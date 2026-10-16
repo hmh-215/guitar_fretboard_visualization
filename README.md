@@ -1,4 +1,5 @@
 # Guitar Fretboard Visualization (MVVM Architecture)
+[![Live Demo](https://shields.io)]([https://github.io](https://hmh-215.github.io/guitar_fretboard_visualization/))
 
 An interactive 22-fret guitar fretboard visualization and memorization web application structured using the **MVVM (Model – View – ViewModel)** pattern.
 
