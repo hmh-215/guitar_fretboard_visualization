@@ -1,0 +1,112 @@
+/* ==========================================================================
+   Guitar Fretboard Visualization - Stylesheet (View Layer Styling)
+   ========================================================================== */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #09090b;
+    color: #fafafa;
+}
+
+/* Realistic Maple Fretboard Styling */
+.maple-neck {
+    background: linear-gradient(180deg, 
+        #f5e6c8 0%, 
+        #edd6ad 18%, 
+        #f3e2c3 45%, 
+        #e8cfa1 75%, 
+        #dfc28f 100%
+    );
+    box-shadow: 
+        inset 0 3px 6px rgba(255, 255, 255, 0.6),
+        inset 0 -4px 8px rgba(120, 80, 30, 0.35),
+        0 16px 40px -5px rgba(0, 0, 0, 0.85);
+    position: relative;
+}
+
+/* Subtle wood grain texture overlay */
+.maple-grain {
+    background-image: repeating-linear-gradient(
+        90deg,
+        rgba(180, 130, 70, 0.03) 0px,
+        rgba(180, 130, 70, 0.03) 25px,
+        transparent 25px,
+        transparent 60px
+    ),
+    repeating-linear-gradient(
+        0deg,
+        rgba(160, 110, 50, 0.04) 0px,
+        rgba(160, 110, 50, 0.04) 2px,
+        transparent 2px,
+        transparent 8px
+    );
+}
+
+/* Metallic Fret Wire */
+.fret-wire {
+    background: linear-gradient(90deg, #94a3b8 0%, #f1f5f9 50%, #64748b 100%);
+    box-shadow: 1px 0 2px rgba(0, 0, 0, 0.35);
+}
+
+/* Bone Nut */
+.guitar-nut {
+    background: linear-gradient(90deg, #e2d9c8 0%, #fffbeb 50%, #cbbba0 100%);
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Guitar Strings with realistic wound/plain appearance */
+.guitar-string {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.string-wound {
+    background: repeating-linear-gradient(
+        90deg,
+        #64748b 0px,
+        #94a3b8 1.5px,
+        #475569 3px
+    );
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+}
+
+.string-plain {
+    background: linear-gradient(180deg, #cbd5e1 0%, #64748b 100%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Note Dot Markers */
+.note-dot {
+    transition: all 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.note-dot:hover {
+    transform: scale(1.16);
+}
+
+.note-dot:active {
+    transform: scale(0.95);
+}
+
+/* Custom minimalist black + orange scrollbar */
+.fretboard-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.fretboard-scroll::-webkit-scrollbar-track {
+    background: #18181b;
+    border-radius: 8px;
+}
+
+.fretboard-scroll::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 8px;
+}
+
+.fretboard-scroll::-webkit-scrollbar-thumb:hover {
+    background: #f97316;
+}
