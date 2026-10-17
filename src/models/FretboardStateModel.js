@@ -38,7 +38,8 @@ class FretboardStateModel {
                 stylePreset: 'alt_rock',
                 bpm: 116,
                 timeSignature: '4/4',
-                currentChordLabel: null
+                currentChordLabel: null,
+                instrumentLabel: '🎸 Distorted Guitar'
             },
 
             // UI Overlay states

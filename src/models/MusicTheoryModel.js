@@ -191,17 +191,23 @@ class MusicTheoryModel {
     }
 
     /**
-     * Format a display chord symbol (e.g. 'Gmaj7', 'Dm7') given root note and chord slot descriptor.
+     * Format a display chord symbol (e.g. 'G5 (I5)', 'Dm7 (ii7)', 'Gmaj7') given root note and chord slot descriptor.
      */
     static formatChordSymbol(rootNoteIdx, chordSlot, accidentalMode = 'sharps') {
         if (!chordSlot || rootNoteIdx === null || rootNoteIdx === undefined) return '';
         const chordRootIdx = ((rootNoteIdx + chordSlot.rootOffset) % 12 + 12) % 12;
         const rootName = MusicTheoryModel.getNoteName(chordRootIdx, accidentalMode);
+        let baseChord = '';
         if (chordSlot.suffix === '/R') {
             const baseRootName = MusicTheoryModel.getNoteName(rootNoteIdx, accidentalMode);
-            return `${rootName}/${baseRootName}`;
+            baseChord = `${rootName}/${baseRootName}`;
+        } else {
+            baseChord = `${rootName}${chordSlot.suffix || ''}`;
         }
-        return `${rootName}${chordSlot.suffix || ''}`;
+        if (chordSlot.degreeRoman) {
+            return `${baseChord} (${chordSlot.degreeRoman})`;
+        }
+        return baseChord;
     }
 
     /**

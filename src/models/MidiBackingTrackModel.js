@@ -29,6 +29,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 116,
+            instrumentType: 'distorted_guitar',
+            bassType: 'distorted_bass',
+            instrumentLabel: '🎸 Distorted Guitar',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'i5' },
+                { rootOffset: 8, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bVI5' },
+                { rootOffset: 3, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bIII5' },
+                { rootOffset: 10, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bVII5' }
+            ],
             drums: {
                 kick: [0, 6, 8],
                 snare: [4, 12],
@@ -61,6 +70,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 124,
+            instrumentType: 'distorted_guitar',
+            bassType: 'distorted_bass',
+            instrumentLabel: '🎸 Overdrive Guitar',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'I5' },
+                { rootOffset: 10, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bVII5' },
+                { rootOffset: 5, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'IV5' },
+                { rootOffset: 0, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'I5' }
+            ],
             drums: {
                 kick: [0, 8, 10],
                 snare: [4, 12],
@@ -90,6 +108,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 138,
+            instrumentType: 'distorted_guitar',
+            bassType: 'distorted_bass',
+            instrumentLabel: '⚡ Heavy Metal Crunch',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'i5' },
+                { rootOffset: 8, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bVI5' },
+                { rootOffset: 10, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bVII5' },
+                { rootOffset: 0, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'i5' }
+            ],
             drums: {
                 kick: [0, 2, 3, 6, 7, 8, 10, 11, 14, 15],
                 snare: [4, 12],
@@ -124,6 +151,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 20,
             defaultBpm: 112,
+            instrumentType: 'distorted_guitar',
+            bassType: 'distorted_bass',
+            instrumentLabel: '🎸 Prog Crunch & Bass',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'i5' },
+                { rootOffset: 10, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bVII5' },
+                { rootOffset: 8, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'bVI5' },
+                { rootOffset: 7, chordIntervals: [0, 7, 12], suffix: '5', degreeRoman: 'v5' }
+            ],
             drums: {
                 kick: [0, 6, 12],
                 snare: [4, 16],
@@ -155,6 +191,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 104,
+            instrumentType: 'clean_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Clean Strat',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' },
+                { rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' }
+            ],
             drums: {
                 kick: [0, 6, 10],
                 snare: [4, 12],
@@ -185,6 +230,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 108,
+            instrumentType: 'synth',
+            bassType: 'synth_bass',
+            instrumentLabel: '🌆 Analog Synth & Bass',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { rootOffset: 8, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { rootOffset: 3, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bIII' },
+                { rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' }
+            ],
             drums: {
                 kick: [0, 4, 8, 12],
                 snare: [4, 12],
@@ -223,6 +277,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 12,
             defaultBpm: 96,
+            instrumentType: 'acoustic_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🪕 Acoustic Guitar',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'Imaj7' },
+                { rootOffset: 9, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'vi7' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'IVmaj7' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
             drums: {
                 kick: [0, 6],
                 snare: [8],
@@ -249,6 +312,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 122,
+            instrumentType: 'electric_piano',
+            bassType: 'upright_bass',
+            instrumentLabel: '🎹 Rhodes & Upright',
+            progression: [
+                { rootOffset: 2, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'ii7' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' },
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'Imaj7' },
+                { rootOffset: 9, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'VI7' }
+            ],
             drums: {
                 kick: [0, 8],
                 rim: [0, 6, 10, 14],
@@ -275,6 +347,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 8,
             defaultBpm: 102,
+            instrumentType: 'acoustic_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🪕 Nylon Guitar',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 9], suffix: '6', degreeRoman: 'I6' },
+                { rootOffset: 9, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'vi7' },
+                { rootOffset: 2, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'ii7' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
             drums: {
                 kick: [0, 4],
                 rim: [0, 3, 6],
@@ -299,6 +380,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 3, // Triplet swing grid: 12 steps/bar
             stepsPerBar: 12,
             defaultBpm: 128,
+            instrumentType: 'jazz_guitar',
+            bassType: 'upright_bass',
+            instrumentLabel: '🎷 Jazz Hollowbody',
+            progression: [
+                { rootOffset: 2, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'ii7' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' },
+                { rootOffset: 4, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'iii7' },
+                { rootOffset: 9, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'VI7' }
+            ],
             drums: {
                 kick: [0, 6],
                 ride: [0, 2, 3, 5, 6, 8, 9, 11],
@@ -325,6 +415,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 12,
             defaultBpm: 132,
+            instrumentType: 'jazz_guitar',
+            bassType: 'upright_bass',
+            instrumentLabel: '🎷 Jazz Hollowbody',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'Imaj7' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'IVmaj7' },
+                { rootOffset: 2, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'ii7' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
             drums: {
                 kick: [0],
                 ride: [0, 4, 6, 8, 10],
@@ -349,6 +448,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 20,
             defaultBpm: 144,
+            instrumentType: 'electric_piano',
+            bassType: 'upright_bass',
+            instrumentLabel: '🎹 Piano & Upright',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
+                { rootOffset: 7, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'v7' },
+                { rootOffset: 0, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
+                { rootOffset: 7, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'v7' }
+            ],
             drums: {
                 kick: [0, 12],
                 ride: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18],
@@ -374,6 +482,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 6,
             stepsPerBar: 12,
             defaultBpm: 105,
+            instrumentType: 'electric_piano',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎹 Latin Piano',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { rootOffset: 8, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
             drums: {
                 kick: [0, 7],
                 ride: [0, 2, 4, 5, 7, 9, 11], // 6/8 bembe bell
@@ -401,6 +518,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 6,
             stepsPerBar: 12,
             defaultBpm: 68,
+            instrumentType: 'clean_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Blues Strat',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'I7' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'IV7' },
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'I7' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
             drums: {
                 kick: [0, 8],
                 snare: [6],
@@ -426,6 +552,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 3,
             stepsPerBar: 12,
             defaultBpm: 118,
+            instrumentType: 'clean_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Texas Blues Strat',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'I7' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'IV7' },
+                { rootOffset: 0, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'I7' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
             drums: {
                 kick: [0, 6],
                 snare: [3, 9],
@@ -457,6 +592,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 98,
+            instrumentType: 'clean_guitar',
+            bassType: 'slap_bass',
+            instrumentLabel: '🎸 Funk Strat & Slap',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' },
+                { rootOffset: 0, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' }
+            ],
             drums: {
                 kick: [0, 5, 10],
                 snare: [4, 7, 12, 15],
@@ -487,6 +631,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 84,
+            instrumentType: 'electric_piano',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎹 Neo-Soul Rhodes',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
+                { rootOffset: 5, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'iv9' },
+                { rootOffset: 10, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'bVII9' },
+                { rootOffset: 3, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'bIIImaj7' }
+            ],
             drums: {
                 kick: [0, 7, 10],
                 snare: [4, 12],
@@ -517,6 +670,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 76,
+            instrumentType: 'clean_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Reggae Skank',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' }
+            ],
             drums: {
                 kick: [8], // One drop on 3
                 rim: [8],
@@ -545,6 +707,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 8,
             defaultBpm: 114,
+            instrumentType: 'acoustic_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🪕 Acoustic & Bass',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { rootOffset: 5, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' },
+                { rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
             drums: {
                 kick: [0, 4],
                 snare: [2, 6],
@@ -568,6 +739,15 @@ class MidiBackingTrackModel {
             stepsPerBeat: 4,
             stepsPerBar: 16,
             defaultBpm: 110,
+            instrumentType: 'acoustic_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🪕 Flamenco Nylon',
+            progression: [
+                { rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { rootOffset: 8, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' }
+            ],
             drums: {
                 kick: [0, 6, 10],
                 rim: [0, 3, 6, 8, 10, 14],
@@ -650,7 +830,9 @@ class MidiBackingTrackModel {
 
             const Theory = window.GuitarApp.Models.MusicTheoryModel;
             const modeData = (Theory && Theory.MUSICAL_MODES[context.musicalModeKey]) || (Theory && Theory.MUSICAL_MODES.ionian);
-            const chordSlot = modeData && modeData.vampChords ? modeData.vampChords[slotIndex] : null;
+            const chordSlot = (preset.progression && preset.progression[slotIndex])
+                ? preset.progression[slotIndex]
+                : (modeData && modeData.vampChords ? modeData.vampChords[slotIndex] : null);
 
             // Notify chord update on chord boundary
             if (barStep === 0 && chordSlot && typeof onChordUpdateFn === 'function') {
@@ -688,23 +870,37 @@ class MidiBackingTrackModel {
                 if (preset.bass) {
                     const bassEvt = preset.bass.find(b => b.step === barStep);
                     if (bassEvt) {
-                        let bassRootMidi = 36 + context.rootNoteIdx;
-                        if (bassRootMidi > 45) bassRootMidi -= 12; // Keep in punchy low octave
+                        let bassBaseMidi = 28 + context.rootNoteIdx + (chordSlot.rootOffset || 0); // E1 is 28
+                        while (bassBaseMidi > 43) bassBaseMidi -= 12; // Keep in low punchy E1..G2 register
+                        while (bassBaseMidi < 28) bassBaseMidi += 12;
 
-                        let semitoneOffset = chordSlot.rootOffset || 0;
+                        let degreeOffset = 0;
                         if (bassEvt.degree === 'third') {
-                            semitoneOffset = chordSlot.thirdOffset !== undefined ? chordSlot.thirdOffset : semitoneOffset + 4;
+                            degreeOffset = (chordSlot.chordIntervals && chordSlot.chordIntervals[1]) !== undefined
+                                ? chordSlot.chordIntervals[1]
+                                : (chordSlot.thirdOffset !== undefined ? chordSlot.thirdOffset : 4);
                         } else if (bassEvt.degree === 'fifth') {
-                            semitoneOffset = chordSlot.fifthOffset !== undefined ? chordSlot.fifthOffset : semitoneOffset + 7;
+                            degreeOffset = (chordSlot.chordIntervals && chordSlot.chordIntervals[2]) !== undefined
+                                ? chordSlot.chordIntervals[2]
+                                : (chordSlot.fifthOffset !== undefined ? chordSlot.fifthOffset : 7);
                         } else if (bassEvt.degree === 'seventh') {
-                            semitoneOffset = chordSlot.seventhOffset !== undefined ? chordSlot.seventhOffset : semitoneOffset + 10;
+                            degreeOffset = (chordSlot.chordIntervals && chordSlot.chordIntervals[3]) !== undefined
+                                ? chordSlot.chordIntervals[3]
+                                : (chordSlot.seventhOffset !== undefined ? chordSlot.seventhOffset : 10);
                         } else if (bassEvt.degree === 'octave') {
-                            semitoneOffset += 12;
+                            degreeOffset = 12;
                         }
 
-                        const bassPitch = bassRootMidi + semitoneOffset;
+                        const bassPitch = bassBaseMidi + degreeOffset;
                         const durationSec = bassEvt.durationSteps * stepDurationSec * 0.92;
-                        audioModel.scheduleBassNote(bassPitch, this.nextStepTime, durationSec, bassEvt.velocity || 0.85, context.isEnabled);
+                        audioModel.scheduleBassNote(
+                            bassPitch,
+                            this.nextStepTime,
+                            durationSec,
+                            bassEvt.velocity || 0.85,
+                            preset.bassType || 'electric_bass',
+                            context.isEnabled
+                        );
                     }
                 }
 
@@ -712,13 +908,30 @@ class MidiBackingTrackModel {
                 if (preset.chords) {
                     const chordEvt = preset.chords.find(c => c.step === barStep);
                     if (chordEvt) {
-                        let chordBaseMidi = 60 + context.rootNoteIdx;
-                        if (chordBaseMidi > 66) chordBaseMidi -= 12; // Warm middle register (F#3..F4)
+                        const isGuitar = preset.instrumentType === 'distorted_guitar' ||
+                                         preset.instrumentType === 'clean_guitar' ||
+                                         preset.instrumentType === 'acoustic_guitar' ||
+                                         preset.instrumentType === 'jazz_guitar';
+
+                        // Set authentic register: Electric guitars sit in 48 (C3)..62 (D4)
+                        let chordRootMidi = (isGuitar ? 48 : 55) + context.rootNoteIdx + (chordSlot.rootOffset || 0);
+                        const maxCeiling = isGuitar ? 62 : 68;
+                        const minFloor = isGuitar ? 44 : 50;
+
+                        while (chordRootMidi > maxCeiling) chordRootMidi -= 12;
+                        while (chordRootMidi < minFloor) chordRootMidi += 12;
 
                         const chordIntervals = chordSlot.chordIntervals || [0, 4, 7];
-                        const midiPitches = chordIntervals.map(interval => chordBaseMidi + interval);
+                        const midiPitches = chordIntervals.map(interval => chordRootMidi + interval);
                         const durationSec = chordEvt.durationSteps * stepDurationSec * 0.95;
-                        audioModel.scheduleChordVoicing(midiPitches, this.nextStepTime, durationSec, chordEvt.velocity || 0.8, context.isEnabled);
+                        audioModel.scheduleChordVoicing(
+                            midiPitches,
+                            this.nextStepTime,
+                            durationSec,
+                            chordEvt.velocity || 0.8,
+                            preset.instrumentType || 'synth',
+                            context.isEnabled
+                        );
                     }
                 }
             }

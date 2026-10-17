@@ -534,6 +534,7 @@ class FretboardViewModel {
             this.state.backingTrack.stylePreset = preset.id;
             this.state.backingTrack.timeSignature = preset.timeSignature;
             this.state.backingTrack.bpm = preset.defaultBpm;
+            this.state.backingTrack.instrumentLabel = preset.instrumentLabel || '🎸 Electric Guitar';
             this.stateModel.notify();
         }
     }

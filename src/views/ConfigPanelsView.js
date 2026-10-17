@@ -39,6 +39,7 @@ class ConfigPanelsView {
 
         // Tab 2: MIDI Backing Track accompaniment controls
         this.backingStyleSelect = document.getElementById('backing-style-select');
+        this.backingInstrumentBadge = document.getElementById('backing-instrument-badge');
         this.backingMeterBadge = document.getElementById('backing-meter-badge');
         this.backingBpmInput = document.getElementById('backing-bpm-input');
         this.btnBpmDec = document.getElementById('btn-bpm-dec');
@@ -266,6 +267,12 @@ class ConfigPanelsView {
             if (data.backingTrack && this.backingStyleSelect.value !== data.backingTrack.stylePreset) {
                 this.backingStyleSelect.value = data.backingTrack.stylePreset;
             }
+        }
+
+        if (this.backingInstrumentBadge && data.backingTrack) {
+            const currentPreset = (data.backingPresets || []).find(p => p.id === data.backingTrack.stylePreset);
+            const label = data.backingTrack.instrumentLabel || (currentPreset && currentPreset.instrumentLabel) || '🎸 Electric Guitar';
+            this.backingInstrumentBadge.textContent = label;
         }
 
         if (this.backingMeterBadge && data.backingTrack) {
