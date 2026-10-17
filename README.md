@@ -26,10 +26,21 @@ An interactive 22-fret guitar fretboard visualization and memorization web appli
      - Show or hide outside-box ghost notes (`25%` opacity).
      - **▶ Play Box**: Audition all notes inside the active box window ascending from the 6th string to the 1st string.
 
-3. **Settings & Custom Guitar Tunings (`Settings`)**:
+3. **MIDI Backing Track Accompaniment (`Modes visualization`)**:
+   - **20 Genre / Style Presets across multiple meters**:
+     - **Rock & Metal**: Alternative Rock (`4/4`), Classic Hard Rock (`4/4`), Heavy Metal Gallop (`4/4`), Prog Rock (`5/4`).
+     - **Pop & Indie**: Modern Pop Groove (`4/4`), 80s Synthwave / Retro (`4/4`), Indie / Dream Pop (`3/4`).
+     - **Jazz & Latin**: Bossa Nova (`4/4`), Brazilian Samba (`2/4`), Jazz Swing Walking (`4/4`), Jazz Waltz (`3/4`), Cool Jazz "Take Five" (`5/4`), Afro-Cuban / Latin (`6/8`).
+     - **Blues, Funk & Soul**: Slow Blues (`6/8`), Texas Blues Shuffle (`4/4`), 70s Funk Pocket (`4/4`), Neo-Soul / R&B (`4/4`).
+     - **World, Folk & Country**: Reggae One-Drop (`4/4`), Country / Bluegrass Train (`2/4`), Spanish Flamenco Rumba (`4/4`).
+   - **Dynamic Toning & Harmonic Adaptation**: Each backing track automatically adopts the harmonic vamp of the active Musical Mode and transposes its bass and chord accompaniment in real time to the selected **Root Note**.
+   - **User-Defined Tempo (BPM)**: Set any tempo between `40 BPM` and `220 BPM` with `-5` / `+5` nudge buttons.
+   - **Live Chord Indicator**: Real-time badge displaying the currently sounding modal chord (e.g. `Chord: Gmaj7` or `Chord: Dm7`).
+
+4. **Automatic Mode-Aware Notation (`♯` / `♭`) & Settings**:
+   - **Automatic Key Signature Notation**: Accidentals (`♯` vs `♭`) are computed automatically from the Parent Major scale of the active Mode and Root (e.g. G Ionian displays `F#`; F Ionian displays `Bb`; D Dorian displays naturals; D Aeolian displays `Bb`).
    - **Quick Tuning Presets**: Standard (`E A D G B E`), Drop D (`D A D G B E`), Eb Standard, Open G (`D G D G B D`), and `DADGAD`.
    - **Individual String Tuning**: Tune each string (`6th` to `1st`) inline or via the dedicated **Guitar String Tuning Modal**.
-   - **♯ Sharps / ♭ Flats** accidental display toggle.
    - **Web Audio Sound ON/OFF** toggle and **Board Reset**.
 
 ---
@@ -37,20 +48,21 @@ An interactive 22-fret guitar fretboard visualization and memorization web appli
 ## 🏗️ MVVM Project Structure
 
 ```text
-guitar_neck_visualization/
+guitar_fretboard_visualization/
 ├── index.html                          # Main View HTML template & script loader
-├── guitar_fretboard_visualizer.html    # Original single-file reference version
+├── guitar_fretboard_visualizer.html    # Single-file HTML entry point
 ├── previous_version_backup.zip         # Archived v1 demo files
 ├── css/
 │   └── styles.css                      # Maple fretboard, strings, nut & UI styling
 └── src/
     ├── main.js                         # Application bootstrapper (wires M-V-VM)
     ├── models/
-    │   ├── MusicTheoryModel.js         # Notes, tunings, 7 modes & pure theory math
-    │   ├── AudioEngineModel.js         # Web Audio API guitar tone synthesizer
+    │   ├── MusicTheoryModel.js         # Notes, modes, parent key derivation & chord vamps
+    │   ├── AudioEngineModel.js         # Web Audio synth for guitar notes & backing tracks
+    │   ├── MidiBackingTrackModel.js    # 20 multi-meter genre presets & lookahead sequencer
     │   └── FretboardStateModel.js      # Reactive observable state container
     ├── viewmodels/
-    │   └── FretboardViewModel.js       # Presentation logic, computed state & commands
+    │   └── FretboardViewModel.js       # Presentation logic, auto-accidentals & backing commands
     └── views/
         ├── HeaderView.js               # Top bar & hamburger navigation dropdown view
         ├── FretboardView.js            # 22-fret maple neck, strings & note dots view

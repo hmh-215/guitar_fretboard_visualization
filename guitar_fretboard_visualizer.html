@@ -164,7 +164,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2 CONFIG: MODES VISUALIZATION (BOX SHAPE) -->
+            <!-- TAB 2 CONFIG: MODES VISUALIZATION (BOX SHAPE & MIDI BACKING TRACK) -->
             <div id="config-panel-scale" class="hidden space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                     
@@ -256,9 +256,50 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- MIDI Backing Track Accompaniment Bar -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-2.5 border-t border-zinc-900 bg-zinc-950/60 p-3 rounded-xl border border-zinc-800/80">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1.5">
+                            <span>♫</span>
+                            <span>Backing Track:</span>
+                        </span>
+                        
+                        <!-- Style Preset Selector (20 Presets across 5 Categories) -->
+                        <div class="relative">
+                            <select id="backing-style-select" class="bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-semibold text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
+                                <!-- Populated dynamically via ConfigPanelsView with 20 presets -->
+                            </select>
+                        </div>
+
+                        <!-- Meter Badge -->
+                        <span id="backing-meter-badge" class="px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[11px] font-mono font-extrabold text-orange-400" title="Active Time Signature">
+                            4/4
+                        </span>
+
+                        <!-- User-Defined Tempo (BPM) Input -->
+                        <div class="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg px-1.5 py-0.5">
+                            <span class="text-[11px] text-zinc-400 font-semibold pl-1">BPM:</span>
+                            <button id="btn-bpm-dec" type="button" class="w-6 h-6 rounded bg-zinc-800 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-300 transition flex items-center justify-center" title="Decrease BPM by 5">−</button>
+                            <input id="backing-bpm-input" type="number" min="40" max="220" value="116" class="w-12 bg-transparent text-center text-xs font-bold text-orange-400 focus:outline-none" title="User-defined Tempo (40 - 220 BPM)">
+                            <button id="btn-bpm-inc" type="button" class="w-6 h-6 rounded bg-zinc-800 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-300 transition flex items-center justify-center" title="Increase BPM by 5">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Controls: Active Chord Pill & Play/Stop Toggle -->
+                    <div class="flex items-center gap-2.5 self-end lg:self-auto">
+                        <span id="backing-chord-badge" class="hidden px-2.5 py-1 rounded-lg bg-orange-500/20 border border-orange-500/50 text-orange-300 font-mono font-extrabold text-xs">
+                            Chord: --
+                        </span>
+                        <button id="btn-toggle-backing" type="button" class="px-3.5 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0" title="Toggle MIDI backing accompaniment in active mode & root">
+                            <span>♫</span>
+                            <span>Play Backing</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- TAB 3 CONFIG: SETTINGS (TUNING, RESET, SOUND, ACCIDENTALS) -->
+            <!-- TAB 3 CONFIG: SETTINGS (TUNING, RESET, SOUND, AUTO ACCIDENTALS) -->
             <div id="config-panel-settings" class="hidden space-y-5">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
@@ -278,9 +319,9 @@
                                 <span>Sound: <strong id="audio-status" class="text-orange-400">ON</strong></span>
                             </button>
 
-                            <div class="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
-                                <button id="btn-sharps" type="button" class="px-2.5 py-1.5 rounded-lg font-bold bg-orange-500 text-black">♯ Sharps</button>
-                                <button id="btn-flats" type="button" class="px-2.5 py-1.5 rounded-lg font-bold text-zinc-400 hover:text-white">♭ Flats</button>
+                            <div class="flex items-center gap-1.5 bg-zinc-950 px-3 py-2 rounded-xl border border-zinc-800 text-xs">
+                                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                                <span id="accidental-mode-badge" class="font-bold text-zinc-300">Auto: ♯ Sharps</span>
                             </div>
                         </div>
                     </div>
@@ -390,6 +431,7 @@
     <!-- Models -->
     <script src="src/models/MusicTheoryModel.js"></script>
     <script src="src/models/AudioEngineModel.js"></script>
+    <script src="src/models/MidiBackingTrackModel.js"></script>
     <script src="src/models/FretboardStateModel.js"></script>
 
     <!-- ViewModel -->

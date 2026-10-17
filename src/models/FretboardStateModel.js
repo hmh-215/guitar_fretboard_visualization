@@ -13,7 +13,7 @@ class FretboardStateModel {
         this.TheoryModel = TheoryModel;
         this.listeners = [];
 
-        // Initial application state matching guitar_fretboard_visualizer.html
+        // Initial application state
         this.state = {
             activeTab: 'note',         // 'note' | 'scale' | 'settings'
             appMode: 'note',           // 'note' (Note visualization) | 'scale' (Modes visualization)
@@ -30,8 +30,16 @@ class FretboardStateModel {
             boxSpanMode: 'standard',   // 'standard' (-1 to +2), 'wide' (-1 to +3), 'left' (-2 to +1), 'forward' (0 to +3), 'full'
             showDegrees: false,
             showGhostNotes: false,
-            accidentalMode: 'sharps',  // 'sharps' | 'flats'
             audioEnabled: true,
+
+            // Backing track accompaniment state
+            backingTrack: {
+                isPlaying: false,
+                stylePreset: 'alt_rock',
+                bpm: 116,
+                timeSignature: '4/4',
+                currentChordLabel: null
+            },
 
             // UI Overlay states
             isHamburgerOpen: false,
@@ -97,6 +105,8 @@ class FretboardStateModel {
         this.state.guitarStrings = this.TheoryModel.cloneStandardStrings();
         this.state.selectedNoteIdx = null;
         this.state.clickedRoot = null;
+        this.state.backingTrack.isPlaying = false;
+        this.state.backingTrack.currentChordLabel = null;
         this.notify();
     }
 }

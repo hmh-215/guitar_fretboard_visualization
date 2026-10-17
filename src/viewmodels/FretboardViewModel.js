@@ -1,18 +1,20 @@
 /**
  * ==========================================================================
  * VIEWMODEL LAYER: FretboardViewModel
- * Connects the Models (MusicTheoryModel, AudioEngineModel, FretboardStateModel)
- * to the Views. Computes presentation data and handles all user actions/commands.
+ * Connects the Models (MusicTheoryModel, AudioEngineModel, FretboardStateModel,
+ * MidiBackingTrackModel) to the Views. Computes presentation data and handles
+ * all user actions/commands.
  * ==========================================================================
  */
 window.GuitarApp = window.GuitarApp || {};
 window.GuitarApp.ViewModels = window.GuitarApp.ViewModels || {};
 
 class FretboardViewModel {
-    constructor(stateModel, theoryModel, audioModel) {
+    constructor(stateModel, theoryModel, audioModel, midiBackingModel) {
         this.stateModel = stateModel;
         this.TheoryModel = theoryModel;
         this.audioModel = audioModel;
+        this.midiBackingModel = midiBackingModel;
         this.viewListeners = [];
 
         // Forward state changes from Model to registered Views
@@ -45,8 +47,16 @@ class FretboardViewModel {
         return this.stateModel.getState();
     }
 
+    /**
+     * Automatically resolves whether notation should be 'sharps' or 'flats'
+     * based on the active Musical Mode and Root Note (Parent Major scale key signature).
+     */
+    get accidentalMode() {
+        return this.TheoryModel.resolveAccidentalMode(this.state);
+    }
+
     getNoteName(noteIdx) {
-        return this.TheoryModel.getNoteName(noteIdx, this.state.accidentalMode);
+        return this.TheoryModel.getNoteName(noteIdx, this.accidentalMode);
     }
 
     getOrderedStrings() {
@@ -319,6 +329,10 @@ class FretboardViewModel {
             }))
         }));
 
+        const backingPresets = window.GuitarApp.Models.MidiBackingTrackModel
+            ? window.GuitarApp.Models.MidiBackingTrackModel.PRESETS
+            : [];
+
         return {
             activeTab: s.activeTab,
             isSettingsTab,
@@ -331,8 +345,10 @@ class FretboardViewModel {
             boxSpanMode: s.boxSpanMode,
             showDegrees: s.showDegrees,
             showGhostNotes: s.showGhostNotes,
-            accidentalMode: s.accidentalMode,
+            accidentalMode: this.accidentalMode,
             audioEnabled: s.audioEnabled,
+            backingTrack: s.backingTrack,
+            backingPresets,
             isTuningModalOpen: s.isTuningModalOpen,
             inlineTuningStrings,
             modalTuningStrings
@@ -362,6 +378,9 @@ class FretboardViewModel {
         };
         if (tabKey === 'note' || tabKey === 'scale') {
             updates.appMode = tabKey;
+        }
+        if (tabKey !== 'scale') {
+            this.stopBackingTrack();
         }
         this.stateModel.setState(updates);
     }
@@ -456,7 +475,82 @@ class FretboardViewModel {
         this.audioModel.playNoteSequence(pitches, s.audioEnabled, 150);
     }
 
+    // ========================================================================
+    // BACKING TRACK CONTROLS
+    // ========================================================================
+
+    toggleBackingTrack() {
+        if (!this.midiBackingModel) return;
+
+        if (this.state.backingTrack.isPlaying) {
+            this.stopBackingTrack();
+        } else {
+            this.startBackingTrack();
+        }
+    }
+
+    startBackingTrack() {
+        if (!this.midiBackingModel || !this.state.audioEnabled) return;
+
+        // If no root is selected yet, default to C on 6th string 8th fret
+        if (!this.state.clickedRoot) {
+            this.quickPickModeRoot(0);
+        }
+
+        const getContextFn = () => ({
+            isEnabled: this.state.audioEnabled && this.state.appMode === 'scale',
+            rootNoteIdx: this.state.clickedRoot ? this.state.clickedRoot.noteIdx : 0,
+            musicalModeKey: this.state.selectedMusicalMode,
+            stylePresetId: this.state.backingTrack.stylePreset,
+            bpm: this.state.backingTrack.bpm,
+            accidentalMode: this.accidentalMode
+        });
+
+        const onChordUpdateFn = (chordSymbol) => {
+            this.state.backingTrack.currentChordLabel = chordSymbol;
+            this.notifyViews();
+        };
+
+        this.midiBackingModel.start(this.audioModel, getContextFn, onChordUpdateFn);
+        this.state.backingTrack.isPlaying = true;
+        this.stateModel.notify();
+    }
+
+    stopBackingTrack() {
+        if (this.midiBackingModel) {
+            this.midiBackingModel.stop();
+        }
+        if (this.state.backingTrack.isPlaying) {
+            this.state.backingTrack.isPlaying = false;
+            this.state.backingTrack.currentChordLabel = null;
+            this.stateModel.notify();
+        }
+    }
+
+    setBackingStylePreset(presetId) {
+        const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
+        const preset = MidiModel ? MidiModel.getPresetById(presetId) : null;
+        if (preset) {
+            this.state.backingTrack.stylePreset = preset.id;
+            this.state.backingTrack.timeSignature = preset.timeSignature;
+            this.state.backingTrack.bpm = preset.defaultBpm;
+            this.stateModel.notify();
+        }
+    }
+
+    setBackingBpm(bpmValue) {
+        const num = parseInt(bpmValue, 10);
+        const bpm = Math.max(40, Math.min(220, isNaN(num) ? 100 : num));
+        this.state.backingTrack.bpm = bpm;
+        this.stateModel.notify();
+    }
+
+    adjustBackingBpm(delta) {
+        this.setBackingBpm((this.state.backingTrack.bpm || 100) + delta);
+    }
+
     resetBoard() {
+        this.stopBackingTrack();
         this.audioModel.stopSequence();
         this.stateModel.resetToStandard();
     }
@@ -464,15 +558,10 @@ class FretboardViewModel {
     toggleAudio() {
         const nextAudio = !this.state.audioEnabled;
         if (!nextAudio) {
+            this.stopBackingTrack();
             this.audioModel.stopSequence();
         }
         this.stateModel.setState({ audioEnabled: nextAudio });
-    }
-
-    setAccidentalMode(mode) {
-        if (mode === 'sharps' || mode === 'flats') {
-            this.stateModel.setState({ accidentalMode: mode });
-        }
     }
 
     tuneSingleString(stringNum, newNoteIdx) {

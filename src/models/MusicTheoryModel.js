@@ -30,49 +30,98 @@ class MusicTheoryModel {
         { id: 'dadgad',      label: 'DADGAD',                       modalLabel: 'DADGAD',                       notes: [2, 9, 2, 7, 9, 2] }
     ];
 
-    // 7 Diatonic Modes with semitone intervals from Root (1st, 2nd, 3rd, 4th, 5th, 6th, 7th degrees)
+    // 7 Diatonic Modes with semitone intervals from Root, parent major offsets, and modal chord vamps
     static MUSICAL_MODES = {
         ionian: {
             name: 'Ionian (Major)',
             intervals: [0, 2, 4, 5, 7, 9, 11],
             degreeNames: ['R', '2', '3', '4', '5', '6', '7'],
-            description: 'Bright, happy, and resolved major scale sound.'
+            description: 'Bright, happy, and resolved major scale sound.',
+            parentMajorOffset: 0,
+            vampChords: [
+                { rootOffset: 0, thirdOffset: 4, fifthOffset: 7, seventhOffset: 11, chordIntervals: [0, 4, 7, 11], suffix: 'maj7' },
+                { rootOffset: 5, thirdOffset: 9, fifthOffset: 12, seventhOffset: 16, chordIntervals: [5, 9, 12, 16], suffix: 'maj7' },
+                { rootOffset: 7, thirdOffset: 11, fifthOffset: 14, seventhOffset: 17, chordIntervals: [7, 11, 14, 17], suffix: '7' },
+                { rootOffset: 0, thirdOffset: 4, fifthOffset: 7, seventhOffset: 11, chordIntervals: [0, 4, 7, 11], suffix: 'maj7' }
+            ]
         },
         dorian: {
             name: 'Dorian',
             intervals: [0, 2, 3, 5, 7, 9, 10],
             degreeNames: ['R', '2', 'b3', '4', '5', '6', 'b7'],
-            description: 'Minor scale with a raised natural 6th; soulful jazz/rock vibe.'
+            description: 'Minor scale with a raised natural 6th; soulful jazz/rock vibe.',
+            parentMajorOffset: 2,
+            vampChords: [
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 3, 7, 10], suffix: 'm7' },
+                { rootOffset: 5, thirdOffset: 9, fifthOffset: 12, seventhOffset: 15, chordIntervals: [5, 9, 12, 15], suffix: '7' },
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 3, 7, 10], suffix: 'm7' },
+                { rootOffset: 5, thirdOffset: 9, fifthOffset: 12, seventhOffset: 15, chordIntervals: [5, 9, 12, 15], suffix: '7' }
+            ]
         },
         phrygian: {
             name: 'Phrygian',
             intervals: [0, 1, 3, 5, 7, 8, 10],
             degreeNames: ['R', 'b2', 'b3', '4', '5', 'b6', 'b7'],
-            description: 'Exotic, Spanish/Flamenco minor sound featuring the flat 2nd.'
+            description: 'Exotic, Spanish/Flamenco minor sound featuring the flat 2nd.',
+            parentMajorOffset: 4,
+            vampChords: [
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 3, 7, 10], suffix: 'm' },
+                { rootOffset: 1, thirdOffset: 5, fifthOffset: 8, seventhOffset: 12, chordIntervals: [1, 5, 8, 12], suffix: 'maj7' },
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 3, 7, 10], suffix: 'm' },
+                { rootOffset: 1, thirdOffset: 5, fifthOffset: 8, seventhOffset: 12, chordIntervals: [1, 5, 8, 12], suffix: 'maj7' }
+            ]
         },
         lydian: {
             name: 'Lydian',
             intervals: [0, 2, 4, 6, 7, 9, 11],
             degreeNames: ['R', '2', '3', '#4', '5', '6', '7'],
-            description: 'Dreamy, floating major sound featuring the raised #4th.'
+            description: 'Dreamy, floating major sound featuring the raised #4th.',
+            parentMajorOffset: 5,
+            vampChords: [
+                { rootOffset: 0, thirdOffset: 4, fifthOffset: 7, seventhOffset: 11, chordIntervals: [0, 4, 7, 11], suffix: 'maj7' },
+                { rootOffset: 2, thirdOffset: 6, fifthOffset: 9, seventhOffset: 12, chordIntervals: [2, 6, 9, 12], suffix: '/R' },
+                { rootOffset: 0, thirdOffset: 4, fifthOffset: 7, seventhOffset: 11, chordIntervals: [0, 4, 7, 11], suffix: 'maj7' },
+                { rootOffset: 2, thirdOffset: 6, fifthOffset: 9, seventhOffset: 12, chordIntervals: [2, 6, 9, 12], suffix: '/R' }
+            ]
         },
         mixolydian: {
             name: 'Mixolydian',
             intervals: [0, 2, 4, 5, 7, 9, 10],
             degreeNames: ['R', '2', '3', '4', '5', '6', 'b7'],
-            description: 'Bluesy, upbeat dominant 7th scale with a flat 7th.'
+            description: 'Bluesy, upbeat dominant 7th scale with a flat 7th.',
+            parentMajorOffset: 7,
+            vampChords: [
+                { rootOffset: 0, thirdOffset: 4, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 4, 7, 10], suffix: '7' },
+                { rootOffset: 10, thirdOffset: 14, fifthOffset: 17, seventhOffset: 21, chordIntervals: [10, 14, 17], suffix: '' },
+                { rootOffset: 5, thirdOffset: 9, fifthOffset: 12, seventhOffset: 16, chordIntervals: [5, 9, 12], suffix: '' },
+                { rootOffset: 0, thirdOffset: 4, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 4, 7, 10], suffix: '7' }
+            ]
         },
         aeolian: {
             name: 'Aeolian (Natural Minor)',
             intervals: [0, 2, 3, 5, 7, 8, 10],
             degreeNames: ['R', '2', 'b3', '4', '5', 'b6', 'b7'],
-            description: 'Classic melancholic and serious natural minor scale.'
+            description: 'Classic melancholic and serious natural minor scale.',
+            parentMajorOffset: 9,
+            vampChords: [
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 3, 7, 10], suffix: 'm7' },
+                { rootOffset: 8, thirdOffset: 12, fifthOffset: 15, seventhOffset: 19, chordIntervals: [8, 12, 15, 19], suffix: 'maj7' },
+                { rootOffset: 10, thirdOffset: 14, fifthOffset: 17, seventhOffset: 21, chordIntervals: [10, 14, 17], suffix: '' },
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 7, seventhOffset: 10, chordIntervals: [0, 3, 7, 10], suffix: 'm7' }
+            ]
         },
         locrian: {
             name: 'Locrian',
             intervals: [0, 1, 3, 5, 6, 8, 10],
             degreeNames: ['R', 'b2', 'b3', '4', 'b5', 'b6', 'b7'],
-            description: 'Tense, unstable half-diminished mode with flat 2nd and flat 5th.'
+            description: 'Tense, unstable half-diminished mode with flat 2nd and flat 5th.',
+            parentMajorOffset: 11,
+            vampChords: [
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 6, seventhOffset: 10, chordIntervals: [0, 3, 6, 10], suffix: 'm7b5' },
+                { rootOffset: 1, thirdOffset: 5, fifthOffset: 8, seventhOffset: 12, chordIntervals: [1, 5, 8, 12], suffix: 'maj7' },
+                { rootOffset: 0, thirdOffset: 3, fifthOffset: 6, seventhOffset: 10, chordIntervals: [0, 3, 6, 10], suffix: 'm7b5' },
+                { rootOffset: 1, thirdOffset: 5, fifthOffset: 8, seventhOffset: 12, chordIntervals: [1, 5, 8, 12], suffix: 'maj7' }
+            ]
         }
     };
 
@@ -105,6 +154,54 @@ class MusicTheoryModel {
         const sharp = MusicTheoryModel.NOTES_SHARP[normalized];
         const flat = MusicTheoryModel.NOTES_FLAT[normalized];
         return sharp !== flat ? `${sharp} / ${flat}` : sharp;
+    }
+
+    /**
+     * Automatically resolves whether notation should be 'sharps' or 'flats'
+     * based on Parent Major scale key signature for modes, or chromatic convention.
+     */
+    static resolveAccidentalMode(state) {
+        if (!state) return 'sharps';
+        const { appMode, selectedNoteIdx, clickedRoot, selectedMusicalMode } = state;
+
+        if (appMode === 'scale') {
+            if (!clickedRoot) {
+                return ['dorian', 'phrygian', 'aeolian', 'locrian'].includes(selectedMusicalMode) ? 'flats' : 'sharps';
+            }
+            const mode = MusicTheoryModel.MUSICAL_MODES[selectedMusicalMode] || MusicTheoryModel.MUSICAL_MODES.ionian;
+            const parentMajorIdx = ((clickedRoot.noteIdx - mode.parentMajorOffset) % 12 + 12) % 12;
+
+            // Flat Parent Major Keys: F(5), Bb(10), Eb(3), Ab(8), Db(1)
+            if ([5, 10, 3, 8, 1].includes(parentMajorIdx)) {
+                return 'flats';
+            }
+            // Sharp Parent Major Keys: G(7), D(2), A(9), E(4), B(11), F#(6)
+            if ([7, 2, 9, 4, 11, 6].includes(parentMajorIdx)) {
+                return 'sharps';
+            }
+            // C Major parent (0) - zero sharps/flats in scale
+            return ['ionian', 'lydian'].includes(selectedMusicalMode) ? 'sharps' : 'flats';
+        }
+
+        // Note visualization mode fallback
+        if (selectedNoteIdx !== null && selectedNoteIdx !== undefined) {
+            return [1, 3, 5, 8, 10].includes(selectedNoteIdx) ? 'flats' : 'sharps';
+        }
+        return 'sharps';
+    }
+
+    /**
+     * Format a display chord symbol (e.g. 'Gmaj7', 'Dm7') given root note and chord slot descriptor.
+     */
+    static formatChordSymbol(rootNoteIdx, chordSlot, accidentalMode = 'sharps') {
+        if (!chordSlot || rootNoteIdx === null || rootNoteIdx === undefined) return '';
+        const chordRootIdx = ((rootNoteIdx + chordSlot.rootOffset) % 12 + 12) % 12;
+        const rootName = MusicTheoryModel.getNoteName(chordRootIdx, accidentalMode);
+        if (chordSlot.suffix === '/R') {
+            const baseRootName = MusicTheoryModel.getNoteName(rootNoteIdx, accidentalMode);
+            return `${rootName}/${baseRootName}`;
+        }
+        return `${rootName}${chordSlot.suffix || ''}`;
     }
 
     /**

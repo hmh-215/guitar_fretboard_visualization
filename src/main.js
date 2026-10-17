@@ -9,16 +9,17 @@ window.GuitarApp = window.GuitarApp || {};
 
 (function bootstrapGuitarApp() {
     function init() {
-        const { MusicTheoryModel, AudioEngineModel, FretboardStateModel } = window.GuitarApp.Models;
+        const { MusicTheoryModel, AudioEngineModel, FretboardStateModel, MidiBackingTrackModel } = window.GuitarApp.Models;
         const { FretboardViewModel } = window.GuitarApp.ViewModels;
         const { HeaderView, FretboardView, ConfigPanelsView, TuningModalView } = window.GuitarApp.Views;
 
         // 1. Instantiate Models
         const audioModel = new AudioEngineModel();
         const stateModel = new FretboardStateModel(MusicTheoryModel);
+        const midiBackingModel = MidiBackingTrackModel ? new MidiBackingTrackModel() : null;
 
         // 2. Instantiate ViewModel
-        const viewModel = new FretboardViewModel(stateModel, MusicTheoryModel, audioModel);
+        const viewModel = new FretboardViewModel(stateModel, MusicTheoryModel, audioModel, midiBackingModel);
 
         // 3. Instantiate Views
         const headerView = new HeaderView(viewModel);
@@ -41,6 +42,7 @@ window.GuitarApp = window.GuitarApp || {};
         window.GuitarApp.instance = {
             stateModel,
             audioModel,
+            midiBackingModel,
             viewModel,
             views: {
                 headerView,
@@ -50,7 +52,7 @@ window.GuitarApp = window.GuitarApp || {};
             }
         };
 
-        // Optional global command bridges for backward compatibility
+        // Global command bridges for backward compatibility and console usage
         window.toggleHamburgerMenu = (e) => {
             if (e) e.stopPropagation();
             viewModel.toggleHamburgerMenu();
@@ -63,9 +65,12 @@ window.GuitarApp = window.GuitarApp || {};
         window.onBoxSpanChange = (spanKey) => viewModel.setBoxSpanMode(spanKey);
         window.toggleDegreeLabels = () => viewModel.toggleDegreeLabels();
         window.toggleGhostNotes = () => viewModel.toggleGhostNotes();
+        window.toggleBackingTrack = () => viewModel.toggleBackingTrack();
+        window.setBackingStylePreset = (id) => viewModel.setBackingStylePreset(id);
+        window.setBackingBpm = (bpm) => viewModel.setBackingBpm(bpm);
+        window.adjustBackingBpm = (delta) => viewModel.adjustBackingBpm(delta);
         window.resetBoard = () => viewModel.resetBoard();
         window.toggleAudio = () => viewModel.toggleAudio();
-        window.setAccidentalMode = (mode) => viewModel.setAccidentalMode(mode);
         window.openTuningModal = () => viewModel.openTuningModal();
         window.closeTuningModal = () => viewModel.closeTuningModal();
         window.applyTuningPreset = (preset) => viewModel.applyTuningPreset(preset);

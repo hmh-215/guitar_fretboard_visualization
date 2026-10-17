@@ -3,8 +3,8 @@
  * VIEW LAYER: ConfigPanelsView
  * Renders and binds the bottom configuration panels for:
  *   1. Note visualization (#config-panel-note)
- *   2. Modes visualization (#config-panel-scale)
- *   3. Settings (#config-panel-settings)
+ *   2. Modes visualization (#config-panel-scale, with 20 MIDI Backing Tracks)
+ *   3. Settings (#config-panel-settings, with auto-accidental display)
  * ==========================================================================
  */
 window.GuitarApp = window.GuitarApp || {};
@@ -37,13 +37,21 @@ class ConfigPanelsView {
         this.modeFormulaBadge = document.getElementById('mode-formula-badge');
         this.btnPlayBox = document.getElementById('btn-play-box');
 
+        // Tab 2: MIDI Backing Track accompaniment controls
+        this.backingStyleSelect = document.getElementById('backing-style-select');
+        this.backingMeterBadge = document.getElementById('backing-meter-badge');
+        this.backingBpmInput = document.getElementById('backing-bpm-input');
+        this.btnBpmDec = document.getElementById('btn-bpm-dec');
+        this.btnBpmInc = document.getElementById('btn-bpm-inc');
+        this.btnToggleBacking = document.getElementById('btn-toggle-backing');
+        this.backingChordBadge = document.getElementById('backing-chord-badge');
+
         // Tab 3: Settings elements
         this.btnResetBoard = document.getElementById('btn-reset-board');
         this.btnAudioToggle = document.getElementById('btn-audio-toggle');
         this.audioIcon = document.getElementById('audio-icon');
         this.audioStatus = document.getElementById('audio-status');
-        this.btnSharps = document.getElementById('btn-sharps');
-        this.btnFlats = document.getElementById('btn-flats');
+        this.accidentalModeBadge = document.getElementById('accidental-mode-badge');
         this.btnOpenTuningModal = document.getElementById('btn-open-tuning-modal');
         this.inlineTuningRow = document.getElementById('inline-tuning-row');
         this.presetButtons = document.querySelectorAll('[data-settings-preset]');
@@ -82,6 +90,38 @@ class ConfigPanelsView {
             });
         }
 
+        // Backing Track Event Bindings
+        if (this.backingStyleSelect) {
+            this.backingStyleSelect.addEventListener('change', (e) => {
+                this.viewModel.setBackingStylePreset(e.target.value);
+            });
+        }
+
+        if (this.backingBpmInput) {
+            this.backingBpmInput.addEventListener('change', (e) => {
+                this.viewModel.setBackingBpm(e.target.value);
+            });
+        }
+
+        if (this.btnBpmDec) {
+            this.btnBpmDec.addEventListener('click', () => {
+                this.viewModel.adjustBackingBpm(-5);
+            });
+        }
+
+        if (this.btnBpmInc) {
+            this.btnBpmInc.addEventListener('click', () => {
+                this.viewModel.adjustBackingBpm(5);
+            });
+        }
+
+        if (this.btnToggleBacking) {
+            this.btnToggleBacking.addEventListener('click', () => {
+                this.viewModel.toggleBackingTrack();
+            });
+        }
+
+        // Settings Event Bindings
         if (this.btnResetBoard) {
             this.btnResetBoard.addEventListener('click', () => {
                 this.viewModel.resetBoard();
@@ -91,18 +131,6 @@ class ConfigPanelsView {
         if (this.btnAudioToggle) {
             this.btnAudioToggle.addEventListener('click', () => {
                 this.viewModel.toggleAudio();
-            });
-        }
-
-        if (this.btnSharps) {
-            this.btnSharps.addEventListener('click', () => {
-                this.viewModel.setAccidentalMode('sharps');
-            });
-        }
-
-        if (this.btnFlats) {
-            this.btnFlats.addEventListener('click', () => {
-                this.viewModel.setAccidentalMode('flats');
             });
         }
 
@@ -212,23 +240,82 @@ class ConfigPanelsView {
             this.btnPlayBox.classList.toggle('opacity-50', !data.hasClickedRoot || !data.audioEnabled);
         }
 
+        // Update MIDI Backing Track Controls (Tab 2)
+        if (this.backingStyleSelect && data.backingPresets && data.backingPresets.length > 0) {
+            if (this.backingStyleSelect.children.length === 0) {
+                // Populate optgroups by category
+                const categories = {};
+                data.backingPresets.forEach(preset => {
+                    const cat = preset.category || 'General';
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push(preset);
+                });
+
+                Object.entries(categories).forEach(([catName, presetList]) => {
+                    const group = document.createElement('optgroup');
+                    group.label = catName;
+                    presetList.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        opt.textContent = `${p.name} (${p.timeSignature})`;
+                        group.appendChild(opt);
+                    });
+                    this.backingStyleSelect.appendChild(group);
+                });
+            }
+            if (data.backingTrack && this.backingStyleSelect.value !== data.backingTrack.stylePreset) {
+                this.backingStyleSelect.value = data.backingTrack.stylePreset;
+            }
+        }
+
+        if (this.backingMeterBadge && data.backingTrack) {
+            this.backingMeterBadge.textContent = data.backingTrack.timeSignature || '4/4';
+        }
+
+        if (this.backingBpmInput && data.backingTrack) {
+            if (document.activeElement !== this.backingBpmInput) {
+                this.backingBpmInput.value = data.backingTrack.bpm || 116;
+            }
+        }
+
+        if (this.btnToggleBacking && data.backingTrack) {
+            const isPlaying = data.backingTrack.isPlaying;
+            this.btnToggleBacking.disabled = !data.audioEnabled;
+            this.btnToggleBacking.classList.toggle('opacity-50', !data.audioEnabled);
+
+            if (isPlaying) {
+                this.btnToggleBacking.className = 'px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black border border-orange-400 font-extrabold text-xs transition flex items-center gap-1.5 shrink-0 shadow-lg shadow-orange-500/30';
+                this.btnToggleBacking.innerHTML = `<span>⏹</span><span>Stop Backing</span>`;
+            } else {
+                this.btnToggleBacking.className = 'px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0';
+                this.btnToggleBacking.innerHTML = `<span>♫</span><span>Play Backing</span>`;
+            }
+        }
+
+        if (this.backingChordBadge && data.backingTrack) {
+            const isPlaying = data.backingTrack.isPlaying;
+            const chord = data.backingTrack.currentChordLabel;
+            if (isPlaying && chord) {
+                this.backingChordBadge.classList.remove('hidden');
+                this.backingChordBadge.textContent = `Chord: ${chord}`;
+            } else {
+                this.backingChordBadge.classList.add('hidden');
+            }
+        }
+
         // Update Tab 3 Settings Controls
-        if (this.btnSharps) {
-            this.btnSharps.className = data.accidentalMode === 'sharps'
-                ? 'px-2.5 py-1.5 rounded-lg font-bold bg-orange-500 text-black'
-                : 'px-2.5 py-1.5 rounded-lg font-bold text-zinc-400 hover:text-white';
-        }
-        if (this.btnFlats) {
-            this.btnFlats.className = data.accidentalMode === 'flats'
-                ? 'px-2.5 py-1.5 rounded-lg font-bold bg-orange-500 text-black'
-                : 'px-2.5 py-1.5 rounded-lg font-bold text-zinc-400 hover:text-white';
-        }
         if (this.audioIcon) {
             this.audioIcon.textContent = data.audioEnabled ? '🔊' : '🔇';
         }
         if (this.audioStatus) {
             this.audioStatus.textContent = data.audioEnabled ? 'ON' : 'OFF';
             this.audioStatus.className = data.audioEnabled ? 'text-orange-400' : 'text-zinc-500';
+        }
+
+        if (this.accidentalModeBadge) {
+            const isSharps = data.accidentalMode === 'sharps';
+            this.accidentalModeBadge.textContent = isSharps ? 'Auto: ♯ Sharps' : 'Auto: ♭ Flats';
+            this.accidentalModeBadge.title = 'Key signature derived automatically from active Musical Mode and Root Note';
         }
 
         // Render Inline Tuning Row (6th string to 1st string)
