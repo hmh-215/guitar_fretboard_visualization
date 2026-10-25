@@ -35,11 +35,11 @@ class FretboardStateModel {
             // Backing track accompaniment state
             backingTrack: {
                 isPlaying: false,
-                stylePreset: 'alt_rock',
-                bpm: 116,
+                stylePreset: 'purge_metal',
+                bpm: 130,
                 timeSignature: '4/4',
                 currentChordLabel: null,
-                instrumentLabel: '🎸 Distorted Guitar'
+                instrumentLabel: '⚡ Heavy Metal Crunch'
             },
 
             // UI Overlay states

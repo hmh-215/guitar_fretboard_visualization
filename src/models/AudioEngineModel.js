@@ -201,12 +201,19 @@ class AudioEngineModel {
                 cabHighCut.type = 'lowpass';
                 cabHighCut.frequency.setValueAtTime(3600, t);
 
-                // 4. Master Chord Envelope
-                const guitarGain = Math.min(0.16, 0.13 * velocity);
+                // 4. Master Chord Envelope (dynamic palm-mute chugs vs open power chords)
+                const isChug = dur < 0.22;
+                const guitarGain = Math.min(0.18, 0.14 * velocity);
                 masterGain.gain.setValueAtTime(0.0001, t);
-                masterGain.gain.linearRampToValueAtTime(guitarGain, t + 0.015);
-                masterGain.gain.setValueAtTime(guitarGain * 0.9, t + dur * 0.7);
-                masterGain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                if (isChug) {
+                    // Tight palm-muted punch for fast 16th gallop chugs
+                    masterGain.gain.linearRampToValueAtTime(guitarGain * 1.15, t + 0.006);
+                    masterGain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                } else {
+                    masterGain.gain.linearRampToValueAtTime(guitarGain, t + 0.015);
+                    masterGain.gain.setValueAtTime(guitarGain * 0.9, t + dur * 0.7);
+                    masterGain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                }
 
                 // Signal Chain Routing
                 preGain.connect(preBassCut);
@@ -706,6 +713,70 @@ class AudioEngineModel {
                     noise.start(t);
                     noise.stop(t + 0.33);
                 }
+            } else if (type === 'crash') {
+                if (noiseBuf) {
+                    const noise = ctx.createBufferSource();
+                    noise.buffer = noiseBuf;
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'highpass';
+                    filter.frequency.setValueAtTime(3200, t);
+
+                    const gain = ctx.createGain();
+                    gain.gain.setValueAtTime(0.22 * velocity, t);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.2);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    noise.start(t);
+                    noise.stop(t + 1.25);
+                }
+            } else if (type === 'ghostSnare') {
+                // Soft snare rattle tap
+                const osc = ctx.createOscillator();
+                const oscGain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(160, t);
+                osc.frequency.exponentialRampToValueAtTime(90, t + 0.05);
+                oscGain.gain.setValueAtTime(0.06 * velocity, t);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+                osc.connect(oscGain);
+                oscGain.connect(ctx.destination);
+                osc.start(t);
+                osc.stop(t + 0.07);
+
+                if (noiseBuf) {
+                    const noise = ctx.createBufferSource();
+                    noise.buffer = noiseBuf;
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'highpass';
+                    filter.frequency.setValueAtTime(1400, t);
+
+                    const noiseGain = ctx.createGain();
+                    noiseGain.gain.setValueAtTime(0.08 * velocity, t);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+
+                    noise.connect(filter);
+                    filter.connect(noiseGain);
+                    noiseGain.connect(ctx.destination);
+
+                    noise.start(t);
+                    noise.stop(t + 0.08);
+                }
+            } else if (type === 'crossStick') {
+                // Woody Brazilian / Jazz cross-stick
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(680, t);
+                osc.frequency.exponentialRampToValueAtTime(350, t + 0.025);
+                gain.gain.setValueAtTime(0.22 * velocity, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(t);
+                osc.stop(t + 0.035);
             }
         } catch (e) {
             // Ignore

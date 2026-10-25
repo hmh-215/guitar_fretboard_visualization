@@ -550,6 +550,13 @@ class FretboardViewModel {
         this.setBackingBpm((this.state.backingTrack.bpm || 100) + delta);
     }
 
+    downloadBackingMidi() {
+        const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
+        if (MidiModel && typeof MidiModel.downloadPresetMidi === 'function') {
+            MidiModel.downloadPresetMidi(this.state.backingTrack.stylePreset);
+        }
+    }
+
     resetBoard() {
         this.stopBackingTrack();
         this.audioModel.stopSequence();

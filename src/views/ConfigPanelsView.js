@@ -45,6 +45,7 @@ class ConfigPanelsView {
         this.btnBpmDec = document.getElementById('btn-bpm-dec');
         this.btnBpmInc = document.getElementById('btn-bpm-inc');
         this.btnToggleBacking = document.getElementById('btn-toggle-backing');
+        this.btnDownloadMidi = document.getElementById('btn-download-midi');
         this.backingChordBadge = document.getElementById('backing-chord-badge');
 
         // Tab 3: Settings elements
@@ -119,6 +120,12 @@ class ConfigPanelsView {
         if (this.btnToggleBacking) {
             this.btnToggleBacking.addEventListener('click', () => {
                 this.viewModel.toggleBackingTrack();
+            });
+        }
+
+        if (this.btnDownloadMidi) {
+            this.btnDownloadMidi.addEventListener('click', () => {
+                this.viewModel.downloadBackingMidi();
             });
         }
 
