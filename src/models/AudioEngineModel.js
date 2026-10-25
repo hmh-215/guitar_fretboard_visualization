@@ -329,7 +329,7 @@ class AudioEngineModel {
                     osc.stop(t + dur + 0.04);
                     subOsc.stop(t + dur + 0.04);
                 });
-            } else if (instrumentType === 'electric_piano') {
+            } else if (instrumentType === 'electric_piano' || instrumentType === 'rhodes') {
                 // ==============================================================
                 // RHODES ELECTRIC PIANO (TINE SINE + BELL TRIANGLE)
                 // ==============================================================
@@ -364,6 +364,106 @@ class AudioEngineModel {
                     bellOsc.start(t);
                     tineOsc.stop(t + dur + 0.04);
                     bellOsc.stop(t + dur + 0.04);
+                });
+            } else if (instrumentType === 'piano') {
+                // ==============================================================
+                // ACOUSTIC GRAND PIANO (HAMMER ATTACK & HARMONIC DECAY)
+                // ==============================================================
+                const noteGainLevel = (0.07 * velocity) / Math.sqrt(voiceCount);
+                midiPitches.forEach((pitch) => {
+                    const freq = 440 * Math.pow(2, (pitch - 69) / 12);
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const filter = ctx.createBiquadFilter();
+                    const gain = ctx.createGain();
+
+                    osc1.type = 'triangle';
+                    osc2.type = 'sine';
+                    osc1.frequency.setValueAtTime(freq, t);
+                    osc2.frequency.setValueAtTime(freq * 2.0, t); // 2nd harmonic hammer
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(3200, t);
+                    filter.frequency.exponentialRampToValueAtTime(800, t + Math.min(dur, 0.4));
+
+                    gain.gain.setValueAtTime(0.0001, t);
+                    gain.gain.linearRampToValueAtTime(noteGainLevel, t + 0.005);
+                    gain.gain.setValueAtTime(noteGainLevel * 0.7, t + 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+
+                    osc1.connect(filter);
+                    osc2.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc1.start(t);
+                    osc2.start(t);
+                    osc1.stop(t + dur + 0.04);
+                    osc2.stop(t + dur + 0.04);
+                });
+            } else if (instrumentType === 'house_organ' || instrumentType === 'percussive_organ') {
+                // ==============================================================
+                // 90s M1 PERCUSSIVE HOUSE ORGAN (SQUARE + SINE PERCUSSIVE CLICK)
+                // ==============================================================
+                const noteGainLevel = (0.06 * velocity) / Math.sqrt(voiceCount);
+                midiPitches.forEach((pitch) => {
+                    const freq = 440 * Math.pow(2, (pitch - 69) / 12);
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const filter = ctx.createBiquadFilter();
+                    const gain = ctx.createGain();
+
+                    osc1.type = 'square';
+                    osc2.type = 'sine';
+                    osc1.frequency.setValueAtTime(freq, t);
+                    osc2.frequency.setValueAtTime(freq * 3.0, t); // Percussive organ harmonic
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(2400, t);
+
+                    gain.gain.setValueAtTime(0.0001, t);
+                    gain.gain.linearRampToValueAtTime(noteGainLevel, t + 0.004);
+                    gain.gain.setValueAtTime(noteGainLevel * 0.85, t + dur * 0.6);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+
+                    osc1.connect(filter);
+                    osc2.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc1.start(t);
+                    osc2.start(t);
+                    osc1.stop(t + dur + 0.04);
+                    osc2.stop(t + dur + 0.04);
+                });
+            } else if (instrumentType === 'tropical_pluck' || instrumentType === 'marimba') {
+                // ==============================================================
+                // TROPICAL PLUCK / MARIMBA MALLET SYNTH
+                // ==============================================================
+                const noteGainLevel = (0.075 * velocity) / Math.sqrt(voiceCount);
+                midiPitches.forEach((pitch) => {
+                    const freq = 440 * Math.pow(2, (pitch - 69) / 12);
+                    const osc = ctx.createOscillator();
+                    const filter = ctx.createBiquadFilter();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, t);
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(3600, t);
+                    filter.frequency.exponentialRampToValueAtTime(600, t + Math.min(dur, 0.2));
+
+                    gain.gain.setValueAtTime(0.0001, t);
+                    gain.gain.linearRampToValueAtTime(noteGainLevel, t + 0.003);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t + Math.min(dur, 0.35));
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(t);
+                    osc.stop(t + Math.min(dur, 0.35) + 0.02);
                 });
             } else {
                 // ==============================================================
