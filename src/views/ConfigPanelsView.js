@@ -22,6 +22,7 @@ class ConfigPanelsView {
 
         // Tab 1: Note Visualization elements
         this.quickNotePills = document.getElementById('quick-note-pills');
+        this.noteRelationSelect = document.getElementById('note-relation-select');
         this.mode1StatusNote = document.getElementById('mode1-status-note');
         this.mode1Count = document.getElementById('mode1-count');
 
@@ -46,7 +47,9 @@ class ConfigPanelsView {
         this.btnBpmInc = document.getElementById('btn-bpm-inc');
         this.btnToggleBacking = document.getElementById('btn-toggle-backing');
         this.btnDownloadMidi = document.getElementById('btn-download-midi');
+        this.backingSectionBadge = document.getElementById('backing-section-badge');
         this.backingChordBadge = document.getElementById('backing-chord-badge');
+        this.backingScaleBadge = document.getElementById('backing-scale-badge');
 
         // Tab 3: Settings elements
         this.btnResetBoard = document.getElementById('btn-reset-board');
@@ -62,6 +65,12 @@ class ConfigPanelsView {
     }
 
     _bindEvents() {
+        if (this.noteRelationSelect) {
+            this.noteRelationSelect.addEventListener('change', (e) => {
+                this.viewModel.setNoteIntervalRelation(e.target.value);
+            });
+        }
+
         if (this.musicalModeSelect) {
             this.musicalModeSelect.addEventListener('change', (e) => {
                 this.viewModel.setMusicalMode(e.target.value);
@@ -215,7 +224,20 @@ class ConfigPanelsView {
             });
         }
 
-        // Update Mode 1 Status Counter
+        // Populate Note Relation Dropdown (Tab 1)
+        if (this.noteRelationSelect && data.noteRelations) {
+            this.noteRelationSelect.innerHTML = '';
+            data.noteRelations.forEach(rel => {
+                const opt = document.createElement('option');
+                opt.value = rel.id;
+                opt.textContent = rel.label;
+                if (rel.selected) opt.selected = true;
+                this.noteRelationSelect.appendChild(opt);
+            });
+            this.noteRelationSelect.value = data.selectedNoteIntervalRelation || 'root_only';
+        }
+
+        // Update Mode 1 Status Counter (if present)
         if (this.mode1StatusNote) {
             this.mode1StatusNote.textContent = data.selectedNoteStatusName;
         }
@@ -265,7 +287,7 @@ class ConfigPanelsView {
                     presetList.forEach(p => {
                         const opt = document.createElement('option');
                         opt.value = p.id;
-                        opt.textContent = `${p.name} (${p.timeSignature})`;
+                        opt.textContent = `${p.name} (${p.defaultBpm} BPM)`;
                         group.appendChild(opt);
                     });
                     this.backingStyleSelect.appendChild(group);
@@ -306,6 +328,17 @@ class ConfigPanelsView {
             }
         }
 
+        if (this.backingSectionBadge && data.backingTrack) {
+            const isPlaying = data.backingTrack.isPlaying;
+            const section = data.backingTrack.currentSectionLabel;
+            if (isPlaying && section) {
+                this.backingSectionBadge.classList.remove('hidden');
+                this.backingSectionBadge.textContent = section;
+            } else {
+                this.backingSectionBadge.classList.add('hidden');
+            }
+        }
+
         if (this.backingChordBadge && data.backingTrack) {
             const isPlaying = data.backingTrack.isPlaying;
             const chord = data.backingTrack.currentChordLabel;
@@ -314,6 +347,17 @@ class ConfigPanelsView {
                 this.backingChordBadge.textContent = `Chord: ${chord}`;
             } else {
                 this.backingChordBadge.classList.add('hidden');
+            }
+        }
+
+        if (this.backingScaleBadge && data.backingTrack) {
+            const currentPreset = (data.backingPresets || []).find(p => p.id === data.backingTrack.stylePreset);
+            const scale = data.backingTrack.scaleRecommendation || (currentPreset && currentPreset.scaleRecommendation);
+            if (scale) {
+                this.backingScaleBadge.classList.remove('hidden');
+                this.backingScaleBadge.textContent = `Scale: ${scale}`;
+            } else {
+                this.backingScaleBadge.classList.add('hidden');
             }
         }
 

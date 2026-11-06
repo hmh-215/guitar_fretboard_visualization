@@ -76,22 +76,52 @@ class FretboardViewModel {
         const noteName = this.getNoteName(noteIdx);
         const midiPitch = this.TheoryModel.getStringMidiPitch(stringObj, fret);
 
-        // MODE 1: Single Note Visualization
+        // MODE 1: Note Visualization (Single Root or 2 Notes in Relation)
         if (s.appMode === 'note') {
             if (s.selectedNoteIdx === null) {
                 return { visible: false, noteIdx, noteName, midiPitch };
             }
-            const isMatch = noteIdx === s.selectedNoteIdx;
-            return {
-                visible: isMatch,
-                isGhost: false,
-                colorClass: 'bg-red-600 border-white text-white shadow-md shadow-red-950/60',
-                label: noteName,
-                subLabel: '',
-                noteIdx,
-                noteName,
-                midiPitch
-            };
+
+            const relations = this.TheoryModel.NOTE_INTERVAL_RELATIONS || [];
+            const relation = relations.find(r => r.id === (s.noteIntervalRelation || 'root_only')) || relations[0];
+
+            const isRoot = noteIdx === s.selectedNoteIdx;
+            const hasInterval = relation && relation.semitones > 0;
+            const intervalNoteIdx = hasInterval ? ((s.selectedNoteIdx + relation.semitones) % 12 + 12) % 12 : -1;
+            const isIntervalMatch = hasInterval && (noteIdx === intervalNoteIdx);
+
+            if (!isRoot && !isIntervalMatch) {
+                return { visible: false, noteIdx, noteName, midiPitch };
+            }
+
+            if (isRoot) {
+                return {
+                    visible: true,
+                    isGhost: false,
+                    isRootNote: true,
+                    colorClass: 'bg-red-600 border-white text-white shadow-md shadow-red-950/60',
+                    label: noteName,
+                    degreeText: 'I',
+                    roleTitle: 'Root (I)',
+                    noteIdx,
+                    noteName,
+                    midiPitch
+                };
+            } else {
+                // Second note in relation (e.g. V)
+                return {
+                    visible: true,
+                    isGhost: false,
+                    isRootNote: false,
+                    colorClass: 'bg-sky-500 border-white text-white shadow-md shadow-sky-950/60',
+                    label: noteName,
+                    degreeText: relation.degreeRoman,
+                    roleTitle: `${relation.degreeRoman} (${relation.name})`,
+                    noteIdx,
+                    noteName,
+                    midiPitch
+                };
+            }
         }
 
         // MODE 2: Musical Mode in Box Shape
@@ -212,12 +242,7 @@ class FretboardViewModel {
         if (s.appMode === 'note') {
             diagramModeTitle = 'Note Visualization';
             showBoxBadge = false;
-            if (s.selectedNoteIdx === null) {
-                diagramModeSubtitle = 'Board cleared — pick a note below or click any fret on the guitar';
-            } else {
-                const noteName = this.getNoteName(s.selectedNoteIdx);
-                diagramModeSubtitle = `Displaying all "${noteName}" notes across the fretboard`;
-            }
+            diagramModeSubtitle = ''; // Non-useful description dropped for visual minimalism
         } else {
             const modeObj = this.TheoryModel.MUSICAL_MODES[s.selectedMusicalMode];
             diagramModeTitle = 'Modes Visualization';
@@ -260,7 +285,7 @@ class FretboardViewModel {
                     stringObj: strObj,
                     fret,
                     cellData,
-                    showDegreeSubLabel: s.appMode === 'scale' && s.showDegrees
+                    showDegreeSubLabel: (s.appMode === 'scale' && s.showDegrees) || (s.appMode === 'note' && s.showDegrees && (s.noteIntervalRelation && s.noteIntervalRelation !== 'root_only'))
                 };
             });
 
@@ -333,7 +358,26 @@ class FretboardViewModel {
             ? window.GuitarApp.Models.MidiBackingTrackModel.PRESETS
             : [];
 
+        // Dynamic 2-note interval relations for active root note
+        const currentRootName = s.selectedNoteIdx !== null ? this.getNoteName(s.selectedNoteIdx) : null;
+        const noteRelations = (this.TheoryModel.NOTE_INTERVAL_RELATIONS || []).map(r => {
+            let label = r.name;
+            if (r.semitones === 0) {
+                label = 'Only root';
+            } else if (currentRootName) {
+                const targetSpelling = this.TheoryModel.getIntervalSpelling(currentRootName, r.semitones, r.degreeOffset);
+                label = `${r.shortName} (${currentRootName} - ${targetSpelling})`;
+            }
+            return {
+                id: r.id,
+                label,
+                selected: (s.noteIntervalRelation || 'root_only') === r.id
+            };
+        });
+
         return {
+            noteRelations,
+            selectedNoteIntervalRelation: s.noteIntervalRelation || 'root_only',
             activeTab: s.activeTab,
             isSettingsTab,
             notePills,
@@ -383,6 +427,10 @@ class FretboardViewModel {
             this.stopBackingTrack();
         }
         this.stateModel.setState(updates);
+    }
+
+    setNoteIntervalRelation(relationId) {
+        this.stateModel.setState({ noteIntervalRelation: relationId });
     }
 
     selectSingleNote(val) {
@@ -506,8 +554,12 @@ class FretboardViewModel {
             accidentalMode: this.accidentalMode
         });
 
-        const onChordUpdateFn = (chordSymbol) => {
+        const onChordUpdateFn = (chordSymbol, sectionSymbol, scaleRecommendation) => {
             this.state.backingTrack.currentChordLabel = chordSymbol;
+            this.state.backingTrack.currentSectionLabel = sectionSymbol;
+            if (scaleRecommendation) {
+                this.state.backingTrack.scaleRecommendation = scaleRecommendation;
+            }
             this.notifyViews();
         };
 
@@ -523,6 +575,7 @@ class FretboardViewModel {
         if (this.state.backingTrack.isPlaying) {
             this.state.backingTrack.isPlaying = false;
             this.state.backingTrack.currentChordLabel = null;
+            this.state.backingTrack.currentSectionLabel = null;
             this.stateModel.notify();
         }
     }
@@ -535,6 +588,10 @@ class FretboardViewModel {
             this.state.backingTrack.timeSignature = preset.timeSignature;
             this.state.backingTrack.bpm = preset.defaultBpm;
             this.state.backingTrack.instrumentLabel = preset.instrumentLabel || '🎸 Electric Guitar';
+            this.state.backingTrack.scaleRecommendation = preset.scaleRecommendation || '';
+            if (preset.defaultRootIdx !== undefined && !this.state.clickedRoot) {
+                this.quickPickModeRoot(preset.defaultRootIdx);
+            }
             this.stateModel.notify();
         }
     }

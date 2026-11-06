@@ -78,9 +78,7 @@
                     <span id="diagram-mode-title" class="text-xs font-extrabold uppercase tracking-widest px-2.5 py-1 bg-orange-500/15 text-orange-400 border border-orange-500/30">
                         Note Visualization
                     </span>
-                    <p id="diagram-mode-subtitle" class="text-sm font-medium text-zinc-400">
-                        Select a note below or click any fret on the guitar
-                    </p>
+                    <p id="diagram-mode-subtitle" class="text-sm font-medium text-zinc-400"></p>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -143,22 +141,26 @@
 
             <!-- TAB 1 CONFIG: NOTE VISUALIZATION -->
             <div id="config-panel-note" class="space-y-4">
-                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                     
-                    <!-- Quick Note Pills Only -->
+                    <!-- 1. Choose Root Note -->
                     <div>
                         <span class="block text-[11px] font-bold uppercase tracking-wider text-orange-400 mb-2">
-                            Quick Pick Note
+                            Choose root note
                         </span>
                         <div id="quick-note-pills" class="flex flex-wrap items-center gap-1.5 bg-zinc-900/90 p-1.5 border border-zinc-800">
                             <!-- Populated via ConfigPanelsView -->
                         </div>
                     </div>
 
-                    <!-- Minimal Status Counter -->
-                    <div class="bg-zinc-900 border border-zinc-800 px-4 py-2.5 flex items-center gap-3 text-sm text-zinc-300">
-                        <span class="w-3.5 h-3.5 rounded-full bg-red-600 inline-block ring-2 ring-red-400/50"></span>
-                        <span>Showing <strong id="mode1-status-note" class="text-orange-400 font-bold">G</strong> across fretboard (<span id="mode1-count" class="text-white font-bold">0</span> positions)</span>
+                    <!-- 2. Choose 2 Notes in Relation -->
+                    <div class="w-full sm:w-72 lg:w-80">
+                        <label for="note-relation-select" class="block text-[11px] font-bold uppercase tracking-wider text-orange-400 mb-2">
+                            Interval Relation
+                        </label>
+                        <select id="note-relation-select" class="w-full bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-bold text-xs px-3 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
+                            <!-- Populated via ConfigPanelsView -->
+                        </select>
                     </div>
 
                 </div>
@@ -291,10 +293,16 @@
                         </div>
                     </div>
 
-                    <!-- Right Controls: Active Chord Pill, MIDI Exporter & Play/Stop Toggle -->
-                    <div class="flex items-center gap-2.5 self-end lg:self-auto">
-                        <span id="backing-chord-badge" class="hidden px-2.5 py-1 bg-orange-500/20 border border-orange-500/50 text-orange-300 font-mono font-extrabold text-xs">
+                    <!-- Right Controls: Section Tracker, Chord Pill, Scale Guide, MIDI Exporter & Play/Stop Toggle -->
+                    <div class="flex items-center gap-2 self-end lg:self-auto flex-wrap">
+                        <span id="backing-section-badge" class="hidden px-2.5 py-1 bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono font-bold text-xs" title="Current Song Section & Measure">
+                            Section: --
+                        </span>
+                        <span id="backing-chord-badge" class="hidden px-2.5 py-1 bg-orange-500/20 border border-orange-500/50 text-orange-300 font-mono font-extrabold text-xs" title="Current Active Chord & Harmonic Degree">
                             Chord: --
+                        </span>
+                        <span id="backing-scale-badge" class="hidden px-2.5 py-1 bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 font-sans font-medium text-xs hidden sm:inline-block" title="Recommended Scales for Soloing">
+                            Scale: --
                         </span>
                         <button id="btn-download-midi" type="button" class="px-2.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700/80 font-bold text-xs transition flex items-center gap-1.5 shrink-0 shadow-sm" title="Download Standard Multi-track MIDI File for DAWs">
                             <span>💾</span>

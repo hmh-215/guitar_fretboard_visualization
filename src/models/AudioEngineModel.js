@@ -169,7 +169,7 @@ class AudioEngineModel {
             const dur = Math.max(0.08, durationSec);
             const voiceCount = midiPitches.length;
 
-            if (instrumentType === 'distorted_guitar') {
+            if (instrumentType === 'distorted_guitar' || instrumentType === 'overdriven_guitar') {
                 // ==============================================================
                 // OVERDRIVEN / DISTORTED ELECTRIC GUITAR WITH CABINET EMULATION
                 // ==============================================================
@@ -562,7 +562,7 @@ class AudioEngineModel {
                 sub.start(t);
                 osc.stop(t + dur + 0.04);
                 sub.stop(t + dur + 0.04);
-            } else if (bassType === 'upright_bass') {
+            } else if (bassType === 'upright_bass' || bassType === 'acoustic_bass' || bassType === 'fretless_bass') {
                 // Acoustic upright jazz bass with wood finger pluck
                 const osc = ctx.createOscillator();
                 const filter = ctx.createBiquadFilter();

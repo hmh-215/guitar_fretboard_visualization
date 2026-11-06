@@ -17,7 +17,8 @@ class FretboardStateModel {
         this.state = {
             activeTab: 'note',         // 'note' | 'scale' | 'settings'
             appMode: 'note',           // 'note' (Note visualization) | 'scale' (Modes visualization)
-            selectedNoteIdx: 7,        // Default 7 = 'G' (or null when reset)
+            selectedNoteIdx: 0,        // Default 0 = 'C' (or null when reset)
+            noteIntervalRelation: 'root_only', // 'root_only' | 'm2' | 'M2' | 'm3' | 'M3' | 'P4' | 'dim5' | 'P5' | 'm6' | 'M6' | 'm7' | 'M7' | 'P8'
             selectedMusicalMode: 'ionian',
 
             // Clicked Root Note in Mode 2 (can be null after Reset, or { stringNum, fret, noteIdx })
@@ -35,11 +36,13 @@ class FretboardStateModel {
             // Backing track accompaniment state
             backingTrack: {
                 isPlaying: false,
-                stylePreset: 'purge_metal',
-                bpm: 130,
+                stylePreset: 'blues_12bar_a7',
+                bpm: 116,
                 timeSignature: '4/4',
                 currentChordLabel: null,
-                instrumentLabel: '⚡ Heavy Metal Crunch'
+                currentSectionLabel: null,
+                scaleRecommendation: 'A Minor / Major Blues, A Mixolydian',
+                instrumentLabel: '🎸 Overdriven Blues Guitar & Organ'
             },
 
             // UI Overlay states
@@ -105,9 +108,11 @@ class FretboardStateModel {
     resetToStandard() {
         this.state.guitarStrings = this.TheoryModel.cloneStandardStrings();
         this.state.selectedNoteIdx = null;
+        this.state.noteIntervalRelation = 'root_only';
         this.state.clickedRoot = null;
         this.state.backingTrack.isPlaying = false;
         this.state.backingTrack.currentChordLabel = null;
+        this.state.backingTrack.currentSectionLabel = null;
         this.notify();
     }
 }

@@ -30,6 +30,23 @@ class MusicTheoryModel {
         { id: 'dadgad',      label: 'DADGAD',                       modalLabel: 'DADGAD',                       notes: [2, 9, 2, 7, 9, 2] }
     ];
 
+    // 2-Note Interval Relations for Note Visualization Mode
+    static NOTE_INTERVAL_RELATIONS = [
+        { id: 'root_only', name: 'Only root', shortName: 'Only root', semitones: 0, degreeRoman: 'I', degreeOffset: 0 },
+        { id: 'm2',        name: 'I - ♭II (Minor 2nd)', shortName: 'I - ♭II', semitones: 1, degreeRoman: '♭II', degreeOffset: 1 },
+        { id: 'M2',        name: 'I - II (Major 2nd)', shortName: 'I - II', semitones: 2, degreeRoman: 'II', degreeOffset: 1 },
+        { id: 'm3',        name: 'I - ♭III (Minor 3rd)', shortName: 'I - ♭III', semitones: 3, degreeRoman: '♭III', degreeOffset: 2 },
+        { id: 'M3',        name: 'I - III (Major 3rd)', shortName: 'I - III', semitones: 4, degreeRoman: 'III', degreeOffset: 2 },
+        { id: 'P4',        name: 'I - IV (Perfect 4th)', shortName: 'I - IV', semitones: 5, degreeRoman: 'IV', degreeOffset: 3 },
+        { id: 'dim5',      name: 'I - ♭V (Tritone)', shortName: 'I - ♭V', semitones: 6, degreeRoman: '♭V', degreeOffset: 4 },
+        { id: 'P5',        name: 'I - V (Perfect 5th)', shortName: 'I - V', semitones: 7, degreeRoman: 'V', degreeOffset: 4 },
+        { id: 'm6',        name: 'I - ♭VI (Minor 6th)', shortName: 'I - ♭VI', semitones: 8, degreeRoman: '♭VI', degreeOffset: 5 },
+        { id: 'M6',        name: 'I - VI (Major 6th)', shortName: 'I - VI', semitones: 9, degreeRoman: 'VI', degreeOffset: 5 },
+        { id: 'm7',        name: 'I - ♭VII (Minor 7th)', shortName: 'I - ♭VII', semitones: 10, degreeRoman: '♭VII', degreeOffset: 6 },
+        { id: 'M7',        name: 'I - VII (Major 7th)', shortName: 'I - VII', semitones: 11, degreeRoman: 'VII', degreeOffset: 6 },
+        { id: 'P8',        name: 'I - VIII (Octave)', shortName: 'I - VIII', semitones: 12, degreeRoman: 'VIII', degreeOffset: 0 }
+    ];
+
     // 7 Diatonic Modes with semitone intervals from Root, parent major offsets, and modal chord vamps
     static MUSICAL_MODES = {
         ionian: {
@@ -277,6 +294,36 @@ class MusicTheoryModel {
      */
     static getFretWidthWeight(fret) {
         return fret === 0 ? 0.72 : Math.max(0.72, 1.35 - (fret * 0.026));
+    }
+
+    /**
+     * Compute musically correct interval spelling for a given root note name and relation.
+     */
+    static getIntervalSpelling(rootName, semitones, degreeOffset) {
+        if (!rootName || semitones === 0) return rootName;
+        const NATURAL_LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+        const NATURAL_SEMITONES = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+
+        const rootLetter = rootName[0];
+        const rootAccidental = rootName.slice(1);
+        let rootSemi = NATURAL_SEMITONES[rootLetter] || 0;
+        if (rootAccidental === '#' || rootAccidental === '♯') rootSemi += 1;
+        else if (rootAccidental === 'b' || rootAccidental === '♭') rootSemi -= 1;
+
+        const targetSemi = (rootSemi + semitones) % 12;
+        const rootLetterIdx = NATURAL_LETTERS.indexOf(rootLetter);
+        const targetLetter = NATURAL_LETTERS[(rootLetterIdx + degreeOffset) % 7];
+        const targetLetterBaseSemi = NATURAL_SEMITONES[targetLetter];
+
+        let diff = (targetSemi - targetLetterBaseSemi + 12) % 12;
+        if (diff > 6) diff -= 12;
+
+        if (diff === 0) return targetLetter;
+        if (diff === 1) return targetLetter + '♯';
+        if (diff === -1) return targetLetter + '♭';
+        if (diff === 2) return targetLetter + '𝄪';
+        if (diff === -2) return targetLetter + '𝄫';
+        return targetLetter;
     }
 }
 
