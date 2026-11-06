@@ -59,7 +59,7 @@ class FretboardView {
                 const lbl = document.createElement('div');
                 lbl.className = 'h-7 flex items-center justify-end pr-1 font-extrabold text-sm text-zinc-200';
                 lbl.innerHTML = `
-                    <span class="w-8 h-7 rounded-lg bg-zinc-900 border border-zinc-800 text-orange-400 flex items-center justify-center shadow-inner text-xs" title="${str.desc} - Tuned to ${str.openNoteName}">
+                    <span class="w-8 h-7 bg-zinc-900 border border-zinc-800 text-orange-400 flex items-center justify-center shadow-inner text-xs" title="${str.desc} - Tuned to ${str.openNoteName}">
                         ${str.openNoteName}
                     </span>
                 `;

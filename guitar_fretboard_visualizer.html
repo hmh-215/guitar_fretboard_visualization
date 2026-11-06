@@ -16,14 +16,14 @@
         <!-- Left: Hamburger Menu Button & Dropdown + Active Tab Pill -->
         <div class="flex items-center gap-4">
             <div class="relative" id="hamburger-container">
-                <button id="hamburger-btn" type="button" class="w-11 h-11 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-orange-500/60 flex flex-col items-center justify-center gap-1.5 transition group" title="Open Navigation Menu">
+                <button id="hamburger-btn" type="button" class="w-11 h-11 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-orange-500/60 flex flex-col items-center justify-center gap-1.5 transition group" title="Open Navigation Menu">
                     <span class="w-6 h-0.5 bg-orange-500 group-hover:bg-orange-400 transition-all"></span>
                     <span class="w-6 h-0.5 bg-orange-500 group-hover:bg-orange-400 transition-all"></span>
                     <span class="w-6 h-0.5 bg-orange-500 group-hover:bg-orange-400 transition-all"></span>
                 </button>
 
                 <!-- Dropdown Menu -->
-                <div id="hamburger-dropdown" class="hidden absolute left-0 mt-3 w-64 bg-zinc-950 border-2 border-orange-500/80 rounded-xl shadow-2xl py-2 z-50 overflow-hidden">
+                <div id="hamburger-dropdown" class="hidden absolute left-0 mt-3 w-64 bg-zinc-950 border-2 border-orange-500/80 shadow-2xl py-2 z-50 overflow-hidden">
                     <div class="px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-800/80">
                         Select Mode / View
                     </div>
@@ -52,7 +52,7 @@
             </div>
 
             <!-- Current Active Section Indicator Badge -->
-            <div class="hidden sm:flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3.5 py-1.5 rounded-lg">
+            <div class="hidden sm:flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 px-3.5 py-1.5">
                 <span class="w-2 h-2 rounded-full bg-orange-500"></span>
                 <span id="active-tab-badge" class="text-xs font-bold uppercase tracking-wider text-orange-400">
                     Note visualization
@@ -75,7 +75,7 @@
             <!-- Minimalist Status Bar Above Fretboard -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
                 <div class="flex items-center gap-3">
-                    <span id="diagram-mode-title" class="text-xs font-extrabold uppercase tracking-widest px-2.5 py-1 rounded bg-orange-500/15 text-orange-400 border border-orange-500/30">
+                    <span id="diagram-mode-title" class="text-xs font-extrabold uppercase tracking-widest px-2.5 py-1 bg-orange-500/15 text-orange-400 border border-orange-500/30">
                         Note Visualization
                     </span>
                     <p id="diagram-mode-subtitle" class="text-sm font-medium text-zinc-400">
@@ -84,10 +84,10 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <div id="box-range-indicator" class="hidden bg-orange-500/15 border border-orange-500/40 text-orange-400 text-xs font-bold px-3 py-1 rounded-lg">
+                    <div id="box-range-indicator" class="hidden bg-orange-500/15 border border-orange-500/40 text-orange-400 text-xs font-bold px-3 py-1">
                         Box Window: Frets 7 to 10
                     </div>
-                    <div class="text-xs font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-lg">
+                    <div class="text-xs font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800 px-3 py-1">
                         Tuning: <strong id="current-tuning-badge" class="text-orange-400">E A D G B E</strong>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                         </div>
 
                         <!-- The Maple Fretboard -->
-                        <div id="fretboard-neck" class="flex-1 maple-neck maple-grain rounded-r-xl border-y-2 border-r-2 border-amber-900/60 relative h-[240px] flex">
+                        <div id="fretboard-neck" class="flex-1 maple-neck maple-grain border-y-2 border-r-2 border-amber-900/60 relative h-[240px] flex">
                             
                             <!-- Strings Overlay Layer -->
                             <div id="strings-layer" class="absolute inset-0 pointer-events-none">
@@ -150,13 +150,13 @@
                         <span class="block text-[11px] font-bold uppercase tracking-wider text-orange-400 mb-2">
                             Quick Pick Note
                         </span>
-                        <div id="quick-note-pills" class="flex flex-wrap items-center gap-1.5 bg-zinc-900/90 p-1.5 rounded-xl border border-zinc-800">
+                        <div id="quick-note-pills" class="flex flex-wrap items-center gap-1.5 bg-zinc-900/90 p-1.5 border border-zinc-800">
                             <!-- Populated via ConfigPanelsView -->
                         </div>
                     </div>
 
                     <!-- Minimal Status Counter -->
-                    <div class="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm text-zinc-300">
+                    <div class="bg-zinc-900 border border-zinc-800 px-4 py-2.5 flex items-center gap-3 text-sm text-zinc-300">
                         <span class="w-3.5 h-3.5 rounded-full bg-red-600 inline-block ring-2 ring-red-400/50"></span>
                         <span>Showing <strong id="mode1-status-note" class="text-orange-400 font-bold">G</strong> across fretboard (<span id="mode1-count" class="text-white font-bold">0</span> positions)</span>
                     </div>
@@ -173,7 +173,7 @@
                         <label for="musical-mode-select" class="block text-[11px] font-bold uppercase tracking-wider text-orange-400 mb-1.5">
                             Musical Mode
                         </label>
-                        <select id="musical-mode-select" class="w-full bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-bold text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
+                        <select id="musical-mode-select" class="w-full bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-bold text-sm px-3.5 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
                             <option value="ionian">1. Ionian (Major Scale)</option>
                             <option value="dorian">2. Dorian Mode</option>
                             <option value="phrygian">3. Phrygian Mode</option>
@@ -189,7 +189,7 @@
                         <span class="block text-[11px] font-bold uppercase tracking-wider text-orange-400 mb-1.5">
                             Root Note (Quick Pick or Click Neck)
                         </span>
-                        <div id="mode-root-pills" class="flex flex-wrap items-center gap-1 bg-zinc-900/90 p-1.5 rounded-xl border border-zinc-800">
+                        <div id="mode-root-pills" class="flex flex-wrap items-center gap-1 bg-zinc-900/90 p-1.5 border border-zinc-800">
                             <!-- Populated via ConfigPanelsView -->
                         </div>
                     </div>
@@ -199,7 +199,7 @@
                         <label for="box-span-select" class="block text-[11px] font-bold uppercase tracking-wider text-orange-400 mb-1.5">
                             Box Shape Window
                         </label>
-                        <select id="box-span-select" class="w-full bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-semibold text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
+                        <select id="box-span-select" class="w-full bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-semibold text-sm px-3.5 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
                             <option value="standard" selected>Standard 4-Fret Box (Root -1 to +2)</option>
                             <option value="wide">Wide 5-Fret Box (Root -1 to +3)</option>
                             <option value="left">Left-Shifted Box (Root -2 to +1)</option>
@@ -214,10 +214,10 @@
                             Display Options
                         </label>
                         <div class="flex items-center gap-2">
-                            <button id="btn-toggle-degrees" type="button" class="flex-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs rounded-xl px-3 py-2.5 transition">
+                            <button id="btn-toggle-degrees" type="button" class="flex-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs px-3 py-2.5 transition">
                                 Labels: <span id="label-type-text" class="text-orange-400 font-bold">Note Names</span>
                             </button>
-                            <button id="btn-toggle-ghost" type="button" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs rounded-xl px-3 py-2.5 transition" title="Show scale notes outside the active box">
+                            <button id="btn-toggle-ghost" type="button" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs px-3 py-2.5 transition" title="Show scale notes outside the active box">
                                 Outside: <span id="ghost-status-text" class="text-zinc-400">Hidden</span>
                             </button>
                         </div>
@@ -250,7 +250,7 @@
                         <span id="mode-description-text" class="italic text-zinc-400">
                             Bright, happy, and resolved major scale sound.
                         </span>
-                        <button id="btn-play-box" type="button" class="px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0" title="Audition notes in the active box ascending">
+                        <button id="btn-play-box" type="button" class="px-3 py-1.5 bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0" title="Audition notes in the active box ascending">
                             <span>▶</span>
                             <span>Play Box</span>
                         </button>
@@ -258,7 +258,7 @@
                 </div>
 
                 <!-- MIDI Backing Track Accompaniment Bar -->
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-2.5 border-t border-zinc-900 bg-zinc-950/60 p-3 rounded-xl border border-zinc-800/80">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-2.5 border-t border-zinc-900 bg-zinc-950/60 p-3 border border-zinc-800/80">
                     <div class="flex flex-wrap items-center gap-3">
                         <span class="text-[11px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1.5">
                             <span>♫</span>
@@ -267,40 +267,40 @@
                         
                         <!-- Style Preset Selector (20 Presets across 5 Categories) -->
                         <div class="relative">
-                            <select id="backing-style-select" class="bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-semibold text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
+                            <select id="backing-style-select" class="bg-zinc-900 border border-zinc-700 hover:border-orange-500 text-white font-semibold text-xs px-2.5 py-1.5 focus:outline-none focus:border-orange-500 cursor-pointer transition">
                                 <!-- Populated dynamically via ConfigPanelsView with 20 presets -->
                             </select>
                         </div>
 
                         <!-- Instrument Timbre Badge -->
-                        <span id="backing-instrument-badge" class="px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[11px] font-semibold text-orange-300 shadow-sm flex items-center gap-1" title="Synthesized Lead/Chord Instrument Voice">
+                        <span id="backing-instrument-badge" class="px-2.5 py-1 bg-zinc-900 border border-zinc-800 text-[11px] font-semibold text-orange-300 shadow-sm flex items-center gap-1" title="Synthesized Lead/Chord Instrument Voice">
                             ⚡ Heavy Metal Crunch
                         </span>
 
                         <!-- Meter Badge -->
-                        <span id="backing-meter-badge" class="px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[11px] font-mono font-extrabold text-orange-400" title="Active Time Signature">
+                        <span id="backing-meter-badge" class="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[11px] font-mono font-extrabold text-orange-400" title="Active Time Signature">
                             4/4
                         </span>
 
                         <!-- User-Defined Tempo (BPM) Input -->
-                        <div class="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg px-1.5 py-0.5">
+                        <div class="flex items-center gap-1 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5">
                             <span class="text-[11px] text-zinc-400 font-semibold pl-1">BPM:</span>
-                            <button id="btn-bpm-dec" type="button" class="w-6 h-6 rounded bg-zinc-800 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-300 transition flex items-center justify-center" title="Decrease BPM by 5">−</button>
+                            <button id="btn-bpm-dec" type="button" class="w-6 h-6 bg-zinc-800 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-300 transition flex items-center justify-center" title="Decrease BPM by 5">−</button>
                             <input id="backing-bpm-input" type="number" min="40" max="220" value="130" class="w-12 bg-transparent text-center text-xs font-bold text-orange-400 focus:outline-none" title="User-defined Tempo (40 - 220 BPM)">
-                            <button id="btn-bpm-inc" type="button" class="w-6 h-6 rounded bg-zinc-800 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-300 transition flex items-center justify-center" title="Increase BPM by 5">+</button>
+                            <button id="btn-bpm-inc" type="button" class="w-6 h-6 bg-zinc-800 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-300 transition flex items-center justify-center" title="Increase BPM by 5">+</button>
                         </div>
                     </div>
 
                     <!-- Right Controls: Active Chord Pill, MIDI Exporter & Play/Stop Toggle -->
                     <div class="flex items-center gap-2.5 self-end lg:self-auto">
-                        <span id="backing-chord-badge" class="hidden px-2.5 py-1 rounded-lg bg-orange-500/20 border border-orange-500/50 text-orange-300 font-mono font-extrabold text-xs">
+                        <span id="backing-chord-badge" class="hidden px-2.5 py-1 bg-orange-500/20 border border-orange-500/50 text-orange-300 font-mono font-extrabold text-xs">
                             Chord: --
                         </span>
-                        <button id="btn-download-midi" type="button" class="px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700/80 font-bold text-xs transition flex items-center gap-1.5 shrink-0 shadow-sm" title="Download Standard Multi-track MIDI File for DAWs">
+                        <button id="btn-download-midi" type="button" class="px-2.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700/80 font-bold text-xs transition flex items-center gap-1.5 shrink-0 shadow-sm" title="Download Standard Multi-track MIDI File for DAWs">
                             <span>💾</span>
                             <span>MIDI</span>
                         </button>
-                        <button id="btn-toggle-backing" type="button" class="px-3.5 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0" title="Toggle MIDI backing accompaniment in active mode & root">
+                        <button id="btn-toggle-backing" type="button" class="px-3.5 py-1.5 bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0" title="Toggle MIDI backing accompaniment in active mode & root">
                             <span>♫</span>
                             <span>Play Backing</span>
                         </button>
@@ -313,22 +313,22 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     <!-- Column 1: Reset & Audio Controls -->
-                    <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 space-y-3 flex flex-col justify-between">
+                    <div class="bg-zinc-900/70 border border-zinc-800 p-4 space-y-3 flex flex-col justify-between">
                         <span class="block text-xs font-bold uppercase tracking-wider text-orange-400">
                             Board Reset &amp; Sound
                         </span>
                         <div class="flex flex-wrap items-center gap-3">
-                            <button id="btn-reset-board" type="button" class="px-4 py-2.5 rounded-xl font-bold text-xs bg-orange-500 hover:bg-orange-400 text-black transition flex items-center gap-2 shadow">
+                            <button id="btn-reset-board" type="button" class="px-4 py-2.5 font-bold text-xs bg-orange-500 hover:bg-orange-400 text-black transition flex items-center gap-2 shadow">
                                 <span>↺</span>
                                 <span>Reset Fretboard &amp; Standard Tuning</span>
                             </button>
 
-                            <button id="btn-audio-toggle" type="button" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-200 px-3.5 py-2.5 rounded-xl border border-zinc-800 flex items-center gap-2 text-xs font-semibold transition">
+                            <button id="btn-audio-toggle" type="button" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-200 px-3.5 py-2.5 border border-zinc-800 flex items-center gap-2 text-xs font-semibold transition">
                                 <span id="audio-icon">🔊</span>
                                 <span>Sound: <strong id="audio-status" class="text-orange-400">ON</strong></span>
                             </button>
 
-                            <div class="flex items-center gap-1.5 bg-zinc-950 px-3 py-2 rounded-xl border border-zinc-800 text-xs">
+                            <div class="flex items-center gap-1.5 bg-zinc-950 px-3 py-2 border border-zinc-800 text-xs">
                                 <span class="w-2 h-2 rounded-full bg-orange-500"></span>
                                 <span id="accidental-mode-badge" class="font-bold text-zinc-300">Auto: ♯ Sharps</span>
                             </div>
@@ -336,34 +336,34 @@
                     </div>
 
                     <!-- Column 2: String Tuning Menu & Presets -->
-                    <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 space-y-3">
+                    <div class="bg-zinc-900/70 border border-zinc-800 p-4 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold uppercase tracking-wider text-orange-400">Guitar Tuning</span>
-                            <button id="btn-open-tuning-modal" type="button" class="px-3 py-1 rounded-lg bg-orange-500/15 border border-orange-500/40 text-xs font-bold text-orange-400 hover:bg-orange-500 hover:text-black transition">
+                            <button id="btn-open-tuning-modal" type="button" class="px-3 py-1 bg-orange-500/15 border border-orange-500/40 text-xs font-bold text-orange-400 hover:bg-orange-500 hover:text-black transition">
                                 Open Tuning Menu
                             </button>
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            <button type="button" data-settings-preset="[4, 9, 2, 7, 11, 4]" class="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                            <button type="button" data-settings-preset="[4, 9, 2, 7, 11, 4]" class="px-3 py-1.5 bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                                 Standard (E A D G B E)
                             </button>
-                            <button type="button" data-settings-preset="[2, 9, 2, 7, 11, 4]" class="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                            <button type="button" data-settings-preset="[2, 9, 2, 7, 11, 4]" class="px-3 py-1.5 bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                                 Drop D
                             </button>
-                            <button type="button" data-settings-preset="[3, 8, 1, 6, 10, 3]" class="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                            <button type="button" data-settings-preset="[3, 8, 1, 6, 10, 3]" class="px-3 py-1.5 bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                                 Eb Standard
                             </button>
-                            <button type="button" data-settings-preset="[2, 7, 2, 7, 11, 2]" class="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                            <button type="button" data-settings-preset="[2, 7, 2, 7, 11, 2]" class="px-3 py-1.5 bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                                 Open G
                             </button>
-                            <button type="button" data-settings-preset="[2, 9, 2, 7, 9, 2]" class="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                            <button type="button" data-settings-preset="[2, 9, 2, 7, 9, 2]" class="px-3 py-1.5 bg-zinc-950 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                                 DADGAD
                             </button>
                         </div>
                     </div>
 
                     <!-- Column 3: Individual String Tuning Row -->
-                    <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 space-y-3">
+                    <div class="bg-zinc-900/70 border border-zinc-800 p-4 space-y-3">
                         <span class="block text-xs font-bold uppercase tracking-wider text-orange-400">
                             Tune Strings (6th Bottom to 1st Top)
                         </span>
@@ -380,13 +380,13 @@
 
     <!-- 4. TUNING POP-UP MODAL (TuningModalView) -->
     <div id="tuning-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="bg-zinc-950 border-2 border-orange-500/80 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+        <div class="bg-zinc-950 border-2 border-orange-500/80 max-w-lg w-full p-6 shadow-2xl space-y-5">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
                 <div>
                     <h3 class="text-lg font-extrabold text-white">Guitar String Tuning</h3>
                     <p class="text-xs text-zinc-400">Tune individual strings or choose a preset</p>
                 </div>
-                <button type="button" data-close-tuning-modal class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-orange-500 hover:text-black text-zinc-400 flex items-center justify-center font-bold transition">
+                <button type="button" data-close-tuning-modal class="w-8 h-8 bg-zinc-900 hover:bg-orange-500 hover:text-black text-zinc-400 flex items-center justify-center font-bold transition">
                     ✕
                 </button>
             </div>
@@ -397,19 +397,19 @@
                     Quick Tuning Presets
                 </label>
                 <div class="flex flex-wrap gap-2">
-                    <button type="button" data-modal-preset="[4, 9, 2, 7, 11, 4]" class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                    <button type="button" data-modal-preset="[4, 9, 2, 7, 11, 4]" class="px-3 py-1.5 bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                         Standard (E A D G B E)
                     </button>
-                    <button type="button" data-modal-preset="[2, 9, 2, 7, 11, 4]" class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                    <button type="button" data-modal-preset="[2, 9, 2, 7, 11, 4]" class="px-3 py-1.5 bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                         Drop D (D A D G B E)
                     </button>
-                    <button type="button" data-modal-preset="[3, 8, 1, 6, 10, 3]" class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                    <button type="button" data-modal-preset="[3, 8, 1, 6, 10, 3]" class="px-3 py-1.5 bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                         Eb Standard (Half-Step Down)
                     </button>
-                    <button type="button" data-modal-preset="[2, 7, 2, 7, 11, 2]" class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                    <button type="button" data-modal-preset="[2, 7, 2, 7, 11, 2]" class="px-3 py-1.5 bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                         Open G (D G D G B D)
                     </button>
-                    <button type="button" data-modal-preset="[2, 9, 2, 7, 9, 2]" class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
+                    <button type="button" data-modal-preset="[2, 9, 2, 7, 9, 2]" class="px-3 py-1.5 bg-zinc-900 hover:bg-orange-500 hover:text-black text-xs font-bold text-zinc-200 border border-zinc-800 transition">
                         DADGAD
                     </button>
                 </div>
@@ -420,7 +420,7 @@
                 <label class="block text-xs font-semibold uppercase tracking-wider text-orange-400">
                     Customize Individual Strings (Top to Bottom)
                 </label>
-                <div id="tuning-strings-list" class="space-y-2 bg-black p-3.5 rounded-xl border border-zinc-800">
+                <div id="tuning-strings-list" class="space-y-2 bg-black p-3.5 border border-zinc-800">
                     <!-- Populated via TuningModalView -->
                 </div>
             </div>
@@ -429,7 +429,7 @@
                 <button type="button" data-modal-preset="[4, 9, 2, 7, 11, 4]" class="text-xs font-semibold text-zinc-400 hover:text-orange-400 transition">
                     Restore Standard (E A D G B E)
                 </button>
-                <button type="button" data-close-tuning-modal class="px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-black font-bold text-sm shadow-lg transition">
+                <button type="button" data-close-tuning-modal class="px-5 py-2 bg-orange-500 hover:bg-orange-400 text-black font-bold text-sm shadow-lg transition">
                     Done
                 </button>
             </div>

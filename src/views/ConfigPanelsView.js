@@ -185,7 +185,7 @@ class ConfigPanelsView {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.textContent = pill.name;
-                btn.className = `px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                btn.className = `px-2.5 py-1 text-xs font-bold transition ${
                     pill.isSelectedSingleNote
                         ? 'bg-orange-500 text-black shadow'
                         : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
@@ -203,7 +203,7 @@ class ConfigPanelsView {
                 const rootBtn = document.createElement('button');
                 rootBtn.type = 'button';
                 rootBtn.textContent = pill.name;
-                rootBtn.className = `px-2 py-1 rounded-lg text-xs font-bold transition ${
+                rootBtn.className = `px-2 py-1 text-xs font-bold transition ${
                     pill.isSelectedModeRoot
                         ? 'bg-orange-500 text-black shadow'
                         : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
@@ -298,10 +298,10 @@ class ConfigPanelsView {
             this.btnToggleBacking.classList.toggle('opacity-50', !data.audioEnabled);
 
             if (isPlaying) {
-                this.btnToggleBacking.className = 'px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black border border-orange-400 font-extrabold text-xs transition flex items-center gap-1.5 shrink-0 shadow-lg shadow-orange-500/30';
+                this.btnToggleBacking.className = 'px-3 py-1.5 bg-orange-500 hover:bg-orange-400 text-black border border-orange-400 font-extrabold text-xs transition flex items-center gap-1.5 shrink-0 shadow-lg shadow-orange-500/30';
                 this.btnToggleBacking.innerHTML = `<span>⏹</span><span>Stop Backing</span>`;
             } else {
-                this.btnToggleBacking.className = 'px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0';
+                this.btnToggleBacking.className = 'px-3 py-1.5 bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0';
                 this.btnToggleBacking.innerHTML = `<span>♫</span><span>Play Backing</span>`;
             }
         }
@@ -337,14 +337,14 @@ class ConfigPanelsView {
             this.inlineTuningRow.innerHTML = '';
             data.inlineTuningStrings.forEach(strObj => {
                 const col = document.createElement('div');
-                col.className = 'flex flex-col items-center bg-zinc-950 p-2 rounded-lg border border-zinc-800';
+                col.className = 'flex flex-col items-center bg-zinc-950 p-2 border border-zinc-800';
 
                 const lbl = document.createElement('span');
                 lbl.className = 'text-[10px] font-bold text-zinc-500 mb-1';
                 lbl.textContent = `Str ${strObj.stringNum}`;
 
                 const sel = document.createElement('select');
-                sel.className = 'w-full bg-zinc-900 border border-zinc-700 text-orange-400 font-bold text-xs rounded px-1 py-1 text-center focus:outline-none focus:border-orange-500 cursor-pointer';
+                sel.className = 'w-full bg-zinc-900 border border-zinc-700 text-orange-400 font-bold text-xs px-1 py-1 text-center focus:outline-none focus:border-orange-500 cursor-pointer';
                 strObj.options.forEach(optData => {
                     const opt = document.createElement('option');
                     opt.value = optData.noteIdx;

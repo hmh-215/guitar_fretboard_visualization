@@ -65,12 +65,12 @@ class TuningModalView {
 
         data.modalTuningStrings.forEach(strObj => {
             const row = document.createElement('div');
-            row.className = 'flex items-center justify-between gap-3 bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800';
+            row.className = 'flex items-center justify-between gap-3 bg-zinc-900 px-3 py-2 border border-zinc-800';
 
             const leftInfo = document.createElement('div');
             leftInfo.className = 'flex items-center gap-2.5';
             leftInfo.innerHTML = `
-                <span class="w-6 h-6 rounded-md bg-zinc-950 border border-zinc-800 text-orange-400 font-extrabold text-xs flex items-center justify-center">
+                <span class="w-6 h-6 bg-zinc-950 border border-zinc-800 text-orange-400 font-extrabold text-xs flex items-center justify-center">
                     ${strObj.stringNum}
                 </span>
                 <div>
@@ -80,7 +80,7 @@ class TuningModalView {
             `;
 
             const select = document.createElement('select');
-            select.className = 'bg-zinc-950 border border-zinc-700 text-orange-400 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer';
+            select.className = 'bg-zinc-950 border border-zinc-700 text-orange-400 font-bold text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer';
 
             strObj.options.forEach(optData => {
                 const opt = document.createElement('option');
