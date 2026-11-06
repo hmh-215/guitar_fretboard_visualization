@@ -30,28 +30,24 @@ class ConfigPanelsView {
         this.musicalModeSelect = document.getElementById('musical-mode-select');
         this.modeRootPills = document.getElementById('mode-root-pills');
         this.boxSpanSelect = document.getElementById('box-span-select');
-        this.btnToggleDegrees = document.getElementById('btn-toggle-degrees');
-        this.labelTypeText = document.getElementById('label-type-text');
-        this.btnToggleGhost = document.getElementById('btn-toggle-ghost');
-        this.ghostStatusText = document.getElementById('ghost-status-text');
-        this.modeDescriptionText = document.getElementById('mode-description-text');
-        this.modeFormulaBadge = document.getElementById('mode-formula-badge');
         this.btnPlayBox = document.getElementById('btn-play-box');
 
         // Tab 2: MIDI Backing Track accompaniment controls
         this.backingStyleSelect = document.getElementById('backing-style-select');
-        this.backingInstrumentBadge = document.getElementById('backing-instrument-badge');
         this.backingMeterBadge = document.getElementById('backing-meter-badge');
         this.backingBpmInput = document.getElementById('backing-bpm-input');
         this.btnBpmDec = document.getElementById('btn-bpm-dec');
         this.btnBpmInc = document.getElementById('btn-bpm-inc');
         this.btnToggleBacking = document.getElementById('btn-toggle-backing');
-        this.btnDownloadMidi = document.getElementById('btn-download-midi');
         this.backingSectionBadge = document.getElementById('backing-section-badge');
         this.backingChordBadge = document.getElementById('backing-chord-badge');
         this.backingScaleBadge = document.getElementById('backing-scale-badge');
 
-        // Tab 3: Settings elements
+        // Tab 3: Settings elements (including Display Options)
+        this.btnToggleDegrees = document.getElementById('btn-toggle-degrees');
+        this.labelTypeText = document.getElementById('label-type-text');
+        this.btnToggleGhost = document.getElementById('btn-toggle-ghost');
+        this.ghostStatusText = document.getElementById('ghost-status-text');
         this.btnResetBoard = document.getElementById('btn-reset-board');
         this.btnAudioToggle = document.getElementById('btn-audio-toggle');
         this.audioIcon = document.getElementById('audio-icon');
@@ -129,12 +125,6 @@ class ConfigPanelsView {
         if (this.btnToggleBacking) {
             this.btnToggleBacking.addEventListener('click', () => {
                 this.viewModel.toggleBackingTrack();
-            });
-        }
-
-        if (this.btnDownloadMidi) {
-            this.btnDownloadMidi.addEventListener('click', () => {
-                this.viewModel.downloadBackingMidi();
             });
         }
 
@@ -259,12 +249,6 @@ class ConfigPanelsView {
             this.ghostStatusText.textContent = data.showGhostNotes ? 'Visible' : 'Hidden';
             this.ghostStatusText.className = data.showGhostNotes ? 'text-orange-400 font-bold' : 'text-zinc-400';
         }
-        if (this.modeDescriptionText && data.currentModeInfo) {
-            this.modeDescriptionText.textContent = data.currentModeInfo.description;
-        }
-        if (this.modeFormulaBadge && data.currentModeInfo) {
-            this.modeFormulaBadge.textContent = data.currentModeInfo.degreeNames.join(' - ');
-        }
         if (this.btnPlayBox) {
             this.btnPlayBox.disabled = !data.hasClickedRoot || !data.audioEnabled;
             this.btnPlayBox.classList.toggle('opacity-50', !data.hasClickedRoot || !data.audioEnabled);
@@ -287,7 +271,7 @@ class ConfigPanelsView {
                     presetList.forEach(p => {
                         const opt = document.createElement('option');
                         opt.value = p.id;
-                        opt.textContent = `${p.name} (${p.defaultBpm} BPM)`;
+                        opt.textContent = p.name;
                         group.appendChild(opt);
                     });
                     this.backingStyleSelect.appendChild(group);
@@ -298,19 +282,13 @@ class ConfigPanelsView {
             }
         }
 
-        if (this.backingInstrumentBadge && data.backingTrack) {
-            const currentPreset = (data.backingPresets || []).find(p => p.id === data.backingTrack.stylePreset);
-            const label = data.backingTrack.instrumentLabel || (currentPreset && currentPreset.instrumentLabel) || '🎸 Electric Guitar';
-            this.backingInstrumentBadge.textContent = label;
-        }
-
         if (this.backingMeterBadge && data.backingTrack) {
             this.backingMeterBadge.textContent = data.backingTrack.timeSignature || '4/4';
         }
 
         if (this.backingBpmInput && data.backingTrack) {
             if (document.activeElement !== this.backingBpmInput) {
-                this.backingBpmInput.value = data.backingTrack.bpm || 116;
+                this.backingBpmInput.value = data.backingTrack.bpm || 74;
             }
         }
 
