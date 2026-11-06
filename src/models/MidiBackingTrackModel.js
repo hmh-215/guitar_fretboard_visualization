@@ -20,10 +20,20 @@ class MidiBackingTrackModel {
     constructor() {
         this.timerId = null;
         this.isPlaying = false;
+        this.isCountingIn = false;
+        this.countInTimers = [];
         this.nextStepTime = 0;
         this.currentStep = 0;
         this.lastReportedChord = null;
         this.lastReportedSection = null;
+        this.lastReportedBar = -1;
+
+        // True Standard MIDI File (SMF) Parsing Cache & Stream State
+        this._parsedMidiCache = {};
+        this._loadingPromises = {};
+        this.songStartTime = 0;
+        this.scheduledNoteIndex = 0;
+        this.currentParsedSong = null;
     }
 
     /**
@@ -33,27 +43,25 @@ class MidiBackingTrackModel {
         // ==================== BLUES & SHUFFLE ====================
         {
             id: 'blues_12bar_a7',
-            name: '12 Bar Blues Shuffle (A7)',
+            name: 'Blues Shuffle - I IV V (12 Bar) - Mixolydian',
             category: 'Blues & Shuffle',
             timeSignature: '4/4',
             beatsPerBar: 4,
             stepsPerBeat: 4,
             stepsPerBar: 16,
-            defaultBpm: 116,
+            defaultBpm: 74,
             defaultRootIdx: 9, // A
             defaultRootName: 'A',
-            midiFile: '01_blues_12bar_a7_116bpm.mid',
-            instrumentType: 'overdriven_guitar',
+            midiFile: '01_blues_12bar_a7_74bpm.mid',
+            instrumentType: 'clean_guitar',
             bassType: 'electric_bass',
-            instrumentLabel: '🎸 Overdriven Blues Guitar & Organ',
+            instrumentLabel: '🎸 Electric Blues Guitar & Drum Kit (Duo)',
             scaleRecommendation: 'A Minor / Major Blues, A Mixolydian',
             cycleBars: 12,
             sections: [
-                { name: 'Count-in / Intro', bars: 4 },
-                { name: 'Verse 1 (Head)', bars: 12 },
-                { name: 'Verse 2', bars: 12 },
-                { name: 'Guitar Solo 1', bars: 12 },
-                { name: 'Guitar Solo 2', bars: 12 },
+                { name: 'Intro & Head', bars: 4 },
+                { name: 'Chorus 1 (Head)', bars: 12 },
+                { name: 'Chorus 2 (Solo)', bars: 12 },
                 { name: 'Turnaround Outro', bars: 4 }
             ],
             progression: [
@@ -71,31 +79,51 @@ class MidiBackingTrackModel {
                 { bar: 12, rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7 (Turnaround)' }
             ],
             drums: {
-                crash: [0],
-                kick: [0, 8, 14],
-                snare: [4, 12],
-                ride: [0, 3, 4, 7, 8, 11, 12, 15]
+                crash: [{ step: 0, vel: 0.85 }],
+                kick: [
+                    { step: 0, vel: 0.82 },   // Solid downbeat punch
+                    { step: 8, vel: 0.76 }   // Beat 3 punch
+                ],
+                snare: [
+                    { step: 4, vel: 0.80 },   // Beat 2 crisp backbeat
+                    { step: 12, vel: 0.80 }   // Beat 4 crisp backbeat
+                ],
+                hihatClosed: [
+                    { step: 0, vel: 0.72 },  // Downbeat accent
+                    { step: 2, vel: 0.32 },  // Ghost middle triplet
+                    { step: 3, vel: 0.60 },  // Swung upbeat push
+                    { step: 4, vel: 0.70 },  // Snare-synced accent
+                    { step: 6, vel: 0.32 },  // Ghost middle triplet
+                    { step: 7, vel: 0.62 },  // Swung upbeat push
+                    { step: 8, vel: 0.72 },  // Beat 3 accent
+                    { step: 10, vel: 0.32 }, // Ghost middle triplet
+                    { step: 11, vel: 0.60 }, // Swung upbeat push
+                    { step: 12, vel: 0.70 }, // Beat 4 accent
+                    { step: 14, vel: 0.32 }, // Ghost middle triplet
+                    { step: 15, vel: 0.64 }  // Turnaround anticipation push
+                ]
             },
-            bass: [
-                { step: 0, degree: 'root', durationSteps: 1.8, velocity: 0.95 },
-                { step: 2, degree: 'third', durationSteps: 1.8, velocity: 0.85 },
-                { step: 4, degree: 'fifth', durationSteps: 1.8, velocity: 0.9 },
-                { step: 6, degree: 'sixth', durationSteps: 1.8, velocity: 0.85 },
-                { step: 8, degree: 'seventh', durationSteps: 1.8, velocity: 0.95 },
-                { step: 10, degree: 'sixth', durationSteps: 1.8, velocity: 0.85 },
-                { step: 12, degree: 'fifth', durationSteps: 1.8, velocity: 0.9 },
-                { step: 14, degree: 'third', durationSteps: 1.8, velocity: 0.85 }
-            ],
+            bass: [], // Pure 2-instrument Duo: Electric Guitar & Drum Kit
             chords: [
-                { step: 4, durationSteps: 1.5, velocity: 0.9 },
-                { step: 7, durationSteps: 1.0, velocity: 0.75 },
-                { step: 12, durationSteps: 1.5, velocity: 0.95 },
-                { step: 15, durationSteps: 1.0, velocity: 0.75 }
+                // Beat 1: Staccato downbeat chop (duration 1 step = 8th triplet)
+                { step: 0, durationSteps: 1.0, velocity: 0.96 },
+                // Beat 1-uh: Low root pickup (duration 1 step)
+                { step: 3, durationSteps: 1.0, velocity: 0.84 },
+                // Beat 2: Snare-synced chop (duration 1 step)
+                { step: 4, durationSteps: 1.0, velocity: 0.96 },
+                // Beat 2-uh: Upbeat Push Chord — QUARTER NOTE (sustains into beat 3, heavily emphasized!)
+                { step: 7, durationSteps: 4.0, velocity: 1.05 },
+                // Beat 3: Sustained downbeat weight (duration 3.5 steps = Quarter Note)
+                { step: 8, durationSteps: 3.5, velocity: 0.96 },
+                // Beat 4: Staccato chop (duration 1 step)
+                { step: 12, durationSteps: 1.0, velocity: 0.94 },
+                // Beat 4-uh: Cross-Bar Anticipation Push — DOTTED QUARTER NOTE (emphasized push!)
+                { step: 15, durationSteps: 4.5, velocity: 1.05 }
             ]
         },
         {
             id: 'minor_blues_12bar_am',
-            name: '12 Bar Minor Blues (A Minor)',
+            name: 'Minor Blues - i iv v (12 Bar) - Aeolian',
             category: 'Blues & Shuffle',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -105,7 +133,7 @@ class MidiBackingTrackModel {
             defaultRootIdx: 9, // A
             defaultRootName: 'A',
             midiFile: '12_minor_blues_12bar_am_58bpm.mid',
-            instrumentType: 'overdriven_guitar',
+            instrumentType: 'distorted_guitar',
             bassType: 'electric_bass',
             instrumentLabel: '🎸 Slow Minor Blues Guitar & Rhodes',
             scaleRecommendation: 'A Minor Pentatonic, A Blues, A Dorian',
@@ -153,7 +181,7 @@ class MidiBackingTrackModel {
         // ==================== JAZZ & SWING ====================
         {
             id: 'jazz_251_c',
-            name: 'Jazz 2-5-1 Swing (C Major)',
+            name: 'Jazz Swing - ii V I VI - Ionian',
             category: 'Jazz & Swing',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -164,7 +192,7 @@ class MidiBackingTrackModel {
             defaultRootName: 'C',
             midiFile: '11_jazz_251_c_122bpm.mid',
             instrumentType: 'jazz_guitar',
-            bassType: 'upright_bass',
+            bassType: 'acoustic_bass',
             instrumentLabel: '🎸 Hollowbody Jazz Guitar & Walking Bass',
             scaleRecommendation: 'C Major, D Dorian, G Mixolydian Bebop',
             cycleBars: 8,
@@ -207,7 +235,7 @@ class MidiBackingTrackModel {
         // ==================== ACOUSTIC & LATIN ====================
         {
             id: 'bossa_nova_2516_c',
-            name: 'Bossa Nova 2-5-1-6 (C Major)',
+            name: 'Bossa Nova - ii V I VI - Ionian',
             category: 'Acoustic & Latin',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -257,7 +285,7 @@ class MidiBackingTrackModel {
         // ==================== R&B, SOUL & FUNK ====================
         {
             id: 'dorian_smooth_a',
-            name: 'Smooth Neo-Soul (A Dorian)',
+            name: 'Neo-Soul - i IV i ii - Dorian',
             category: 'R&B, Soul & Funk',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -306,7 +334,7 @@ class MidiBackingTrackModel {
         },
         {
             id: 'dorian_funk_d',
-            name: 'Latin Funk Groove (D Dorian)',
+            name: 'Latin Funk - i IV i ii - Dorian',
             category: 'R&B, Soul & Funk',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -360,7 +388,7 @@ class MidiBackingTrackModel {
         // ==================== ROCK & METAL ====================
         {
             id: 'phrygian_metal_e',
-            name: 'Dark Metal Gallop (E Phrygian)',
+            name: 'Dark Metal - i bII bIII bII - Phrygian',
             category: 'Rock & Metal',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -371,7 +399,7 @@ class MidiBackingTrackModel {
             defaultRootName: 'E',
             midiFile: '08_phrygian_metal_e_120bpm.mid',
             instrumentType: 'distorted_guitar',
-            bassType: 'distorted_bass',
+            bassType: 'electric_bass',
             instrumentLabel: '⚡ Heavy Distortion Metal Guitar',
             scaleRecommendation: 'E Phrygian, C Major, E Minor Pentatonic',
             cycleBars: 4,
@@ -429,7 +457,7 @@ class MidiBackingTrackModel {
         },
         {
             id: 'vai_lydian_e',
-            name: 'Steve Vai Virtuoso Rock (E Lydian)',
+            name: 'Virtuoso Rock - I II I II - Lydian',
             category: 'Rock & Metal',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -487,7 +515,7 @@ class MidiBackingTrackModel {
         // ==================== ROCK & POP ====================
         {
             id: 'mixolydian_open_life_a',
-            name: 'Open Life Jam (A Mixolydian)',
+            name: 'Open Rock - I bVII IV I - Mixolydian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -497,7 +525,7 @@ class MidiBackingTrackModel {
             defaultRootIdx: 9, // A
             defaultRootName: 'A',
             midiFile: '04_mixolydian_open_life_a_120bpm.mid',
-            instrumentType: 'overdriven_guitar',
+            instrumentType: 'distorted_guitar',
             bassType: 'electric_bass',
             instrumentLabel: '🎸 Crunch Electric Guitar & Grand Piano',
             scaleRecommendation: 'A Mixolydian, D Major, A Major Pentatonic',
@@ -542,7 +570,7 @@ class MidiBackingTrackModel {
         },
         {
             id: 'dark_sad_blues_rock_am',
-            name: 'Dark Sad Blues Rock Ballad (A Minor)',
+            name: 'Blues Rock Ballad - i bVI bIII bVII - Aeolian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -597,7 +625,7 @@ class MidiBackingTrackModel {
         },
         {
             id: 'emotional_rock_ballad_bm',
-            name: 'Emotional Melodic Rock Ballad (B Minor)',
+            name: 'Melodic Ballad - i bVI bIII bVII - Aeolian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -648,7 +676,7 @@ class MidiBackingTrackModel {
         },
         {
             id: 'rock_pop_g_70bpm',
-            name: 'Acoustic Rock Pop 70 BPM (G Major)',
+            name: 'Acoustic Pop - I V vi IV - Ionian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -701,7 +729,7 @@ class MidiBackingTrackModel {
         // ==================== MODAL & FUSION ====================
         {
             id: 'locrian_jam_a',
-            name: 'Dark Ambient Fusion (A Locrian)',
+            name: 'Ambient Fusion - i° bII vii i° - Locrian',
             category: 'Modal & Fusion',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -712,7 +740,7 @@ class MidiBackingTrackModel {
             defaultRootName: 'A',
             midiFile: '03_locrian_jam_a_68bpm.mid',
             instrumentType: 'clean_guitar',
-            bassType: 'synth_bass',
+            bassType: 'fretless_bass',
             instrumentLabel: '🎸 Ambient Clean Guitar & Synth Pad',
             scaleRecommendation: 'A Locrian, Bb Major, G Minor',
             cycleBars: 4,
@@ -749,7 +777,7 @@ class MidiBackingTrackModel {
         },
         {
             id: 'locrian_dark_fs',
-            name: 'Alien Modern Fusion (F# Locrian)',
+            name: 'Modern Fusion - i° bII vii i° - Locrian',
             category: 'Modal & Fusion',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -810,6 +838,168 @@ class MidiBackingTrackModel {
     }
 
     /**
+     * Parse Standard MIDI File (.mid) binary buffer into high-resolution paired notes and timeline.
+     */
+    async loadAndParseMidi(presetId) {
+        if (this._parsedMidiCache[presetId]) {
+            return this._parsedMidiCache[presetId];
+        }
+        if (this._loadingPromises[presetId]) {
+            return this._loadingPromises[presetId];
+        }
+
+        const preset = MidiBackingTrackModel.getPresetById(presetId);
+        if (!preset) return null;
+
+        const midiFile = preset.midiFile || '01_blues_12bar_a7_74bpm.mid';
+        const url = `midi_tracks/${midiFile}`;
+
+        this._loadingPromises[presetId] = (async () => {
+            try {
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const arrayBuffer = await resp.arrayBuffer();
+
+                if (!window.MidiPlayer || !window.MidiPlayer.Player) {
+                    console.warn('MidiPlayer library not loaded yet');
+                    delete this._loadingPromises[presetId];
+                    return null;
+                }
+
+                const player = new window.MidiPlayer.Player();
+                player.loadArrayBuffer(arrayBuffer);
+
+                const division = player.division || 480;
+
+                // 1. Build Tempo Map (handles both BPM values and microseconds)
+                const initialBpm = preset.defaultBpm || player.tempo || 120;
+                const tempoMap = [];
+                for (const track of player.tracks) {
+                    for (const evt of track.events) {
+                        if (evt.name === 'Set Tempo' && evt.data) {
+                            const bpmVal = evt.data > 500 ? (60000000.0 / evt.data) : Number(evt.data);
+                            tempoMap.push({ tick: evt.tick, bpm: bpmVal });
+                        }
+                    }
+                }
+                tempoMap.sort((a, b) => a.tick - b.tick);
+                if (tempoMap.length === 0) {
+                    tempoMap.push({ tick: 0, bpm: initialBpm });
+                }
+
+                const tickToSeconds = (tick) => {
+                    if (tick <= 0) return 0;
+                    let sec = 0;
+                    let prevTick = 0;
+                    let curBpm = tempoMap[0].bpm;
+                    for (let i = 0; i < tempoMap.length; i++) {
+                        const entry = tempoMap[i];
+                        if (tick <= entry.tick) break;
+                        sec += ((entry.tick - prevTick) / division) * (60.0 / curBpm);
+                        prevTick = entry.tick;
+                        curBpm = entry.bpm;
+                    }
+                    sec += ((tick - prevTick) / division) * (60.0 / curBpm);
+                    return sec;
+                };
+
+                // 2. Parse & Pair Notes
+                const notes = [];
+                player.tracks.forEach((track, tIdx) => {
+                    let trackName = '';
+                    for (const evt of track.events) {
+                        if (evt.name === 'Sequence/Track Name' && evt.string) {
+                            trackName = evt.string;
+                            break;
+                        }
+                    }
+                    const nameLower = trackName.toLowerCase();
+                    const isDrumTrack = nameLower.includes('drum') || nameLower.includes('kit') || nameLower.includes('percussion') || nameLower.includes('cymbal');
+                    const isBassTrack = nameLower.includes('bass');
+                    const isGuitarTrack = nameLower.includes('guitar') || nameLower.includes('strat');
+                    const isKeysTrack = nameLower.includes('rhodes') || nameLower.includes('piano') || nameLower.includes('keys') || nameLower.includes('flute') || nameLower.includes('pad');
+
+                    const activeNotes = new Map();
+                    for (const evt of track.events) {
+                        const channel = evt.channel !== undefined ? evt.channel : 1;
+                        const isChannel10 = (channel === 10 || channel === 9);
+                        let role = 'guitar';
+                        if (isChannel10 || isDrumTrack) role = 'drums';
+                        else if (isBassTrack) role = 'bass';
+                        else if (isGuitarTrack) role = 'guitar';
+                        else if (isKeysTrack) role = 'keys';
+                        else if (tIdx === 1 && !isBassTrack && !isKeysTrack) role = 'guitar';
+
+                        if (evt.name === 'Note on' && evt.velocity > 0) {
+                            const key = `${channel}_${evt.noteNumber}`;
+                            activeNotes.set(key, {
+                                tick: evt.tick,
+                                vel: evt.velocity / 127.0,
+                                pitch: evt.noteNumber,
+                                role,
+                                channel
+                            });
+                        } else if ((evt.name === 'Note off') || (evt.name === 'Note on' && evt.velocity === 0)) {
+                            const key = `${channel}_${evt.noteNumber}`;
+                            if (activeNotes.has(key)) {
+                                const onEvt = activeNotes.get(key);
+                                activeNotes.delete(key);
+                                const durTicks = Math.max(1, evt.tick - onEvt.tick);
+                                const startSec = tickToSeconds(onEvt.tick);
+                                const endSec = tickToSeconds(evt.tick);
+                                const durSec = Math.max(0.05, endSec - startSec);
+                                notes.push({
+                                    pitch: onEvt.pitch,
+                                    vel: onEvt.vel,
+                                    startSec,
+                                    durSec,
+                                    role: onEvt.role,
+                                    channel: onEvt.channel
+                                });
+                            }
+                        }
+                    }
+
+                    // Flush any unclosed notes
+                    for (const [key, onEvt] of activeNotes) {
+                        const startSec = tickToSeconds(onEvt.tick);
+                        notes.push({
+                            pitch: onEvt.pitch,
+                            vel: onEvt.vel,
+                            startSec,
+                            durSec: 0.35,
+                            role: onEvt.role,
+                            channel: onEvt.channel
+                        });
+                    }
+                });
+
+                notes.sort((a, b) => a.startSec - b.startSec);
+                const totalDurationSec = notes.length > 0
+                    ? Math.max(...notes.map(n => n.startSec + n.durSec))
+                    : 60.0;
+
+                const parsed = {
+                    notes,
+                    totalDurationSec,
+                    nativeBpm: preset.defaultBpm || Math.round(tempoMap[0].bpm),
+                    division
+                };
+
+                this._parsedMidiCache[presetId] = parsed;
+                delete this._loadingPromises[presetId];
+                return parsed;
+            } catch (err) {
+                console.error(`Error loading MIDI file ${url}:`, err);
+                delete this._loadingPromises[presetId];
+                return null;
+            }
+        })();
+
+        return this._loadingPromises[presetId];
+    }
+
+    /**
      * Start playback sequencer loop.
      */
     start(audioModel, getContextFn, onChordUpdateFn) {
@@ -819,16 +1009,73 @@ class MidiBackingTrackModel {
         const ctx = audioModel._ensureContext();
         if (!ctx) return;
 
+        const context = typeof getContextFn === 'function' ? getContextFn() : {};
+        const preset = MidiBackingTrackModel.getPresetById(context.stylePresetId);
+
+        // Apply autonomous smart mastering (10-band studio EQ + convolution reverb)
+        if (typeof audioModel.applyStyleMastering === 'function') {
+            audioModel.applyStyleMastering(preset.id);
+        }
+
         this.isPlaying = true;
+        this.isCountingIn = true;
         this.currentStep = 0;
-        this.nextStepTime = ctx.currentTime + 0.05;
+        this.lastReportedBar = -1;
         this.lastReportedChord = null;
         this.lastReportedSection = null;
+        this.scheduledNoteIndex = 0;
+
+        // Eagerly precache instruments for this preset
+        audioModel.precacheWavInstruments();
+
+        // Load & parse standard MIDI file asynchronously
+        this.loadAndParseMidi(preset.id).then(parsed => {
+            if (!this.isPlaying) return;
+            this.currentParsedSong = parsed;
+        });
+
+        // 4-BEAT COUNT-IN TIMING SETUP
+        const userBpm = context.bpm || preset.defaultBpm || 120;
+        const beatSec = 60.0 / userBpm;
+        const countInStartTime = ctx.currentTime + 0.05;
+        const countInDurationSec = 4 * beatSec;
+        this.songStartTime = countInStartTime + countInDurationSec;
+        this.nextStepTime = this.songStartTime;
+
+        // Schedule the 4 audible drumstick clicks into Web Audio hardware clock
+        for (let beat = 1; beat <= 4; beat++) {
+            const beatAudioTime = countInStartTime + (beat - 1) * beatSec;
+            if (typeof audioModel.scheduleCountInClick === 'function') {
+                audioModel.scheduleCountInClick(beat, beatAudioTime);
+            } else {
+                audioModel.scheduleDrumHit('crossStick', beatAudioTime, beat === 1 ? 1.0 : 0.8);
+            }
+
+            // Timed UI callback updates for visual count-in badge (Count-in: 1, 2, 3, 4)
+            const msFromNow = Math.max(0, (beatAudioTime - ctx.currentTime) * 1000);
+            const timerId = window.setTimeout(() => {
+                if (!this.isPlaying || !this.isCountingIn) return;
+                if (typeof onChordUpdateFn === 'function') {
+                    onChordUpdateFn(null, `Count-in: ${beat} / 4`, preset.scaleRecommendation);
+                }
+            }, msFromNow);
+            this.countInTimers.push(timerId);
+        }
+
+        // Timed callback for when count-in ends and song loop begins
+        const countInEndMs = Math.max(0, (this.songStartTime - ctx.currentTime) * 1000);
+        const endCountInTimer = window.setTimeout(() => {
+            if (!this.isPlaying) return;
+            this.isCountingIn = false;
+            this.lastReportedBar = -1;
+            this._reportChordAndSection(preset, 0, context, onChordUpdateFn);
+        }, countInEndMs);
+        this.countInTimers.push(endCountInTimer);
 
         const scheduleIntervalMs = 25;
         this.timerId = window.setInterval(() => {
             if (!this.isPlaying) return;
-            this._scheduleLookahead(audioModel, getContextFn, onChordUpdateFn);
+            this._scheduleMidiStream(audioModel, getContextFn, onChordUpdateFn);
         }, scheduleIntervalMs);
     }
 
@@ -840,10 +1087,170 @@ class MidiBackingTrackModel {
             window.clearInterval(this.timerId);
             this.timerId = null;
         }
+        if (this.countInTimers && this.countInTimers.length > 0) {
+            this.countInTimers.forEach(id => window.clearTimeout(id));
+            this.countInTimers = [];
+        }
         this.isPlaying = false;
+        this.isCountingIn = false;
         this.currentStep = 0;
+        this.lastReportedBar = -1;
         this.lastReportedChord = null;
         this.lastReportedSection = null;
+        this.scheduledNoteIndex = 0;
+    }
+
+    /**
+     * High-Precision SMF MIDI Stream Lookahead Scheduler.
+     * Schedules parsed MIDI notes directly into Web Audio context for bit-for-bit timing parity.
+     */
+    _scheduleMidiStream(audioModel, getContextFn, onChordUpdateFn) {
+        const ctx = audioModel._ensureContext();
+        if (!ctx) return;
+
+        // If currently in 4-beat count-in window, do NOT schedule musical stream yet
+        const now = ctx.currentTime;
+        if (now < this.songStartTime) {
+            return;
+        }
+        if (this.isCountingIn) {
+            this.isCountingIn = false;
+        }
+
+        const context = typeof getContextFn === 'function' ? getContextFn() : {};
+        const preset = MidiBackingTrackModel.getPresetById(context.stylePresetId);
+        const parsed = this._parsedMidiCache[preset.id];
+
+        // If MIDI is still loading from network, fall back to step sequencer temporarily
+        if (!parsed || !parsed.notes || parsed.notes.length === 0) {
+            this._scheduleLookahead(audioModel, getContextFn, onChordUpdateFn);
+            return;
+        }
+
+        const userBpm = context.bpm || preset.defaultBpm || parsed.nativeBpm || 120;
+        const nativeBpm = parsed.nativeBpm || preset.defaultBpm || 120;
+        const timeScale = userBpm / nativeBpm;
+
+        const elapsedRealSec = Math.max(0, now - this.songStartTime);
+        let songPosSec = elapsedRealSec * timeScale;
+
+        // Seamless Loop Handling
+        if (songPosSec >= parsed.totalDurationSec) {
+            this.songStartTime = now;
+            songPosSec = 0;
+            this.scheduledNoteIndex = 0;
+            this.lastReportedBar = -1;
+            this.isCountingIn = false;
+        }
+
+        // Lookahead window: schedule notes up to 0.16 seconds ahead
+        const lookaheadHorizonSongSec = songPosSec + (0.16 * timeScale);
+
+        const guitarBus = audioModel.getMixerChannelBus('guitar');
+        const bassBus = audioModel.getMixerChannelBus('bass');
+        const drumsBus = audioModel.getMixerChannelBus('drums');
+        const keysBus = audioModel.getMixerChannelBus('keys');
+
+        const guitarInstrument = preset.instrumentType || 'clean_guitar';
+        const bassInstrument = preset.bassType || 'electric_bass';
+
+        while (this.scheduledNoteIndex < parsed.notes.length) {
+            const note = parsed.notes[this.scheduledNoteIndex];
+            if (note.startSec > lookaheadHorizonSongSec) break;
+
+            const noteAudioStartTime = this.songStartTime + (note.startSec / timeScale);
+            const noteAudioDuration = Math.max(0.06, note.durSec / timeScale);
+
+            if (noteAudioStartTime >= now - 0.04) {
+                if (note.role === 'drums') {
+                    const drumType = MidiBackingTrackModel.GM_DRUM_MAP[note.pitch] || 'snare';
+                    audioModel.scheduleDrumHit(drumType, noteAudioStartTime, note.vel * 0.95);
+                } else if (note.role === 'guitar') {
+                    audioModel.playWavNote(guitarInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
+                } else if (note.role === 'bass') {
+                    audioModel.playWavNote(bassInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
+                } else if (note.role === 'keys') {
+                    audioModel.playWavNote('electric_piano', note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
+                }
+            }
+            this.scheduledNoteIndex++;
+        }
+
+        // Live Measure, Chord & Section Tracking
+        const beatsPerBar = preset.beatsPerBar || 4;
+        const barDurationSec = (60.0 / userBpm) * beatsPerBar;
+        const currentBar = Math.floor(songPosSec / barDurationSec);
+
+        if (currentBar !== this.lastReportedBar && typeof onChordUpdateFn === 'function') {
+            this.lastReportedBar = currentBar;
+            this._reportChordAndSection(preset, currentBar, context, onChordUpdateFn);
+        }
+    }
+
+    /**
+     * Report current chord and section to UI badges.
+     */
+    _reportChordAndSection(preset, barIndex, context, onChordUpdateFn) {
+        if (!preset || typeof onChordUpdateFn !== 'function') return;
+        const totalSlots = (preset.progression && preset.progression.length) || 4;
+        const slotIndex = barIndex % totalSlots;
+        const chordSlot = preset.progression ? preset.progression[slotIndex] : null;
+
+        let currentSection = 'Main Groove';
+        let barInSection = 1;
+        let totalSectionBars = 4;
+        if (preset.sections && preset.sections.length > 0) {
+            let cumulativeBars = 0;
+            const totalSongBars = preset.sections.reduce((acc, s) => acc + s.bars, 0);
+            const songBarIndex = barIndex % totalSongBars;
+            for (const sec of preset.sections) {
+                if (songBarIndex < cumulativeBars + sec.bars) {
+                    currentSection = sec.name;
+                    barInSection = (songBarIndex - cumulativeBars) + 1;
+                    totalSectionBars = sec.bars;
+                    break;
+                }
+                cumulativeBars += sec.bars;
+            }
+        }
+
+        if (chordSlot) {
+            const scaleRootIdx = (context.rootNoteIdx !== undefined && context.rootNoteIdx !== null)
+                ? context.rootNoteIdx
+                : (preset.defaultRootIdx !== undefined ? preset.defaultRootIdx : 0);
+            
+            const isSharps = context.accidentalMode !== 'flats';
+            const NOTES = isSharps
+                ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+                : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+            const chordRootIdx = ((scaleRootIdx + (chordSlot.rootOffset || 0)) % 12 + 12) % 12;
+            const chordRootName = NOTES[chordRootIdx];
+            const chordLabel = `${chordRootName}${chordSlot.suffix || ''} (${chordSlot.degreeRoman || ''})`;
+            const sectionLabel = `${currentSection} [${barInSection}/${totalSectionBars}]`;
+
+            if (this.lastReportedChord !== chordLabel || this.lastReportedSection !== sectionLabel) {
+                this.lastReportedChord = chordLabel;
+                this.lastReportedSection = sectionLabel;
+                onChordUpdateFn(chordLabel, sectionLabel, preset.scaleRecommendation);
+            }
+        }
+    }
+
+    /**
+     * Resolve a drum hit step definition (supports raw step numbers and { step, vel } objects).
+     */
+    _getDrumHit(hits, currentStep) {
+        if (!hits || !Array.isArray(hits)) return null;
+        for (const item of hits) {
+            if (typeof item === 'number' && item === currentStep) {
+                return { vel: 0.85 };
+            } else if (typeof item === 'object' && item !== null && item.step === currentStep) {
+                const vel = item.vel !== undefined ? item.vel : (item.velocity !== undefined ? item.velocity : 0.85);
+                return { vel };
+            }
+        }
+        return null;
     }
 
     /**
@@ -852,6 +1259,7 @@ class MidiBackingTrackModel {
     _scheduleLookahead(audioModel, getContextFn, onChordUpdateFn) {
         const ctx = audioModel._ensureContext();
         if (!ctx) return;
+        if (ctx.currentTime < this.songStartTime) return;
 
         const lookaheadHorizonSec = 0.12;
 
@@ -916,34 +1324,43 @@ class MidiBackingTrackModel {
                     ? context.rootNoteIdx
                     : (preset.defaultRootIdx !== undefined ? preset.defaultRootIdx : 0);
 
-                // 1. DRUMS
+                // 1. DRUMS (with velocity & emphasis dynamics)
                 if (preset.drums) {
-                    if (preset.drums.crash && preset.drums.crash.includes(barStep) && (barIndex % 4 === 0)) {
-                        audioModel.scheduleDrumHit('crash', this.nextStepTime, 0.9, context.isEnabled);
+                    if (preset.drums.crash && (barIndex % 4 === 0)) {
+                        const hit = this._getDrumHit(preset.drums.crash, barStep);
+                        if (hit) audioModel.scheduleDrumHit('crash', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.kick && preset.drums.kick.includes(barStep)) {
-                        audioModel.scheduleDrumHit('kick', this.nextStepTime, 0.95, context.isEnabled);
+                    if (preset.drums.kick) {
+                        const hit = this._getDrumHit(preset.drums.kick, barStep);
+                        if (hit) audioModel.scheduleDrumHit('kick', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.snare && preset.drums.snare.includes(barStep)) {
-                        audioModel.scheduleDrumHit('snare', this.nextStepTime, 0.9, context.isEnabled);
+                    if (preset.drums.snare) {
+                        const hit = this._getDrumHit(preset.drums.snare, barStep);
+                        if (hit) audioModel.scheduleDrumHit('snare', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.ghostSnare && preset.drums.ghostSnare.includes(barStep)) {
-                        audioModel.scheduleDrumHit('ghostSnare', this.nextStepTime, 0.55, context.isEnabled);
+                    if (preset.drums.ghostSnare) {
+                        const hit = this._getDrumHit(preset.drums.ghostSnare, barStep);
+                        if (hit) audioModel.scheduleDrumHit('ghostSnare', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.crossStick && preset.drums.crossStick.includes(barStep)) {
-                        audioModel.scheduleDrumHit('crossStick', this.nextStepTime, 0.85, context.isEnabled);
+                    if (preset.drums.crossStick) {
+                        const hit = this._getDrumHit(preset.drums.crossStick, barStep);
+                        if (hit) audioModel.scheduleDrumHit('crossStick', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.rim && preset.drums.rim.includes(barStep)) {
-                        audioModel.scheduleDrumHit('rim', this.nextStepTime, 0.85, context.isEnabled);
+                    if (preset.drums.rim) {
+                        const hit = this._getDrumHit(preset.drums.rim, barStep);
+                        if (hit) audioModel.scheduleDrumHit('rim', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.hihatClosed && preset.drums.hihatClosed.includes(barStep)) {
-                        audioModel.scheduleDrumHit('hihatClosed', this.nextStepTime, 0.65, context.isEnabled);
+                    if (preset.drums.hihatClosed) {
+                        const hit = this._getDrumHit(preset.drums.hihatClosed, barStep);
+                        if (hit) audioModel.scheduleDrumHit('hihatClosed', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.hihatOpen && preset.drums.hihatOpen.includes(barStep)) {
-                        audioModel.scheduleDrumHit('hihatOpen', this.nextStepTime, 0.8, context.isEnabled);
+                    if (preset.drums.hihatOpen) {
+                        const hit = this._getDrumHit(preset.drums.hihatOpen, barStep);
+                        if (hit) audioModel.scheduleDrumHit('hihatOpen', this.nextStepTime, hit.vel, context.isEnabled);
                     }
-                    if (preset.drums.ride && preset.drums.ride.includes(barStep)) {
-                        audioModel.scheduleDrumHit('ride', this.nextStepTime, 0.75, context.isEnabled);
+                    if (preset.drums.ride) {
+                        const hit = this._getDrumHit(preset.drums.ride, barStep);
+                        if (hit) audioModel.scheduleDrumHit('ride', this.nextStepTime, hit.vel, context.isEnabled);
                     }
                 }
 
@@ -1031,7 +1448,7 @@ class MidiBackingTrackModel {
      */
     static downloadPresetMidi(presetId) {
         const preset = MidiBackingTrackModel.getPresetById(presetId);
-        const filename = preset.midiFile || '01_blues_12bar_a7_116bpm.mid';
+        const filename = preset.midiFile || '01_blues_12bar_a7_74bpm.mid';
         const midiUrl = `midi_tracks/${filename}`;
         
         const a = document.createElement('a');
@@ -1042,5 +1459,29 @@ class MidiBackingTrackModel {
         document.body.removeChild(a);
     }
 }
+
+MidiBackingTrackModel.GM_DRUM_MAP = {
+    35: 'kick',        // Acoustic Bass Drum
+    36: 'kick',        // Bass Drum 1
+    37: 'crossStick',   // Side Stick
+    38: 'snare',       // Acoustic Snare
+    40: 'snare',       // Electric Snare
+    41: 'tomLow',      // Low Floor Tom
+    42: 'hihatClosed', // Closed Hi-Hat
+    43: 'tomLow',      // High Floor Tom
+    44: 'hihatClosed', // Pedal Hi-Hat
+    45: 'tomMid',      // Low Tom
+    46: 'hihatOpen',   // Open Hi-Hat
+    47: 'tomMid',      // Low-Mid Tom
+    48: 'tomHigh',     // Hi-Mid Tom
+    49: 'crash',       // Crash Cymbal 1
+    50: 'tomHigh',     // High Tom
+    51: 'ride',        // Ride Cymbal 1
+    52: 'crash',       // Chinese Cymbal
+    53: 'ride',        // Ride Bell
+    55: 'crash',       // Splash Cymbal
+    57: 'crash',       // Crash 2
+    59: 'ride'         // Ride 2
+};
 
 window.GuitarApp.Models.MidiBackingTrackModel = MidiBackingTrackModel;

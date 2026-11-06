@@ -546,7 +546,7 @@ class FretboardViewModel {
         }
 
         const getContextFn = () => ({
-            isEnabled: this.state.audioEnabled && this.state.appMode === 'scale',
+            isEnabled: this.state.audioEnabled,
             rootNoteIdx: this.state.clickedRoot ? this.state.clickedRoot.noteIdx : 0,
             musicalModeKey: this.state.selectedMusicalMode,
             stylePresetId: this.state.backingTrack.stylePreset,
@@ -557,6 +557,7 @@ class FretboardViewModel {
         const onChordUpdateFn = (chordSymbol, sectionSymbol, scaleRecommendation) => {
             this.state.backingTrack.currentChordLabel = chordSymbol;
             this.state.backingTrack.currentSectionLabel = sectionSymbol;
+            this.state.backingTrack.isCountingIn = Boolean(this.midiBackingModel && this.midiBackingModel.isCountingIn);
             if (scaleRecommendation) {
                 this.state.backingTrack.scaleRecommendation = scaleRecommendation;
             }
@@ -565,6 +566,9 @@ class FretboardViewModel {
 
         this.midiBackingModel.start(this.audioModel, getContextFn, onChordUpdateFn);
         this.state.backingTrack.isPlaying = true;
+        this.state.backingTrack.isCountingIn = true;
+        this.state.backingTrack.currentSectionLabel = 'Count-in: 1 / 4';
+        this.state.backingTrack.currentChordLabel = null;
         this.stateModel.notify();
     }
 
@@ -572,15 +576,17 @@ class FretboardViewModel {
         if (this.midiBackingModel) {
             this.midiBackingModel.stop();
         }
-        if (this.state.backingTrack.isPlaying) {
-            this.state.backingTrack.isPlaying = false;
-            this.state.backingTrack.currentChordLabel = null;
-            this.state.backingTrack.currentSectionLabel = null;
-            this.stateModel.notify();
-        }
+        this.state.backingTrack.isPlaying = false;
+        this.state.backingTrack.isCountingIn = false;
+        this.state.backingTrack.currentChordLabel = null;
+        this.state.backingTrack.currentSectionLabel = null;
+        this.stateModel.notify();
     }
 
     setBackingStylePreset(presetId) {
+        // Immediately stop any active playback or count-in and restart button state
+        this.stopBackingTrack();
+
         const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
         const preset = MidiModel ? MidiModel.getPresetById(presetId) : null;
         if (preset) {

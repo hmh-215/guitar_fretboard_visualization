@@ -1,7 +1,6 @@
 backing_track_mp3/
 archive/
 *.mp3
-*.wav
 *.pyc
 __pycache__/
 .vscode/

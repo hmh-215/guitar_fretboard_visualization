@@ -64,77 +64,154 @@ def save_multitrack_midi(filename, bpm, time_sig, tracks_data, markers=None):
     print(f"Generated: {dest} ({os.path.getsize(dest)} bytes, {len(mid.tracks)} tracks)")
 
 # =========================================================================
-# 01. 12 BAR BLUES SHUFFLE IN A7 (116 BPM)
+# 01. 12 BAR BLUES SHUFFLE IN A7 (74 BPM) - 2 DISTINCT INSTRUMENTS:
+#     Track 1: Electric Guitar (GM 26 Jazz Guitar / Clean Electric)
+#     Track 2: Drum Kit (GM Drum Kit, Ch 9/10)
+#     Calibrated from Songscription AI authentic audio transcription
 # =========================================================================
 def build_blues_12bar_a7():
-    bpm = 116
-    bars = 36 # 4 bar intro + 2 choruses of 12 bars + 4 bar turnaround outro = 32+4 = 36 bars
-    bar_sub = 16 * SUB
-    dr_ev, bs_ev, gt_ev, org_ev = [], [], [], []
+    bpm = 74 # Calibrated from authentic audio transcription
+    # 4 bar intro + 2 choruses of 12 bars + 4 bar turnaround outro = 32 bars
+    bars = 32
+    bar_ticks = 4 * TICKS_PER_BEAT # 1920 ticks per bar
+    TRIP = TICKS_PER_BEAT // 3     # 160 ticks per 8th triplet
+    Q_NOTE = TICKS_PER_BEAT        # 480 ticks (Quarter Note)
+    H_NOTE = 2 * TICKS_PER_BEAT    # 960 ticks (Half Note)
+    DOT_Q = int(1.5 * TICKS_PER_BEAT) # 720 ticks (Dotted Quarter Note)
+    
+    dr_ev, gt_ev = [], []
     markers = [
-        (0, "Count-in & Intro"),
-        (4 * bar_sub, "Chorus 1 (Head)"),
-        (16 * bar_sub, "Chorus 2 (Solo)"),
-        (28 * bar_sub, "Chorus 3 (Peak)"),
-        (32 * bar_sub, "Turnaround Outro")
+        (0, "Intro (Head)"),
+        (4 * bar_ticks, "Chorus 1 (Head)"),
+        (16 * bar_ticks, "Chorus 2 (Solo)"),
+        (28 * bar_ticks, "Turnaround Outro")
     ]
 
-    prog_roots = [
+    # 12-bar blues progression in A7:
+    prog_chords = [
         # Intro 4 bars: A7 - D7 - A7 - E7
-        0, 5, 0, 7,
+        ('A7', False), ('D7', False), ('A7', False), ('E7', True),
         # Chorus 1 (12 bars)
-        0, 5, 0, 0,  5, 5, 0, 0,  7, 5, 0, 7,
+        ('A7', False), ('D7', False), ('A7', False), ('A7', False),
+        ('D7', False), ('D7', False), ('A7', False), ('A7', False),
+        ('E7', False), ('D7', False), ('A7', False), ('E7', True),
         # Chorus 2 (12 bars)
-        0, 5, 0, 0,  5, 5, 0, 0,  7, 5, 0, 7,
+        ('A7', False), ('D7', False), ('A7', False), ('A7', False),
+        ('D7', False), ('D7', False), ('A7', False), ('A7', False),
+        ('E7', False), ('D7', False), ('A7', False), ('E7', True),
         # Outro 4 bars
-        0, 5, 0, 0
+        ('A7', False), ('D7', False), ('A7', False), ('A7', True)
     ]
 
-    for bar_idx in range(len(prog_roots)):
-        b_start = bar_idx * bar_sub
-        r_off = prog_roots[bar_idx]
-        base_a = 45 # A1 = 33, A2 = 45
+    VOICINGS = {
+        'A7': {
+            'downbeat': [45, 52, 55, 61],        # A2, E3, G3, C#4
+            'pickup': [45],                      # A2 (low root)
+            'chop': [45, 52, 55, 61, 69],        # A2, E3, G3, C#4, A4
+            'push': [45, 61, 64, 69],            # A2, C#4, E4, A4 (sustained quarter note)
+            'weight': [45, 52, 55, 61],          # A2, E3, G3, C#4
+            'cadence': [45, 55, 61, 64]          # Sustained half note
+        },
+        'D7': {
+            'downbeat': [50, 57, 60, 66],        # D3, A3, C4, F#4
+            'pickup': [50],                      # D3 (low root)
+            'chop': [50, 57, 60, 66, 69],        # D3, A3, C4, F#4, A4
+            'push': [50, 60, 66, 69],            # D3, C4, F#4, A4 (sustained quarter note)
+            'weight': [50, 57, 60],              # D3, A3, C4
+            'cadence': [50, 60, 64, 66]          # Sustained half note
+        },
+        'E7': {
+            'downbeat': [40, 52, 56, 59, 62],    # E2, E3, G#3, B3, D4
+            'pickup': [52],                      # E3
+            'chop': [52, 59, 62, 68],            # E3, B3, D4, G#4
+            'push': [52, 62, 68, 71],            # E3, D4, G#4, B4 (sustained quarter note)
+            'weight': [52, 59, 62, 68],          # E3, B3, D4, G#4
+            'cadence': [52, 62, 65, 68]          # E7#9 Hendrix / turnaround push
+        }
+    }
 
-        # Drums: Blues shuffle
-        # Crash on start of chorus
+    for bar_idx, (chord_name, is_turnaround) in enumerate(prog_chords):
+        b_start = bar_idx * bar_ticks
+        v = VOICINGS[chord_name]
+
+        # -------------------------------------------------------------
+        # TRACK 1: ELECTRIC GUITAR (Channel 0, GM 26 Jazz Electric)
+        # -------------------------------------------------------------
+        if is_turnaround:
+            # Turnaround cadence bar: Half Notes on Beat 1 and Beat 3
+            # Beat 1: V7 push (Half Note = 960 ticks)
+            add_chord(gt_ev, b_start + 0, H_NOTE - 40, v['cadence'], 95)
+            # Beat 3: V7#9 push (Half Note = 960 ticks)
+            add_chord(gt_ev, b_start + 2 * Q_NOTE, H_NOTE - 40, v['push'], 100)
+        else:
+            # Standard Blues Shuffle Comping Bar (Exact Songscription Rhythm)
+            # Beat 1:
+            # - Triplet 0 (downbeat): Staccato chord chop (160 ticks)
+            add_chord(gt_ev, b_start + 0, TRIP, v['downbeat'], 95)
+            # - Triplet 2 (push): Low string root pickup (160 ticks)
+            add_chord(gt_ev, b_start + 2 * TRIP, TRIP, v['pickup'], 85)
+
+            # Beat 2:
+            # - Triplet 0 (snare sync): Staccato chord chop (160 ticks)
+            add_chord(gt_ev, b_start + Q_NOTE + 0, TRIP, v['chop'], 95)
+            # - Triplet 2 (Beat 2-uh): SUSTAINED QUARTER NOTE PUSH (480 ticks)
+            #   Sustains right across Beat 3 downbeat!
+            add_chord(gt_ev, b_start + Q_NOTE + 2 * TRIP, Q_NOTE, v['push'], 98)
+
+            # Beat 3:
+            # - Beat 3 harmonic weight: Sustained chord hit (Quarter Note)
+            add_chord(gt_ev, b_start + 2 * Q_NOTE + TRIP, Q_NOTE - TRIP, v['weight'], 90)
+
+            # Beat 4:
+            # - Triplet 0: Staccato chord chop (160 ticks)
+            add_chord(gt_ev, b_start + 3 * Q_NOTE + 0, TRIP, v['downbeat'], 92)
+            # - Triplet 1: Low string root pickup (160 ticks)
+            add_chord(gt_ev, b_start + 3 * Q_NOTE + TRIP, TRIP, v['pickup'], 80)
+            # - Triplet 2 (Beat 4-uh): ANTICIPATION PUSH CHORD (Dotted Quarter Note = 720 ticks)
+            #   Sustains across the barline into Beat 1 of next bar!
+            add_chord(gt_ev, b_start + 3 * Q_NOTE + 2 * TRIP, DOT_Q, v['push'], 96)
+
+        # -------------------------------------------------------------
+        # TRACK 2: DRUM KIT (Channel 9 / GM Drums)
+        # -------------------------------------------------------------
+        # Crash cymbal on downbeat of new choruses
         if bar_idx in [0, 4, 16, 28]:
-            add_note(dr_ev, b_start, SUB*2, 49, 110)
-        
-        # Shuffle ride on 0, 3, 4, 7, 8, 11, 12, 15 (swung 8ths)
-        for s in [0, 3, 4, 7, 8, 11, 12, 15]:
-            vel = 85 if s in [0, 4, 8, 12] else 70
-            add_note(dr_ev, b_start + s*SUB, SUB, 51, vel)
-        # Snare backbeat on 4 and 12
-        add_note(dr_ev, b_start + 4*SUB, SUB*2, 38, 105)
-        add_note(dr_ev, b_start + 12*SUB, SUB*2, 38, 105)
-        # Bass drum on beats 1 & 3 (0 & 8) + shuffle pickup on 14
-        add_note(dr_ev, b_start + 0*SUB, SUB*2, 36, 100)
-        add_note(dr_ev, b_start + 8*SUB, SUB*2, 36, 95)
-        add_note(dr_ev, b_start + 14*SUB, SUB, 36, 80)
+            add_note(dr_ev, b_start, Q_NOTE, 49, 110) # Crash Cymbal
 
-        # Walking / Boogie Bass (R, 3, 5, 6, b7, 6, 5, 3)
-        b_root = 33 + r_off # A1 = 33
-        bass_pitches = [b_root, b_root + 4, b_root + 7, b_root + 9, b_root + 10, b_root + 9, b_root + 7, b_root + 4]
-        for step_i, p in enumerate(bass_pitches):
-            s_time = b_start + step_i * 2 * SUB
-            add_note(bs_ev, s_time, int(SUB * 1.7), p, 95)
+        # Continuous 12/8 Closed Hi-Hat Swung Shuffle (12 triplets per bar)
+        for beat in range(4):
+            b_off = b_start + beat * Q_NOTE
+            # Triplet 0: downbeat accent
+            add_note(dr_ev, b_off + 0, TRIP - 20, 42, 85)
+            # Triplet 1: light ghost
+            add_note(dr_ev, b_off + TRIP, TRIP - 20, 42, 60)
+            # Triplet 2: push swing
+            add_note(dr_ev, b_off + 2 * TRIP, TRIP - 20, 42, 75)
 
-        # Rhythm Guitar: Shuffle chops on beats 2 & 4 (steps 4 & 12)
-        chord_root = 57 + r_off # A3 = 57
-        add_chord(gt_ev, b_start + 4*SUB, int(SUB * 1.5), [chord_root, chord_root + 4, chord_root + 10], 90)
-        add_chord(gt_ev, b_start + 7*SUB, SUB, [chord_root, chord_root + 4, chord_root + 10], 75)
-        add_chord(gt_ev, b_start + 12*SUB, int(SUB * 1.5), [chord_root, chord_root + 4, chord_root + 10], 95)
-        add_chord(gt_ev, b_start + 15*SUB, SUB, [chord_root, chord_root + 4, chord_root + 10], 75)
+        # Kick Drum (Note 36):
+        # Punch on Beat 1 (t = 0) and Beat 3 (t = 2 * Q_NOTE)
+        add_note(dr_ev, b_start + 0, TRIP * 2, 36, 105)
+        add_note(dr_ev, b_start + 2 * Q_NOTE, TRIP * 2, 36, 95)
 
-        # Hammond Organ: Sustained whole-note pads
-        add_chord(org_ev, b_start, bar_sub - 20, [chord_root - 12, chord_root - 5, chord_root, chord_root + 4, chord_root + 10], 70)
+        # Snare Drum (Note 38):
+        # Solid backbeat on Beat 2 (t = Q_NOTE) and Beat 4 (t = 3 * Q_NOTE)
+        add_note(dr_ev, b_start + Q_NOTE, TRIP * 2, 38, 105)
+
+        if is_turnaround or (bar_idx % 4 == 3):
+            # Tasteful 16th-triplet turnaround snare roll on Beat 4
+            roll_step = TRIP // 2 # 80 ticks
+            for r in range(4):
+                add_note(dr_ev, b_start + 3 * Q_NOTE + r * roll_step, roll_step, 38, 85 + r * 5)
+        else:
+            add_note(dr_ev, b_start + 3 * Q_NOTE, TRIP * 2, 38, 105)
 
     tracks = [
-        ("Blues Drums", 9, None, dr_ev),
-        ("Boogie Bass", 0, 33, bs_ev),      # Finger Electric Bass
-        ("Overdrive Guitar", 1, 29, gt_ev), # Overdriven Guitar
-        ("Hammond Organ", 2, 17, org_ev)    # Percussive Organ
+        ("Electric Guitar", 0, 26, gt_ev), # Jazz Electric Guitar (GM 26)
+        ("Drum Kit", 9, None, dr_ev)       # Standard GM Drum Kit (Channel 10)
     ]
+
+    # Save both canonical 74bpm and compatibility 116bpm filenames
+    save_multitrack_midi("01_blues_12bar_a7_74bpm.mid", bpm, "4/4", tracks, markers)
     save_multitrack_midi("01_blues_12bar_a7_116bpm.mid", bpm, "4/4", tracks, markers)
 
 # =========================================================================

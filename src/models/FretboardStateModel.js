@@ -36,13 +36,14 @@ class FretboardStateModel {
             // Backing track accompaniment state
             backingTrack: {
                 isPlaying: false,
+                isCountingIn: false,
                 stylePreset: 'blues_12bar_a7',
-                bpm: 116,
+                bpm: 74,
                 timeSignature: '4/4',
                 currentChordLabel: null,
                 currentSectionLabel: null,
                 scaleRecommendation: 'A Minor / Major Blues, A Mixolydian',
-                instrumentLabel: '🎸 Overdriven Blues Guitar & Organ'
+                instrumentLabel: '🎸 Electric Blues Guitar & Drum Kit (Duo)'
             },
 
             // UI Overlay states

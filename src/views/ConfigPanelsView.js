@@ -294,12 +294,17 @@ class ConfigPanelsView {
 
         if (this.btnToggleBacking && data.backingTrack) {
             const isPlaying = data.backingTrack.isPlaying;
+            const isCountingIn = data.backingTrack.isCountingIn;
             this.btnToggleBacking.disabled = !data.audioEnabled;
             this.btnToggleBacking.classList.toggle('opacity-50', !data.audioEnabled);
 
             if (isPlaying) {
                 this.btnToggleBacking.className = 'px-3 py-1.5 bg-orange-500 hover:bg-orange-400 text-black border border-orange-400 font-extrabold text-xs transition flex items-center gap-1.5 shrink-0 shadow-lg shadow-orange-500/30';
-                this.btnToggleBacking.innerHTML = `<span>⏹</span><span>Stop Backing</span>`;
+                if (isCountingIn) {
+                    this.btnToggleBacking.innerHTML = `<span>⏳</span><span>Count-in...</span>`;
+                } else {
+                    this.btnToggleBacking.innerHTML = `<span>⏹</span><span>Stop Backing</span>`;
+                }
             } else {
                 this.btnToggleBacking.className = 'px-3 py-1.5 bg-orange-500/15 hover:bg-orange-500 text-orange-400 hover:text-black border border-orange-500/40 font-bold text-xs transition flex items-center gap-1.5 shrink-0';
                 this.btnToggleBacking.innerHTML = `<span>♫</span><span>Play Backing</span>`;
@@ -311,7 +316,7 @@ class ConfigPanelsView {
             const section = data.backingTrack.currentSectionLabel;
             if (isPlaying && section) {
                 this.backingSectionBadge.classList.remove('hidden');
-                this.backingSectionBadge.textContent = section;
+                this.backingSectionBadge.textContent = section.startsWith('Count-in') ? section : `Section: ${section}`;
             } else {
                 this.backingSectionBadge.classList.add('hidden');
             }
