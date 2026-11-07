@@ -6,9 +6,10 @@
     <title>Guitar Fretboard Visualization</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css?v=2.2">
 </head>
-<body class="h-screen overflow-hidden flex flex-col bg-zinc-950 text-zinc-100 select-none">
+<body class="min-h-screen overflow-x-hidden overflow-y-auto flex flex-col bg-zinc-950 text-zinc-100 select-none">
 
     <!-- 1. TOP BAR: Hamburger Dropdown Menu + Title (HeaderView) -->
     <header class="w-full border-b-2 border-orange-500/80 bg-black px-4 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between relative z-40 shrink-0">
@@ -60,16 +61,20 @@
             </div>
         </div>
 
-        <!-- Right: Main Title (Non-clickable, all white text) -->
-        <div class="flex items-center gap-4">
-            <h1 class="text-lg sm:text-2xl font-bold tracking-tight text-white">
+        <!-- Right: Landscape/Fullscreen Toggle + Main Title -->
+        <div class="flex items-center gap-2.5 sm:gap-4">
+            <button id="btn-fullscreen-landscape" type="button" class="px-2.5 py-1 bg-zinc-900 hover:bg-orange-500 hover:text-black border border-zinc-800 hover:border-orange-500/60 text-xs font-bold text-orange-400 transition flex items-center gap-1.5 shrink-0" title="Switch to Fullscreen Landscape">
+                <span>⛶</span>
+                <span class="text-[11px] font-semibold">Landscape</span>
+            </button>
+            <h1 class="text-sm sm:text-2xl font-bold tracking-tight text-white whitespace-nowrap">
                 Guitar fretboard visualization
             </h1>
         </div>
     </header>
 
     <!-- 2. MIDDLE MAIN STAGE: Centered Guitar Fretboard (FretboardView) -->
-    <main id="fretboard-stage" class="flex-1 min-h-0 flex flex-col justify-center px-3 sm:px-6 py-1.5 sm:py-2.5 bg-zinc-950 relative overflow-hidden">
+    <main id="fretboard-stage" class="flex-1 flex flex-col justify-center px-3 sm:px-6 py-1.5 sm:py-2.5 bg-zinc-950 relative">
         <div class="max-w-[1440px] w-full mx-auto space-y-1.5 sm:space-y-2">
             
             <!-- Minimalist Status Bar Above Fretboard -->
@@ -435,30 +440,43 @@
         </div>
     </div>
 
+    <!-- Floating Rotation Prompt for Mobile Portrait Orientation -->
+    <div id="portrait-orientation-prompt" class="hidden fixed inset-x-3 bottom-3 z-50">
+        <div class="bg-zinc-900 border-2 border-orange-500 p-3 shadow-2xl flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <span class="text-lg">🔄</span>
+                <span class="text-xs font-medium text-zinc-200">Rotate phone to <strong>Landscape</strong> for full fretboard view</span>
+            </div>
+            <button id="btn-prompt-landscape" type="button" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-400 text-black font-extrabold text-xs shrink-0">
+                ⛶ Rotate
+            </button>
+        </div>
+    </div>
+
     <!-- Authentic Guitar & Bass SoundFont Instrument Samples -->
-    <script src="soundfonts/electric_guitar_clean-mp3.js"></script>
-    <script src="soundfonts/acoustic_guitar_nylon-mp3.js"></script>
-    <script src="soundfonts/electric_guitar_jazz-mp3.js"></script>
-    <script src="soundfonts/distortion_guitar-mp3.js"></script>
-    <script src="src/libraries/midiplayer.js"></script>
+    <script src="soundfonts/electric_guitar_clean-mp3.js?v=2.2"></script>
+    <script src="soundfonts/acoustic_guitar_nylon-mp3.js?v=2.2"></script>
+    <script src="soundfonts/electric_guitar_jazz-mp3.js?v=2.2"></script>
+    <script src="soundfonts/distortion_guitar-mp3.js?v=2.2"></script>
+    <script src="src/libraries/midiplayer.js?v=2.2"></script>
 
     <!-- MVVM Architecture Scripts (Model -> ViewModel -> View -> Main Bootstrapper) -->
     <!-- Models -->
-    <script src="src/models/MusicTheoryModel.js"></script>
-    <script src="src/models/AudioEngineModel.js"></script>
-    <script src="src/models/MidiBackingTrackModel.js"></script>
-    <script src="src/models/FretboardStateModel.js"></script>
+    <script src="src/models/MusicTheoryModel.js?v=2.2"></script>
+    <script src="src/models/AudioEngineModel.js?v=2.2"></script>
+    <script src="src/models/MidiBackingTrackModel.js?v=2.2"></script>
+    <script src="src/models/FretboardStateModel.js?v=2.2"></script>
 
     <!-- ViewModel -->
-    <script src="src/viewmodels/FretboardViewModel.js"></script>
+    <script src="src/viewmodels/FretboardViewModel.js?v=2.2"></script>
 
     <!-- Views -->
-    <script src="src/views/HeaderView.js"></script>
-    <script src="src/views/FretboardView.js"></script>
-    <script src="src/views/ConfigPanelsView.js"></script>
-    <script src="src/views/TuningModalView.js"></script>
+    <script src="src/views/HeaderView.js?v=2.2"></script>
+    <script src="src/views/FretboardView.js?v=2.2"></script>
+    <script src="src/views/ConfigPanelsView.js?v=2.2"></script>
+    <script src="src/views/TuningModalView.js?v=2.2"></script>
 
     <!-- Bootstrapper -->
-    <script src="src/main.js"></script>
+    <script src="src/main.js?v=2.2"></script>
 </body>
 </html>

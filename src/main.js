@@ -75,6 +75,43 @@ window.GuitarApp = window.GuitarApp || {};
         window.closeTuningModal = () => viewModel.closeTuningModal();
         window.applyTuningPreset = (preset) => viewModel.applyTuningPreset(preset);
 
+        // 5. Landscape and Fullscreen Automation for Mobile Devices
+        const requestLandscapeFullscreen = async () => {
+            try {
+                if (!document.fullscreenElement) {
+                    if (document.documentElement.requestFullscreen) {
+                        await document.documentElement.requestFullscreen();
+                    } else if (document.documentElement.webkitRequestFullscreen) {
+                        await document.documentElement.webkitRequestFullscreen();
+                    }
+                }
+                if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                    await screen.orientation.lock('landscape').catch(() => {});
+                }
+            } catch (err) {
+                if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
+            }
+        };
+
+        const btnLandscape = document.getElementById('btn-fullscreen-landscape');
+        if (btnLandscape) {
+            btnLandscape.addEventListener('click', requestLandscapeFullscreen);
+        }
+
+        const btnPromptLandscape = document.getElementById('btn-prompt-landscape');
+        if (btnPromptLandscape) {
+            btnPromptLandscape.addEventListener('click', requestLandscapeFullscreen);
+        }
+
+        // Try locking orientation on first touch gesture
+        window.addEventListener('touchstart', () => {
+            if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                screen.orientation.lock('landscape').catch(() => {});
+            }
+        }, { once: true, passive: true });
+
         // Initial render
         renderAllViews();
     }

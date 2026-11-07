@@ -18,12 +18,12 @@ class AudioEngineModel {
 
         // Multi-Track Studio Mixer Channels (Internal Autonomous Balance)
         this.channelVolumes = {
-            guitar: 1.15,
-            drums: 0.65,
-            bass: 0.75,
-            keys: 0.85,
-            lead: 1.05,
-            master: 0.85
+            guitar: 1.25,
+            drums: 0.60,
+            bass: 1.15,
+            keys: 1.05,
+            lead: 1.20,
+            master: 0.90
         };
 
         this.channelMutes = {
@@ -579,22 +579,34 @@ class AudioEngineModel {
      */
     playWavNote(instrumentId, targetMidiPitch, startTime, durationSec, velocity = 0.8, outputBus = null) {
         try {
-            if (this._wavDisabled) return false;
             const ctx = this._ensureContext();
             if (!ctx) return false;
             const resolvedId = this._resolveWavInstrumentId(instrumentId);
-            const meta = AudioEngineModel.WAV_INSTRUMENTS[resolvedId];
-            if (!meta) return false;
+            const bus = outputBus || this.getMixerChannelBus(resolvedId.includes('bass') ? 'bass' : (resolvedId.includes('piano') || resolvedId.includes('synth') || resolvedId.includes('flute') ? 'keys' : 'guitar'));
 
             const buf = this._wavBuffers[resolvedId];
             if (!buf) {
                 if (!this._wavDisabled) {
                     this.loadWavInstrument(resolvedId);
                 }
-                return false;
+                // Resilient automatic fallback: always play sound immediately if WAV is not available
+                if (resolvedId.includes('bass')) {
+                    this.scheduleBassNote(targetMidiPitch, startTime, durationSec, velocity, resolvedId);
+                    return true;
+                } else if (resolvedId.includes('piano') || resolvedId.includes('synth') || resolvedId.includes('flute')) {
+                    this.scheduleChordVoicing([targetMidiPitch], startTime, durationSec, velocity, 'electric_piano');
+                    return true;
+                } else {
+                    const sfInst = this.mapInstrumentToSoundfont(resolvedId);
+                    const playedSf = this.playSampleNote(sfInst, targetMidiPitch, startTime, durationSec, velocity, bus);
+                    if (playedSf) return true;
+                    this.scheduleChordVoicing([targetMidiPitch], startTime, durationSec, velocity, resolvedId);
+                    return true;
+                }
             }
 
-            const bus = outputBus || this.getMixerChannelBus(resolvedId.includes('bass') ? 'bass' : (resolvedId.includes('piano') || resolvedId.includes('synth') || resolvedId.includes('flute') ? 'keys' : 'guitar'));
+            const meta = AudioEngineModel.WAV_INSTRUMENTS[resolvedId];
+            if (!meta) return false;
             const t = Math.max(startTime, ctx.currentTime);
             const dur = Math.max(0.08, durationSec);
 
@@ -976,7 +988,7 @@ class AudioEngineModel {
                 masterGain.connect(guitarBus);
 
                 // 5. Dual Detuned Sawtooth Oscillators per Note
-                const noteInputLevel = (1.4 / Math.sqrt(voiceCount));
+                const noteInputLevel = (2.2 / Math.sqrt(voiceCount));
                 midiPitches.forEach((pitch) => {
                     const freq = 440 * Math.pow(2, (pitch - 69) / 12);
                     const osc1 = ctx.createOscillator();
@@ -1004,7 +1016,7 @@ class AudioEngineModel {
                 // ACOUSTIC GUITAR WITH STAGGERED PICK STRUMMING
                 // ==============================================================
                 const dynVel = Math.pow(Math.max(0.2, Math.min(1.0, velocity)), 1.3);
-                const noteGainLevel = (0.065 * dynVel) / Math.sqrt(voiceCount);
+                const noteGainLevel = (0.26 * dynVel) / Math.pow(voiceCount, 0.35);
 
                 midiPitches.forEach((pitch, idx) => {
                     const strumOffset = idx * 0.014;
@@ -1023,8 +1035,8 @@ class AudioEngineModel {
                     osc2.frequency.setValueAtTime(freq, noteTime);
 
                     filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(4400, noteTime);
-                    filter.frequency.exponentialRampToValueAtTime(1900, noteTime + Math.min(noteDur, 0.35));
+                    filter.frequency.setValueAtTime(5200, noteTime);
+                    filter.frequency.exponentialRampToValueAtTime(2400, noteTime + Math.min(noteDur, 0.35));
 
                     gain.gain.setValueAtTime(0.0001, noteTime);
                     gain.gain.linearRampToValueAtTime(noteGainLevel, noteTime + 0.005);
@@ -1047,8 +1059,8 @@ class AudioEngineModel {
                 // ==============================================================
                 const isJazz = instrumentType === 'jazz_guitar';
                 const dynVel = Math.pow(Math.max(0.2, Math.min(1.0, velocity)), 1.35);
-                const cutoff = isJazz ? (1500 + dynVel * 700) : (2500 + dynVel * 1700);
-                const noteGainLevel = (0.075 * dynVel) / Math.sqrt(voiceCount);
+                const cutoff = isJazz ? (2200 + dynVel * 900) : (3800 + dynVel * 2000);
+                const noteGainLevel = (0.28 * dynVel) / Math.pow(voiceCount, 0.35);
 
                 // 1. Pick attack micro-transient click/pluck
                 const noiseBuf = this._getNoiseBuffer(ctx);
@@ -1057,10 +1069,10 @@ class AudioEngineModel {
                     pickNoise.buffer = noiseBuf;
                     const pickFilter = ctx.createBiquadFilter();
                     pickFilter.type = 'bandpass';
-                    pickFilter.frequency.setValueAtTime(isJazz ? 2200 : 3400, t);
+                    pickFilter.frequency.setValueAtTime(isJazz ? 2400 : 3600, t);
                     pickFilter.Q.setValueAtTime(2.2, t);
                     const pickGain = ctx.createGain();
-                    pickGain.gain.setValueAtTime(0.035 * dynVel, t);
+                    pickGain.gain.setValueAtTime(0.08 * dynVel, t);
                     pickGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.016);
                     pickNoise.connect(pickFilter);
                     pickFilter.connect(pickGain);
@@ -1090,12 +1102,12 @@ class AudioEngineModel {
                     // Amplifier speaker cabinet filter (warmth + presence peak)
                     filter.type = 'lowpass';
                     filter.frequency.setValueAtTime(cutoff, noteTime);
-                    filter.frequency.exponentialRampToValueAtTime(cutoff * 0.65, noteTime + Math.min(noteDur, 0.4));
+                    filter.frequency.exponentialRampToValueAtTime(cutoff * 0.75, noteTime + Math.min(noteDur, 0.4));
 
                     cabShelf.type = 'peaking';
                     cabShelf.frequency.setValueAtTime(2400, noteTime);
                     cabShelf.Q.setValueAtTime(1.4, noteTime);
-                    cabShelf.gain.setValueAtTime(isJazz ? 1.0 : 3.5, noteTime);
+                    cabShelf.gain.setValueAtTime(isJazz ? 1.5 : 4.0, noteTime);
 
                     gain.gain.setValueAtTime(0.0001, noteTime);
                     gain.gain.linearRampToValueAtTime(noteGainLevel, noteTime + (isJazz ? 0.010 : 0.005));
@@ -1335,7 +1347,7 @@ class AudioEngineModel {
             }
 
             // ==============================================================
-            // 2. SYNTHESIZED BASS FALLBACK
+            // 2. SYNTHESIZED BASS FALLBACK (PUNCHY, RICH HARMONICS)
             // ==============================================================
             if (bassType === 'distorted_bass') {
                 // Gritty rock & metal bass
@@ -1354,10 +1366,10 @@ class AudioEngineModel {
                 shaper.oversample = '2x';
 
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(800, t);
-                filter.frequency.exponentialRampToValueAtTime(350, t + Math.min(dur, 0.25));
+                filter.frequency.setValueAtTime(1400, t);
+                filter.frequency.exponentialRampToValueAtTime(550, t + Math.min(dur, 0.25));
 
-                const targetGain = 0.15 * dynVel;
+                const targetGain = 0.38 * dynVel;
                 gain.gain.setValueAtTime(0.0001, t);
                 gain.gain.linearRampToValueAtTime(targetGain, t + 0.008);
                 gain.gain.setValueAtTime(targetGain * 0.85, t + dur * 0.65);
@@ -1376,30 +1388,36 @@ class AudioEngineModel {
             } else if (bassType === 'upright_bass' || bassType === 'acoustic_bass' || bassType === 'fretless_bass') {
                 // Acoustic upright jazz bass with wood finger pluck
                 const osc = ctx.createOscillator();
+                const sub = ctx.createOscillator();
                 const filter = ctx.createBiquadFilter();
                 const gain = ctx.createGain();
 
                 osc.type = 'triangle';
+                sub.type = 'sine';
                 // Subtle pitch pluck transient
-                osc.frequency.setValueAtTime(freq * 1.05, t);
+                osc.frequency.setValueAtTime(freq * 1.08, t);
                 osc.frequency.exponentialRampToValueAtTime(freq, t + 0.025);
+                sub.frequency.setValueAtTime(freq, t);
 
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(380, t);
-                filter.frequency.exponentialRampToValueAtTime(140, t + Math.min(dur, 0.3));
+                filter.frequency.setValueAtTime(850, t);
+                filter.frequency.exponentialRampToValueAtTime(320, t + Math.min(dur, 0.3));
 
-                const targetGain = 0.17 * dynVel;
+                const targetGain = 0.40 * dynVel;
                 gain.gain.setValueAtTime(0.0001, t);
                 gain.gain.linearRampToValueAtTime(targetGain, t + 0.006);
                 gain.gain.setValueAtTime(targetGain * 0.75, t + dur * 0.5);
                 gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
 
                 osc.connect(filter);
+                sub.connect(filter);
                 filter.connect(gain);
                 gain.connect(bassBus);
 
                 osc.start(t);
+                sub.start(t);
                 osc.stop(t + dur + 0.04);
+                sub.stop(t + dur + 0.04);
             } else if (bassType === 'slap_bass') {
                 // Snappy 70s funk slap bass
                 const osc = ctx.createOscillator();
@@ -1414,10 +1432,10 @@ class AudioEngineModel {
 
                 filter.type = 'lowpass';
                 filter.Q.setValueAtTime(2.2, t);
-                filter.frequency.setValueAtTime(1200, t);
-                filter.frequency.exponentialRampToValueAtTime(220, t + 0.045);
+                filter.frequency.setValueAtTime(1800, t);
+                filter.frequency.exponentialRampToValueAtTime(450, t + 0.045);
 
-                const targetGain = 0.16 * dynVel;
+                const targetGain = 0.40 * dynVel;
                 gain.gain.setValueAtTime(0.0001, t);
                 gain.gain.linearRampToValueAtTime(targetGain, t + 0.005);
                 gain.gain.setValueAtTime(targetGain * 0.8, t + dur * 0.6);
@@ -1443,10 +1461,10 @@ class AudioEngineModel {
 
                 filter.type = 'lowpass';
                 filter.Q.setValueAtTime(2.8, t);
-                filter.frequency.setValueAtTime(1700, t);
-                filter.frequency.exponentialRampToValueAtTime(140, t + Math.min(dur, 0.12));
+                filter.frequency.setValueAtTime(2200, t);
+                filter.frequency.exponentialRampToValueAtTime(380, t + Math.min(dur, 0.12));
 
-                const targetGain = 0.15 * dynVel;
+                const targetGain = 0.38 * dynVel;
                 gain.gain.setValueAtTime(0.0001, t);
                 gain.gain.linearRampToValueAtTime(targetGain, t + 0.006);
                 gain.gain.setValueAtTime(targetGain * 0.8, t + dur * 0.6);
@@ -1459,30 +1477,39 @@ class AudioEngineModel {
                 osc.start(t);
                 osc.stop(t + dur + 0.04);
             } else {
-                // Standard electric bass
+                // Standard electric bass (rich punchy harmonics audible on mobile phones & laptops)
                 const osc = ctx.createOscillator();
                 const sub = ctx.createOscillator();
                 const filter = ctx.createBiquadFilter();
+                const bodyShelf = ctx.createBiquadFilter();
                 const gain = ctx.createGain();
 
                 osc.type = 'sawtooth';
                 sub.type = 'sine';
-                osc.frequency.setValueAtTime(freq, t);
+                // Slight fret pluck pitch transient
+                osc.frequency.setValueAtTime(freq * 1.08, t);
+                osc.frequency.exponentialRampToValueAtTime(freq, t + 0.02);
                 sub.frequency.setValueAtTime(freq, t);
 
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(540, t);
-                filter.frequency.exponentialRampToValueAtTime(190, t + Math.min(dur, 0.28));
+                filter.frequency.setValueAtTime(1200, t);
+                filter.frequency.exponentialRampToValueAtTime(420, t + Math.min(dur, 0.28));
 
-                const targetGain = 0.16 * dynVel;
+                bodyShelf.type = 'peaking';
+                bodyShelf.frequency.setValueAtTime(500, t);
+                bodyShelf.Q.setValueAtTime(1.2, t);
+                bodyShelf.gain.setValueAtTime(3.5, t);
+
+                const targetGain = 0.42 * dynVel;
                 gain.gain.setValueAtTime(0.0001, t);
                 gain.gain.linearRampToValueAtTime(targetGain, t + 0.008);
-                gain.gain.setValueAtTime(targetGain * 0.8, t + dur * 0.65);
+                gain.gain.setValueAtTime(targetGain * 0.82, t + dur * 0.65);
                 gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
 
                 osc.connect(filter);
                 sub.connect(filter);
-                filter.connect(gain);
+                filter.connect(bodyShelf);
+                bodyShelf.connect(gain);
                 gain.connect(bassBus);
 
                 osc.start(t);

@@ -1038,7 +1038,7 @@ class MidiBackingTrackModel {
             audioModel.precacheWavInstruments();
         }
         if (typeof audioModel.predecodeGuitarSamples === 'function') {
-            const guitarInst = preset.guitarInstrument || 'clean_guitar';
+            const guitarInst = preset.guitarInstrument || preset.instrumentType || 'clean_guitar';
             const sfName = audioModel.mapInstrumentToSoundfont ? audioModel.mapInstrumentToSoundfont(guitarInst) : 'electric_guitar_clean';
             audioModel.predecodeGuitarSamples(sfName);
         }

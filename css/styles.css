@@ -2,10 +2,29 @@
    Guitar Fretboard Visualization - Stylesheet (View Layer Styling)
    ========================================================================== */
 
+html, body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: #09090b;
     color: #fafafa;
+}
+
+/* Portrait Orientation Mobile Hint */
+#portrait-orientation-prompt {
+    display: none;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    #portrait-orientation-prompt {
+        display: block !important;
+    }
 }
 
 /* ==========================================================================
