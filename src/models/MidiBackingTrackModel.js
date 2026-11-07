@@ -44,6 +44,7 @@ class MidiBackingTrackModel {
         {
             id: 'blues_12bar_a7',
             name: 'Blues Shuffle - I IV V (12 Bar) - Mixolydian',
+            targetModeKey: 'mixolydian',
             category: 'Blues & Shuffle',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -59,10 +60,8 @@ class MidiBackingTrackModel {
             scaleRecommendation: 'A Minor / Major Blues, A Mixolydian',
             cycleBars: 12,
             sections: [
-                { name: 'Intro & Head', bars: 4 },
-                { name: 'Chorus 1 (Head)', bars: 12 },
-                { name: 'Chorus 2 (Solo)', bars: 12 },
-                { name: 'Turnaround Outro', bars: 4 }
+                { name: 'Verse (Head)', bars: 12 },
+                { name: 'Chorus (Solo)', bars: 12 }
             ],
             progression: [
                 { bar: 1, rootOffset: 0, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'I7' },
@@ -124,6 +123,7 @@ class MidiBackingTrackModel {
         {
             id: 'minor_blues_12bar_am',
             name: 'Minor Blues - i iv v (12 Bar) - Aeolian',
+            targetModeKey: 'aeolian',
             category: 'Blues & Shuffle',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -139,12 +139,8 @@ class MidiBackingTrackModel {
             scaleRecommendation: 'A Minor Pentatonic, A Blues, A Dorian',
             cycleBars: 12,
             sections: [
-                { name: 'Intro Slow Blues', bars: 4 },
-                { name: 'Verse 1 (Minor Head)', bars: 12 },
-                { name: 'Verse 2', bars: 12 },
-                { name: 'Slow Blues Solo 1', bars: 12 },
-                { name: 'Slow Blues Solo 2', bars: 12 },
-                { name: 'Cadence Outro', bars: 4 }
+                { name: 'Verse (Minor Head)', bars: 12 },
+                { name: 'Chorus (Solo)', bars: 12 }
             ],
             progression: [
                 { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
@@ -182,6 +178,7 @@ class MidiBackingTrackModel {
         {
             id: 'jazz_251_c',
             name: 'Jazz Swing - ii V I VI - Ionian',
+            targetModeKey: 'ionian',
             category: 'Jazz & Swing',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -236,6 +233,7 @@ class MidiBackingTrackModel {
         {
             id: 'bossa_nova_2516_c',
             name: 'Bossa Nova - ii V I VI - Ionian',
+            targetModeKey: 'ionian',
             category: 'Acoustic & Latin',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -286,6 +284,7 @@ class MidiBackingTrackModel {
         {
             id: 'dorian_smooth_a',
             name: 'Neo-Soul - i IV i ii - Dorian',
+            targetModeKey: 'dorian',
             category: 'R&B, Soul & Funk',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -335,6 +334,7 @@ class MidiBackingTrackModel {
         {
             id: 'dorian_funk_d',
             name: 'Latin Funk - i IV i ii - Dorian',
+            targetModeKey: 'dorian',
             category: 'R&B, Soul & Funk',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -389,6 +389,7 @@ class MidiBackingTrackModel {
         {
             id: 'phrygian_metal_e',
             name: 'Dark Metal - i bII bIII bII - Phrygian',
+            targetModeKey: 'phrygian',
             category: 'Rock & Metal',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -458,6 +459,7 @@ class MidiBackingTrackModel {
         {
             id: 'vai_lydian_e',
             name: 'Virtuoso Rock - I II I II - Lydian',
+            targetModeKey: 'lydian',
             category: 'Rock & Metal',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -516,6 +518,7 @@ class MidiBackingTrackModel {
         {
             id: 'mixolydian_open_life_a',
             name: 'Open Rock - I bVII IV I - Mixolydian',
+            targetModeKey: 'mixolydian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -571,6 +574,7 @@ class MidiBackingTrackModel {
         {
             id: 'dark_sad_blues_rock_am',
             name: 'Blues Rock Ballad - i bVI bIII bVII - Aeolian',
+            targetModeKey: 'aeolian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -626,6 +630,7 @@ class MidiBackingTrackModel {
         {
             id: 'emotional_rock_ballad_bm',
             name: 'Melodic Ballad - i bVI bIII bVII - Aeolian',
+            targetModeKey: 'aeolian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -677,6 +682,7 @@ class MidiBackingTrackModel {
         {
             id: 'rock_pop_g_70bpm',
             name: 'Acoustic Pop - I V vi IV - Ionian',
+            targetModeKey: 'ionian',
             category: 'Rock & Pop',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -730,6 +736,7 @@ class MidiBackingTrackModel {
         {
             id: 'locrian_jam_a',
             name: 'Ambient Fusion - i° bII vii i° - Locrian',
+            targetModeKey: 'locrian',
             category: 'Modal & Fusion',
             timeSignature: '4/4',
             beatsPerBar: 4,
@@ -778,6 +785,7 @@ class MidiBackingTrackModel {
         {
             id: 'locrian_dark_fs',
             name: 'Modern Fusion - i° bII vii i° - Locrian',
+            targetModeKey: 'locrian',
             category: 'Modal & Fusion',
             timeSignature: '4/4',
             beatsPerBar: 4,

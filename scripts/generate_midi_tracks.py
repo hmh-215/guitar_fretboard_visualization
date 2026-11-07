@@ -71,8 +71,8 @@ def save_multitrack_midi(filename, bpm, time_sig, tracks_data, markers=None):
 # =========================================================================
 def build_blues_12bar_a7():
     bpm = 74 # Calibrated from authentic audio transcription
-    # 4 bar intro + 2 choruses of 12 bars + 4 bar turnaround outro = 32 bars
-    bars = 32
+    # 2 choruses of 12 bars (Verse Head + Chorus Solo) = 24 bars (no intro/outro)
+    bars = 24
     bar_ticks = 4 * TICKS_PER_BEAT # 1920 ticks per bar
     TRIP = TICKS_PER_BEAT // 3     # 160 ticks per 8th triplet
     Q_NOTE = TICKS_PER_BEAT        # 480 ticks (Quarter Note)
@@ -81,26 +81,20 @@ def build_blues_12bar_a7():
     
     dr_ev, gt_ev = [], []
     markers = [
-        (0, "Intro (Head)"),
-        (4 * bar_ticks, "Chorus 1 (Head)"),
-        (16 * bar_ticks, "Chorus 2 (Solo)"),
-        (28 * bar_ticks, "Turnaround Outro")
+        (0, "Verse (Head)"),
+        (12 * bar_ticks, "Chorus (Solo)")
     ]
 
-    # 12-bar blues progression in A7:
+    # 12-bar blues progression in A7 (24 bars: 12-bar Verse + 12-bar Chorus):
     prog_chords = [
-        # Intro 4 bars: A7 - D7 - A7 - E7
-        ('A7', False), ('D7', False), ('A7', False), ('E7', True),
-        # Chorus 1 (12 bars)
+        # Verse 1 / Head (12 bars)
         ('A7', False), ('D7', False), ('A7', False), ('A7', False),
         ('D7', False), ('D7', False), ('A7', False), ('A7', False),
         ('E7', False), ('D7', False), ('A7', False), ('E7', True),
-        # Chorus 2 (12 bars)
+        # Chorus 2 / Solo (12 bars)
         ('A7', False), ('D7', False), ('A7', False), ('A7', False),
         ('D7', False), ('D7', False), ('A7', False), ('A7', False),
-        ('E7', False), ('D7', False), ('A7', False), ('E7', True),
-        # Outro 4 bars
-        ('A7', False), ('D7', False), ('A7', False), ('A7', True)
+        ('E7', False), ('D7', False), ('A7', False), ('E7', True)
     ]
 
     VOICINGS = {
@@ -867,26 +861,20 @@ def build_jazz_251_c():
 # =========================================================================
 def build_minor_blues_12bar_am():
     bpm = 58
-    bars = 36
+    # 2 choruses of 12 bars (Verse Minor Head + Chorus Solo) = 24 bars (no intro/outro)
+    bars = 24
     bar_sub = 16 * SUB
     dr_ev, bs_ev, gt_ev, rh_ev = [], [], [], []
     markers = [
-        (0, "Intro Slow Blues"),
-        (4 * bar_sub, "Verse 1 (Minor Head)"),
-        (16 * bar_sub, "Verse 2"),
-        (28 * bar_sub, "Slow Blues Solo"),
-        (32 * bar_sub, "Cadence Outro")
+        (0, "Verse (Minor Head)"),
+        (12 * bar_sub, "Chorus (Solo)")
     ]
 
     prog_roots = [
-        # Intro 4b: Am7 - Dm7 - Am7 - E7alt
-        0, 5, 0, 7,
-        # Chorus 1 (12b): Am7(4b) -> Dm7(2b) -> Am7(2b) -> F7(1b) -> E7#9(1b) -> Am7(1b) -> E7alt(1b)
+        # Chorus 1 / Verse (Minor Head) (12b): Am7(4b) -> Dm7(2b) -> Am7(2b) -> F7(1b) -> E7#9(1b) -> Am7(1b) -> E7alt(1b)
         0, 0, 0, 0,  5, 5, 0, 0,  8, 7, 0, 7,
-        # Chorus 2 (12b)
-        0, 0, 0, 0,  5, 5, 0, 0,  8, 7, 0, 7,
-        # Outro 4b
-        0, 5, 0, 0
+        # Chorus 2 / Solo (12b)
+        0, 0, 0, 0,  5, 5, 0, 0,  8, 7, 0, 7
     ]
 
     for bar_idx in range(len(prog_roots)):
@@ -894,7 +882,7 @@ def build_minor_blues_12bar_am():
         r_off = prog_roots[bar_idx]
 
         # Drums: Slow Minor Blues Pocket (B.B. King Style)
-        if bar_idx in [0, 4, 16, 28]:
+        if bar_idx in [0, 12]:
             add_note(dr_ev, b_start, SUB*3, 49, 105)
         # 8th note hi-hats with swing
         for s in range(0, 16, 2):

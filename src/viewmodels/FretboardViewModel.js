@@ -310,7 +310,8 @@ class FretboardViewModel {
             tuningBadgeText,
             orderedStrings,
             fretColumns,
-            mode1MatchCount
+            mode1MatchCount,
+            showModeLegend: s.appMode === 'scale'
         };
     }
 
@@ -595,11 +596,36 @@ class FretboardViewModel {
             this.state.backingTrack.bpm = preset.defaultBpm;
             this.state.backingTrack.instrumentLabel = preset.instrumentLabel || '🎸 Electric Guitar';
             this.state.backingTrack.scaleRecommendation = preset.scaleRecommendation || '';
-            if (preset.defaultRootIdx !== undefined && !this.state.clickedRoot) {
-                this.quickPickModeRoot(preset.defaultRootIdx);
+
+            // Automatically switch Musical Mode to recommended mode for backing track
+            const targetMode = preset.targetModeKey || this._detectModeFromPreset(preset);
+            if (targetMode && this.TheoryModel.MUSICAL_MODES[targetMode]) {
+                this.state.selectedMusicalMode = targetMode;
             }
+
+            // Synchronize root note to match the backing track preset's default key
+            if (preset.defaultRootIdx !== undefined) {
+                const sixthString = this.stateModel.getStringByNumber(6) || this.state.guitarStrings[0];
+                const fretOn6th = ((preset.defaultRootIdx - sixthString.openNoteIdx) % 12 + 12) % 12;
+                this.state.clickedRoot = {
+                    stringNum: sixthString.stringNum,
+                    fret: fretOn6th,
+                    noteIdx: preset.defaultRootIdx
+                };
+            }
+
             this.stateModel.notify();
         }
+    }
+
+    _detectModeFromPreset(preset) {
+        if (!preset) return null;
+        const name = (preset.name || '').toLowerCase();
+        const modes = ['ionian', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'aeolian', 'locrian'];
+        for (const m of modes) {
+            if (name.includes(m)) return m;
+        }
+        return null;
     }
 
     setBackingBpm(bpmValue) {

@@ -202,7 +202,7 @@ class ConfigPanelsView {
                 const rootBtn = document.createElement('button');
                 rootBtn.type = 'button';
                 rootBtn.textContent = pill.name;
-                rootBtn.className = `px-2 py-1 text-xs font-bold transition ${
+                rootBtn.className = `px-1.5 py-0.5 text-xs font-bold transition ${
                     pill.isSelectedModeRoot
                         ? 'bg-orange-500 text-black shadow'
                         : 'text-zinc-400 hover:text-white hover:bg-zinc-800'

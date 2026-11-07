@@ -17,6 +17,7 @@ class FretboardView {
         this.fretboardStage = document.getElementById('fretboard-stage');
         this.diagramModeTitle = document.getElementById('diagram-mode-title');
         this.diagramModeSubtitle = document.getElementById('diagram-mode-subtitle');
+        this.modeFretboardLegend = document.getElementById('mode-fretboard-legend');
         this.boxRangeIndicator = document.getElementById('box-range-indicator');
         this.currentTuningBadge = document.getElementById('current-tuning-badge');
 
@@ -41,6 +42,9 @@ class FretboardView {
         }
         if (this.diagramModeSubtitle) {
             this.diagramModeSubtitle.textContent = data.diagramModeSubtitle;
+        }
+        if (this.modeFretboardLegend) {
+            this.modeFretboardLegend.classList.toggle('hidden', !data.showModeLegend);
         }
         if (this.boxRangeIndicator) {
             this.boxRangeIndicator.classList.toggle('hidden', !data.showBoxBadge);
