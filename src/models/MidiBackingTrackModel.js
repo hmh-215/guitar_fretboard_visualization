@@ -1034,7 +1034,14 @@ class MidiBackingTrackModel {
         this.scheduledNoteIndex = 0;
 
         // Eagerly precache instruments for this preset
-        audioModel.precacheWavInstruments();
+        if (typeof audioModel.precacheWavInstruments === 'function') {
+            audioModel.precacheWavInstruments();
+        }
+        if (typeof audioModel.predecodeGuitarSamples === 'function') {
+            const guitarInst = preset.guitarInstrument || 'clean_guitar';
+            const sfName = audioModel.mapInstrumentToSoundfont ? audioModel.mapInstrumentToSoundfont(guitarInst) : 'electric_guitar_clean';
+            audioModel.predecodeGuitarSamples(sfName);
+        }
 
         // Load & parse standard MIDI file asynchronously
         this.loadAndParseMidi(preset.id).then(parsed => {
@@ -1170,15 +1177,28 @@ class MidiBackingTrackModel {
             const noteAudioDuration = Math.max(0.06, note.durSec / timeScale);
 
             if (noteAudioStartTime >= now - 0.04) {
-                if (note.role === 'drums') {
-                    const drumType = MidiBackingTrackModel.GM_DRUM_MAP[note.pitch] || 'snare';
-                    audioModel.scheduleDrumHit(drumType, noteAudioStartTime, note.vel * 0.95);
-                } else if (note.role === 'guitar') {
-                    audioModel.playWavNote(guitarInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
-                } else if (note.role === 'bass') {
-                    audioModel.playWavNote(bassInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
-                } else if (note.role === 'keys') {
-                    audioModel.playWavNote('electric_piano', note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
+                if (typeof audioModel.playAccompanimentNote === 'function') {
+                    if (note.role === 'drums') {
+                        const drumType = MidiBackingTrackModel.GM_DRUM_MAP[note.pitch] || 'snare';
+                        audioModel.scheduleDrumHit(drumType, noteAudioStartTime, note.vel * 0.95);
+                    } else if (note.role === 'guitar') {
+                        audioModel.playAccompanimentNote('guitar', guitarInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
+                    } else if (note.role === 'bass') {
+                        audioModel.playAccompanimentNote('bass', bassInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
+                    } else if (note.role === 'keys') {
+                        audioModel.playAccompanimentNote('keys', 'electric_piano', note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
+                    }
+                } else {
+                    if (note.role === 'drums') {
+                        const drumType = MidiBackingTrackModel.GM_DRUM_MAP[note.pitch] || 'snare';
+                        audioModel.scheduleDrumHit(drumType, noteAudioStartTime, note.vel * 0.95);
+                    } else if (note.role === 'guitar') {
+                        audioModel.playWavNote(guitarInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
+                    } else if (note.role === 'bass') {
+                        audioModel.playWavNote(bassInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
+                    } else if (note.role === 'keys') {
+                        audioModel.playWavNote('electric_piano', note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
+                    }
                 }
             }
             this.scheduledNoteIndex++;

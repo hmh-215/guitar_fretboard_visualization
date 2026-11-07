@@ -1,47 +1,51 @@
 # Guitar Fretboard Visualization (MVVM Architecture)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?style=for-the-badge&logo=github)](https://hmh-215.github.io/guitar_fretboard_visualization/)
 
-An interactive 22-fret guitar fretboard visualization and memorization web application structured using the **MVVM (Model – View – ViewModel)** pattern.
+An interactive 22-fret guitar fretboard visualization, interval study, and modal improvisation web application built with vanilla JavaScript using the **MVVM (Model – View – ViewModel)** architectural pattern and **Web Audio API**.
+
+---
 
 ## ✨ Key Features
 
-1. **Note Visualization (`Note visualization`)**:
-   - Quick-pick any of the 12 chromatic notes (`C` through `B`) or click directly on any fret (`0`–`22`) to highlight every position of that note across the entire 22-fret maple neck.
-   - Displays total matching positions and plays the corresponding guitar pitch via the Web Audio API synthesizer.
+1. **Note & Interval Relationship Visualization (`Note visualization`)**:
+   - **Root Note Selector**: Quick-pick any root note (`C` through `B`) across all 6 strings and 22 frets.
+   - **2-Note Harmonic Relations**: Audition and visualize fundamental musical intervals in relation to the root:
+     - `Only Root`
+     - `I - II` (Major Second), `I - bIII` (Minor Third), `I - III` (Major Third)
+     - `I - IV` (Perfect Fourth), `I - bV` (Tritone / Flat Fifth), `I - V` (Perfect Fifth)
+     - `I - bVI` (Minor Sixth), `I - VI` (Major Sixth), `I - bVII` (Minor Seventh), `I - VII` (Major Seventh)
+     - `I - VIII` (Octaves)
+   - Distinct color-coded markers for Root and Relation notes with interactive audio auditioning.
 
 2. **Modes & Box Shape Visualization (`Modes visualization`)**:
    - **7 Diatonic Modes**: Ionian (Major), Dorian, Phrygian, Lydian, Mixolydian, Aeolian (Natural Minor), and Locrian.
-   - **Interactive Box Shape Window**:
+   - **Interactive Box Shape Windows**:
      - **Standard 4-Fret Box** (`Root -1 to +2`, or `Frets 0 to 3` when anchored at the open nut)
      - **Wide 5-Fret Box** (`Root -1 to +3`)
      - **Left-Shifted Box** (`Root -2 to +1`)
      - **Forward Box** (`Root 0 to +3`)
      - **Full Fretboard** (`Frets 0 to 22`)
    - **Color-Coded Music Theory Roles**:
-     - 🟢 **Green (`bg-green-600`)**: Root Note (`1st` degree), with a highlighted ring around the exact clicked root position.
-     - 🔴 **Red (`bg-red-600`)**: Pentatonic Core notes of the mode.
-     - 🔵 **Sky Blue (`bg-sky-500`)**: Diatonic Tritone Pair (characteristic color notes of the mode).
-   - **Display & Audio Options**:
-     - Toggle between **Note Names** and **Note + Scale Degree** labels.
-     - Show or hide outside-box ghost notes (`25%` opacity).
-     - **▶ Play Box**: Audition all notes inside the active box window ascending from the 6th string to the 1st string.
+     - 🟢 **Green**: Root Note (`1st` degree), with highlighted gold border on the anchor root.
+     - 🔴 **Red**: Pentatonic Core notes of the mode.
+     - 🔵 **Sky Blue**: Diatonic Tritone Pair (modal color / characteristic notes).
+   - **▶ Play Box**: Sequentially auditions every note inside the active box shape window from the 6th string to the 1st string.
 
-3. **MIDI Backing Track Accompaniment (`Modes visualization`)**:
-   - **20 Genre / Style Presets across multiple meters**:
-     - **Rock & Metal**: Alternative Rock (`4/4`), Classic Hard Rock (`4/4`), Heavy Metal Gallop (`4/4`), Prog Rock (`5/4`).
-     - **Pop & Indie**: Modern Pop Groove (`4/4`), 80s Synthwave / Retro (`4/4`), Indie / Dream Pop (`3/4`).
-     - **Jazz & Latin**: Bossa Nova (`4/4`), Brazilian Samba (`2/4`), Jazz Swing Walking (`4/4`), Jazz Waltz (`3/4`), Cool Jazz "Take Five" (`5/4`), Afro-Cuban / Latin (`6/8`).
-     - **Blues, Funk & Soul**: Slow Blues (`6/8`), Texas Blues Shuffle (`4/4`), 70s Funk Pocket (`4/4`), Neo-Soul / R&B (`4/4`).
-     - **World, Folk & Country**: Reggae One-Drop (`4/4`), Country / Bluegrass Train (`2/4`), Spanish Flamenco Rumba (`4/4`).
-   - **Dynamic Toning & Harmonic Adaptation**: Each backing track automatically adopts the harmonic vamp of the active Musical Mode and transposes its bass and chord accompaniment in real time to the selected **Root Note**.
-   - **User-Defined Tempo (BPM)**: Set any tempo between `40 BPM` and `220 BPM` with `-5` / `+5` nudge buttons.
-   - **Live Chord Indicator**: Real-time badge displaying the currently sounding modal chord (e.g. `Chord: Gmaj7` or `Chord: Dm7`).
+3. **Multi-Track MIDI Backing Track Accompaniment**:
+   - **14 Genre Accompaniment Tracks**: Blues Shuffle, Dorian Smooth, Locrian Jam, Mixolydian Open Life, Bossa Nova, Dorian Funk, Dark Sad Blues Rock, Phrygian Metal, Melodic Rock Ballad, F# Locrian, Jazz Swing 2-5-1, Minor Blues, Rock Pop, and Steve Vai Lydian.
+   - **Real-Time Chord & Section Indicators**: Live display of current measure chords and song structure (Verse / Chorus / Head / Solo).
+   - **User-Defined Tempo (BPM)**: Real-time tempo adjustment with `-` / `+` increment controls.
+   - **3-Tier Resilient Audio Engine**:
+     - **Tier 1**: Hardware WAV samples (if locally present).
+     - **Tier 2**: Bundled Base64 SoundFont banks (`clean`, `nylon`, `jazz`, `distortion`).
+     - **Tier 3**: Pure Web Audio synthesis (distortion wave-shaping, sub-bass oscillators, procedural drum synthesis).
 
-4. **Automatic Mode-Aware Notation (`♯` / `♭`) & Settings**:
-   - **Automatic Key Signature Notation**: Accidentals (`♯` vs `♭`) are computed automatically from the Parent Major scale of the active Mode and Root (e.g. G Ionian displays `F#`; F Ionian displays `Bb`; D Dorian displays naturals; D Aeolian displays `Bb`).
-   - **Quick Tuning Presets**: Standard (`E A D G B E`), Drop D (`D A D G B E`), Eb Standard, Open G (`D G D G B D`), and `DADGAD`.
-   - **Individual String Tuning**: Tune each string (`6th` to `1st`) inline or via the dedicated **Guitar String Tuning Modal**.
-   - **Web Audio Sound ON/OFF** toggle and **Board Reset**.
+4. **Settings & Customization**:
+   - Display options: Note Names vs Scale Degrees, Outside-Box ghost notes visibility.
+   - **Quick Tuning Presets**: Standard (`E A D G B E`), Drop D, Eb Standard, Open G, and DADGAD.
+   - **Individual String Tuning**: Modal dialog to tune each string independently.
+   - Audio mute toggle and fretboard reset.
+   - Sharp, modern rectangular aesthetic with zero border-radius.
 
 ---
 
@@ -49,29 +53,50 @@ An interactive 22-fret guitar fretboard visualization and memorization web appli
 
 ```text
 guitar_fretboard_visualization/
-├── index.html                          # Main View HTML template & script loader
-├── guitar_fretboard_visualizer.html    # Single-file HTML entry point
-├── previous_version_backup.zip         # Archived v1 demo files
+├── index.html                          # Primary web entry point
+├── guitar_fretboard_visualizer.html    # Standalone HTML entry point
 ├── css/
-│   └── styles.css                      # Maple fretboard, strings, nut & UI styling
-└── src/
-    ├── main.js                         # Application bootstrapper (wires M-V-VM)
-    ├── models/
-    │   ├── MusicTheoryModel.js         # Notes, modes, parent key derivation & chord vamps
-    │   ├── AudioEngineModel.js         # Web Audio synth for guitar notes & backing tracks
-    │   ├── MidiBackingTrackModel.js    # 20 multi-meter genre presets & lookahead sequencer
-    │   └── FretboardStateModel.js      # Reactive observable state container
-    ├── viewmodels/
-    │   └── FretboardViewModel.js       # Presentation logic, auto-accidentals & backing commands
-    └── views/
-        ├── HeaderView.js               # Top bar & hamburger navigation dropdown view
-        ├── FretboardView.js            # 22-fret maple neck, strings & note dots view
-        ├── ConfigPanelsView.js         # Bottom configuration panels view
-        └── TuningModalView.js          # Pop-up string tuning modal view
+│   └── styles.css                      # Fretboard styling, strings, frets, box animations
+├── soundfonts/                         # Bundled offline guitar soundfonts (Base64)
+│   ├── electric_guitar_clean-mp3.js
+│   ├── acoustic_guitar_nylon-mp3.js
+│   ├── electric_guitar_jazz-mp3.js
+│   └── distortion_guitar-mp3.js
+├── midi_tracks/                        # 14 standard multi-track MIDI accompaniment files
+│   ├── 01_blues_12bar_a7_74bpm.mid
+│   ├── 02_dorian_smooth_a_95bpm.mid
+│   └── ...
+├── src/
+│   ├── main.js                         # Application bootstrapper
+│   ├── libraries/
+│   │   └── midiplayer.js               # Zero-dependency MIDI file event parser
+│   ├── models/
+│   │   ├── MusicTheoryModel.js         # Modal scales, interval relations, key derivations
+│   │   ├── AudioEngineModel.js         # Soundfonts, multi-bus studio mixer, procedural synthesis
+│   │   ├── MidiBackingTrackModel.js    # Multi-track MIDI playback coordinator & chord tracker
+│   │   └── FretboardStateModel.js      # Observable application state
+│   ├── viewmodels/
+│   │   └── FretboardViewModel.js       # Presentation logic & commands
+│   └── views/
+│       ├── HeaderView.js               # Hamburger menu & title
+│       ├── FretboardView.js            # 22-fret interactive neck view
+│       ├── ConfigPanelsView.js         # Note / Mode / Settings control panels
+│       └── TuningModalView.js          # String tuning modal
+└── scripts/                            # Development, transcription & validation utilities
+    ├── generate_midi_tracks.py
+    └── validate_js.py
 ```
+
+---
 
 ## 🚀 Running the Application
 
-Because the MVVM modules are attached to the `window.GuitarApp` namespace in dependency order, the app requires **zero build step** and works both:
-- By opening `index.html` directly in any modern browser (`file://`), or
-- By serving the folder over HTTP (e.g. `python -m http.server 8080` or GitHub Pages).
+The application has **zero build dependencies** and requires no node/npm installations.
+
+To run locally:
+```bash
+# Using Python built-in HTTP server:
+python -m http.server 8080
+```
+Then navigate to `http://localhost:8080` in your web browser.
+It can also be opened directly via `file://` or deployed to GitHub Pages.

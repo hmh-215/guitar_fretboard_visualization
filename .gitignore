@@ -1,6 +1,24 @@
+# Audio Binaries & Samples (App uses Soundfonts and Web Audio synthesis)
+*.wav
+*.mp3
+midi_instruments/
 backing_track_mp3/
 archive/
-*.mp3
-*.pyc
+
+# Backups, Archives & Test Files
+*.zip
+*.tar.gz
+downloaded_*.mid
+
+# Python Cache & Virtual Environments
 __pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# IDE & OS Metadata
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db

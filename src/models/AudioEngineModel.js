@@ -59,6 +59,7 @@ class AudioEngineModel {
         // Authentic Hardware WAV Instruments (midi_instruments/*.wav)
         this._wavBuffers = {};
         this._wavLoadingPromises = {};
+        this._wavDisabled = false;
     }
 
     /**
@@ -75,7 +76,7 @@ class AudioEngineModel {
             this.audioCtx.resume();
         }
         this._ensureMixerBuses();
-        if (this.audioCtx && !this._hasPrecachedWav) {
+        if (this.audioCtx && !this._hasPrecachedWav && !this._wavDisabled) {
             this._hasPrecachedWav = true;
             this.precacheWavInstruments();
         }
@@ -504,9 +505,29 @@ class AudioEngineModel {
     }
 
     /**
+     * Map fuzzy instrument ID or preset genre to bundled SoundFont bank.
+     */
+    mapInstrumentToSoundfont(instrumentType) {
+        if (!instrumentType) return 'electric_guitar_clean';
+        const lower = String(instrumentType).toLowerCase();
+        if (lower.includes('distort') || lower.includes('metal') || lower.includes('rock') || lower.includes('overdrive') || lower.includes('heavy')) {
+            return 'distortion_guitar';
+        }
+        if (lower.includes('nylon') || lower.includes('acoustic') || lower.includes('classical') || lower.includes('bossa')) {
+            return 'acoustic_guitar_nylon';
+        }
+        if (lower.includes('jazz') || lower.includes('hollow') || lower.includes('warm')) {
+            return 'electric_guitar_jazz';
+        }
+        return 'electric_guitar_clean';
+    }
+
+    /**
      * Asynchronously fetch and decode an authentic hardware WAV instrument sample.
+     * Fails cleanly and disables further WAV fetches if samples are not present in the environment.
      */
     async loadWavInstrument(instrumentId) {
+        if (this._wavDisabled) return null;
         const resolvedId = this._resolveWavInstrumentId(instrumentId);
         if (this._wavBuffers[resolvedId]) {
             return this._wavBuffers[resolvedId];
@@ -522,13 +543,20 @@ class AudioEngineModel {
 
         this._wavLoadingPromises[resolvedId] = (async () => {
             try {
+                if (this._wavDisabled) return null;
                 const resp = await fetch(meta.path);
+                if (!resp.ok) {
+                    this._wavDisabled = true;
+                    delete this._wavLoadingPromises[resolvedId];
+                    return null;
+                }
                 const arrayBuf = await resp.arrayBuffer();
                 const audioBuf = await ctx.decodeAudioData(arrayBuf);
                 this._wavBuffers[resolvedId] = audioBuf;
                 delete this._wavLoadingPromises[resolvedId];
                 return audioBuf;
             } catch (e) {
+                this._wavDisabled = true;
                 delete this._wavLoadingPromises[resolvedId];
                 return null;
             }
@@ -541,6 +569,7 @@ class AudioEngineModel {
      * Precache core hardware WAV instruments for zero-latency playback.
      */
     precacheWavInstruments() {
+        if (this._wavDisabled) return;
         const allKeys = Object.keys(AudioEngineModel.WAV_INSTRUMENTS);
         allKeys.forEach(id => this.loadWavInstrument(id));
     }
@@ -550,6 +579,7 @@ class AudioEngineModel {
      */
     playWavNote(instrumentId, targetMidiPitch, startTime, durationSec, velocity = 0.8, outputBus = null) {
         try {
+            if (this._wavDisabled) return false;
             const ctx = this._ensureContext();
             if (!ctx) return false;
             const resolvedId = this._resolveWavInstrumentId(instrumentId);
@@ -558,7 +588,9 @@ class AudioEngineModel {
 
             const buf = this._wavBuffers[resolvedId];
             if (!buf) {
-                this.loadWavInstrument(resolvedId);
+                if (!this._wavDisabled) {
+                    this.loadWavInstrument(resolvedId);
+                }
                 return false;
             }
 
@@ -601,7 +633,69 @@ class AudioEngineModel {
 
             return true;
         } catch (e) {
-            console.error('Error in playWavNote:', e);
+            return false;
+        }
+    }
+
+    /**
+     * Resilient multi-tier playback for accompaniment events (guitar, bass, keys, drums).
+     * Tier 1: Hardware WAV samples (if locally available)
+     * Tier 2: Authenticated Base64 SoundFont samples (zero network overhead)
+     * Tier 3: Algorithmic Web Audio physical modeling synthesis (always available)
+     */
+    playAccompanimentNote(role, instrumentType, midiPitch, startTime, durationSec, velocity = 0.8, outputBus = null) {
+        if (!midiPitch) return false;
+        try {
+            const ctx = this._ensureContext();
+            if (!ctx) return false;
+
+            if (role === 'drums') {
+                const drumType = (window.GuitarApp && window.GuitarApp.Models && window.GuitarApp.Models.MidiBackingTrackModel && window.GuitarApp.Models.MidiBackingTrackModel.GM_DRUM_MAP && window.GuitarApp.Models.MidiBackingTrackModel.GM_DRUM_MAP[midiPitch]) || 'snare';
+                this.scheduleDrumHit(drumType, startTime, velocity * 0.95);
+                return true;
+            }
+
+            if (role === 'bass') {
+                const bus = outputBus || this.getMixerChannelBus('bass');
+                const wavId = this._resolveWavInstrumentId(instrumentType || 'electric_bass');
+                if (!this._wavDisabled && this._wavBuffers[wavId]) {
+                    return this.playWavNote(wavId, midiPitch, startTime, durationSec, velocity * 0.95, bus);
+                }
+                // Fallback to high-definition synthesized bass
+                this.scheduleBassNote(midiPitch, startTime, durationSec, velocity * 0.95, instrumentType || 'electric_bass');
+                return true;
+            }
+
+            if (role === 'keys') {
+                const bus = outputBus || this.getMixerChannelBus('keys');
+                const wavId = 'electric_piano';
+                if (!this._wavDisabled && this._wavBuffers[wavId]) {
+                    return this.playWavNote(wavId, midiPitch, startTime, durationSec, velocity * 0.85, bus);
+                }
+                // Fallback to synthesized Rhodes / keyboard chords
+                this.scheduleChordVoicing([midiPitch], startTime, durationSec, velocity * 0.85, 'electric_piano');
+                return true;
+            }
+
+            // Guitar / Lead role
+            const bus = outputBus || this.getMixerChannelBus('guitar');
+            const wavId = this._resolveWavInstrumentId(instrumentType || 'clean_guitar');
+            if (!this._wavDisabled && this._wavBuffers[wavId]) {
+                const ok = this.playWavNote(wavId, midiPitch, startTime, durationSec, velocity, bus);
+                if (ok) return true;
+            }
+
+            // SoundFont sample playback
+            const sfInst = this.mapInstrumentToSoundfont(instrumentType);
+            if (sfInst) {
+                const ok = this.playSampleNote(sfInst, midiPitch, startTime, durationSec, velocity, bus);
+                if (ok) return true;
+            }
+
+            // Pure synthesized guitar fallback
+            this.scheduleChordVoicing([midiPitch], startTime, durationSec, velocity, instrumentType || 'clean_guitar');
+            return true;
+        } catch (e) {
             return false;
         }
     }
@@ -615,8 +709,10 @@ class AudioEngineModel {
             const ctx = this._ensureContext();
             if (!ctx) return;
 
-            // Trigger eager precaching of hardware WAV instruments
-            this.precacheWavInstruments();
+            // Trigger precaching if WAVs enabled
+            if (!this._wavDisabled) {
+                this.precacheWavInstruments();
+            }
             this.predecodeGuitarSamples('electric_guitar_clean');
 
             const leadBus = this.getMixerChannelBus('lead');
@@ -624,7 +720,7 @@ class AudioEngineModel {
             const playedWav = this.playWavNote('clean_guitar', midiPitch, ctx.currentTime, 1.8, 1.0, leadBus);
             if (playedWav) return;
 
-            // 2. Secondary: SoundFont sample if WAV is still loading
+            // 2. Secondary: SoundFont sample if WAV is still loading or absent
             const playedSf = this.playSampleNote('electric_guitar_clean', midiPitch, ctx.currentTime, 1.4, 0.95, leadBus);
             if (playedSf) return;
 
