@@ -257,10 +257,43 @@
                             </select>
                         </div>
 
-                        <!-- Meter Badge -->
-                        <span id="backing-meter-badge" class="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[11px] font-mono font-extrabold text-orange-400" title="Active Time Signature">
-                            4/4
-                        </span>
+                        <!-- Expandable Time Signature Filter -->
+                        <div id="meter-filter-wrapper" class="relative inline-block text-left">
+                            <button id="backing-meter-badge" type="button" class="px-2 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 hover:border-orange-500 text-[11px] font-mono font-extrabold text-orange-400 flex items-center gap-1.5 cursor-pointer transition select-none" title="Filter backing tracks by Time Signature" aria-haspopup="true" aria-expanded="false">
+                                <span id="meter-badge-text">All (4/4)</span>
+                                <span class="text-[9px] text-zinc-400">▼</span>
+                            </button>
+                            <!-- Meter Filter Popover Dropdown Menu -->
+                            <div id="meter-filter-menu" class="hidden absolute left-0 top-full mt-1 w-44 bg-zinc-900 border border-zinc-700 shadow-2xl z-50 py-1 text-xs">
+                                <div class="px-3 py-1 text-[10px] font-bold uppercase text-zinc-400 tracking-wider border-b border-zinc-800">
+                                    Time Signature Filter
+                                </div>
+                                <button type="button" data-meter="all" class="meter-filter-opt w-full text-left px-3 py-2 flex items-center justify-between text-zinc-300 hover:bg-orange-500 hover:text-black font-semibold transition">
+                                    <span>All Meters</span>
+                                    <span class="meter-check text-[11px] font-bold text-orange-400">✓</span>
+                                </button>
+                                <button type="button" data-meter="4/4" class="meter-filter-opt w-full text-left px-3 py-2 flex items-center justify-between text-zinc-300 hover:bg-orange-500 hover:text-black font-semibold transition">
+                                    <span>4/4 Standard</span>
+                                    <span class="meter-check hidden text-[11px] font-bold text-orange-400">✓</span>
+                                </button>
+                                <button type="button" data-meter="3/4" class="meter-filter-opt w-full text-left px-3 py-2 flex items-center justify-between text-zinc-300 hover:bg-orange-500 hover:text-black font-semibold transition">
+                                    <span>3/4 Waltz</span>
+                                    <span class="meter-check hidden text-[11px] font-bold text-orange-400">✓</span>
+                                </button>
+                                <button type="button" data-meter="5/4" class="meter-filter-opt w-full text-left px-3 py-2 flex items-center justify-between text-zinc-300 hover:bg-orange-500 hover:text-black font-semibold transition">
+                                    <span>5/4 Quintuple</span>
+                                    <span class="meter-check hidden text-[11px] font-bold text-orange-400">✓</span>
+                                </button>
+                                <button type="button" data-meter="6/8" class="meter-filter-opt w-full text-left px-3 py-2 flex items-center justify-between text-zinc-300 hover:bg-orange-500 hover:text-black font-semibold transition">
+                                    <span>6/8 Compound</span>
+                                    <span class="meter-check hidden text-[11px] font-bold text-orange-400">✓</span>
+                                </button>
+                                <button type="button" data-meter="7/8" class="meter-filter-opt w-full text-left px-3 py-2 flex items-center justify-between text-zinc-300 hover:bg-orange-500 hover:text-black font-semibold transition">
+                                    <span>7/8 Septuple</span>
+                                    <span class="meter-check hidden text-[11px] font-bold text-orange-400">✓</span>
+                                </button>
+                            </div>
+                        </div>
 
                         <!-- User-Defined Tempo (BPM) Input -->
                         <div class="flex items-center gap-1 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5">

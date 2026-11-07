@@ -1,13 +1,13 @@
 ---
 name: backing-track-transcriber
 description: >-
-  Universal Backing Track Audio Structure Analysis, Groove Extraction, and Multi-Track MIDI Transcription Toolkit.
+  Universal Backing Track Audio Structure Analysis, Groove Extraction, and Multi-Track MIDI Transcription Toolkit for Guitar Fretboard Visualization.
   Bộ kỹ năng chuyên nghiệp phân tích cấu trúc ca khúc (Verse, Chorus, Solo, Turnaround), trích xuất rãnh nhịp điệu (groove, drum patterns, basslines, chord comping), và lập trình xuất file MIDI đa rãnh chuẩn xác cho phòng thu và web ứng dụng.
 ---
 
 # 🎼 Backing Track Transcriber & Audio-to-MIDI Synthesis Skill
 
-This skill provides an end-to-end standard methodology to analyze audio backing tracks (`.mp3`, `.wav`), interpret their musical structure (Intro, Verse, Chorus, Solo, Bridge, Turnaround, Outro), transcribe their rhythmic and harmonic content, and generate authentic multi-track General MIDI files for web applications, DAWs, and fretboard visualization engines.
+This skill provides an end-to-end standard methodology to analyze audio backing tracks (`.mp3`, `.wav`), interpret their musical structure (Intro, Verse, Chorus, Solo, Turnaround, Outro), transcribe their rhythmic and harmonic content, and generate authentic multi-track General MIDI files for the **Guitar Fretboard Visualization** web application.
 
 ---
 
@@ -15,11 +15,11 @@ This skill provides an end-to-end standard methodology to analyze audio backing 
 
 ```mermaid
 flowchart TD
-    A["Raw Audio (.mp3 / .wav)"] --> B["Stage 1: Acoustic & Tempo Extraction<br/>(FFmpeg / PyAV / Onset Flux)"]
-    B --> C["Stage 2: Structural Segmentation<br/>(Intro / Verse / Chorus / Solo / Outro)"]
-    C --> D["Stage 3: Harmonic & Groove Decoding<br/>(Chords, Basslines, Drum Grids)"]
-    D --> E["Stage 4: Multi-Track MIDI Generation<br/>(mido: Drums, Bass, Guitar, Keys)"]
-    E --> F["Stage 5: Web App Integration<br/>(MidiBackingTrackModel & AudioEngine)"]
+    A["Raw Audio (.mp3 / .wav)"] --> B["Stage 1: Acoustic & Tempo Extraction<br/>(PyAV / Onset Flux / Autocorrelation)"]
+    B --> C["Stage 2: Structural Segmentation<br/>(Pure 24-bar Blues, AABA, Modal Vamps)"]
+    C --> D["Stage 3: Harmonic & Groove Decoding<br/>(Chords, Basslines, Drum Grids, Micro-timing)"]
+    D --> E["Stage 4: Multi-Track MIDI Generation<br/>(mido: Conductor, Guitar, Bass, Drums)"]
+    E --> F["Stage 5: Web App MVVM Integration<br/>(MidiBackingTrackModel, Mode Auto-Sync, 4-Beat Count-In)"]
 ```
 
 ---
@@ -27,135 +27,142 @@ flowchart TD
 ## 2. Stage 1: Acoustic & Tempo Extraction
 
 1. **Audio Ingestion**:
-   - Resample audio to mono 22,050 Hz or 44,100 Hz using `av.AudioResampler`.
+   - Resample audio to mono 22,050 Hz using `av.AudioResampler`.
    - Compute short-time energy (RMS) across 10ms hops:
-     $$E(t) = \sum_{n=0}^{N-1} x^2(t \cdot H + n)$$
+     $$E(t) = \sqrt{\frac{1}{N} \sum_{n=0}^{N-1} x^2(t \cdot H + n)}$$
 2. **Onset Detection & Autocorrelation**:
    - Extract spectral/transient flux: $\Delta E(t) = \max(0, E(t) - E(t-1))$.
-   - Run autocorrelation across the lag window corresponding to 45–200 BPM:
+   - Run autocorrelation across the lag window corresponding to 45–220 BPM:
      $$R(\tau) = \sum_{t} \Delta E(t) \cdot \Delta E(t+\tau)$$
-   - Check octave harmonics ($\tau / 2, 2\tau, \frac{3}{2}\tau$) to resolve tempo ambiguities (e.g., 65 BPM vs 130 BPM).
+   - Check octave harmonics ($\tau / 2, 2\tau$) to resolve tempo ambiguities (e.g., 74 BPM vs 148 BPM, or 60 BPM vs 120 BPM).
 3. **Meter Identification**:
-   - 4/4 (standard common time), 6/8 or 12/8 (slow blues / rock ballad triplet compound meter), 3/4 (waltz), 2/2 (bossa nova cut time).
+   - **4/4 Standard**: Common rock, pop, and funk meters.
+   - **12/8 or Swung 4/4 with Triplets**: Slow blues, Texas shuffle, and ballads.
 
 ---
 
 ## 3. Stage 2: Structural Segmentation (Song Form)
 
-Backing tracks generally follow recognizable structural architectures:
+### 3.1. Structural Rules by Genre
 
-| Form Architecture | Standard Section Progression | Typical Bar Lengths | Genre Examples |
+| Form Architecture | Standard Section Progression | Total Bars | Genre / Track Examples |
 |---|---|---|---|
-| **12-Bar Blues Cycle** | `[Intro 4b]` $\to$ `[Verse 1 12b]` $\to$ `[Verse 2 12b]` $\to$ `[Solo 1 12b]` $\to$ `[Solo 2 12b]` $\to$ `[Turnaround / Outro 4b]` | 12 bars per cycle | Blues A7, Minor Blues in Am |
-| **Bebop / Swing Turnaround** | `[Count-in 2b]` $\to$ `[Head / A1 8b]` $\to$ `[A2 8b]` $\to$ `[Bridge B 8b]` $\to$ `[Turnaround / Solo Vamp 8b]` | 8 bars / 32-bar AABA | Jazz 2-5-1 C Major |
-| **Bossa Nova Cycle** | `[Intro 4b]` $\to$ `[Part A (2-5-1-6) 8b]` $\to$ `[Part B 8b]` $\to$ `[Solo Vamp 8b]` $\to$ `[Outro 4b]` | 8 or 16 bars | Bossa Nova (2516) C Major |
-| **Rock / Pop Ballad** | `[Intro 4b]` $\to$ `[Verse 8b]` $\to$ `[Pre-Chorus 4b]` $\to$ `[Chorus 8b]` $\to$ `[Solo / Jam 16b]` $\to$ `[Outro 4b]` | 4, 8, 16 bars | Rock Pop G Major, Bm Rock Ballad, Am Dark Ballad |
-| **Modal Vamp / Fusion** | `[Intro 4b]` $\to$ `[Theme A (Main Riff) 8b]` $\to$ `[Development B 8b]` $\to$ `[Solo Vamp 16b]` $\to$ `[Outro 4b]` | 8 or 16 bars | A Dorian, D Dorian, E Phrygian, E Lydian, A/F# Locrian |
+| **Pure 12-Bar Blues Cycle** | `[Verse (Head) 12b]` $\to$ `[Chorus (Solo) 12b]` | **24 bars** (No intro/outro) | `blues_12bar_a7`, `minor_blues_12bar_am` |
+| **Bebop / Swing 2-5-1** | `[Count-in 4b]` $\to$ `[Head A1 8b]` $\to$ `[A2 8b]` $\to$ `[Solo 1 16b]` $\to$ `[Solo 2 16b]` $\to$ `[Outro 4b]` | 56 bars | `jazz_251_c` |
+| **Bossa Nova Cycle** | `[Intro 4b]` $\to$ `[Part A (2-5-1-6) 8b]` $\to$ `[Part B 8b]` $\to$ `[Solo 16b]` $\to$ `[Outro 4b]` | 40 bars | `bossa_nova_2516_c` |
+| **Rock / Pop Ballad** | `[Intro 4b]` $\to$ `[Verse 8b]` $\to$ `[Chorus 8b]` $\to$ `[Solo 16b]` $\to$ `[Outro 4b]` | 40 bars | `dark_sad_blues_rock_am`, `emotional_rock_ballad_bm` |
+| **Modal Vamp / Fusion** | `[Intro 4b]` $\to$ `[Theme A (Verse) 8b]` $\to$ `[Chorus 8b]` $\to$ `[Solo Vamp 16b]` $\to$ `[Outro 4b]` | 40 bars | `dorian_smooth_a`, `phrygian_metal_e`, `vai_lydian_e`, `locrian_jam_a` |
 
-### Section Boundary Detection Rules:
-- **Intro**: Bar 1 to entry of full drums/bass (typically 2 to 4 bars).
-- **Verse (Section A)**: Main thematic progression, lower energy, steady comping.
-- **Chorus (Section B)**: Energy surge (+2 to +4 dB RMS), crash cymbal on bar 1, open hi-hat or ride, layered guitars/keys.
-- **Solo Section**: Dynamic rhythm bed, high rhythmic propulsion for soloist improvisation.
-- **Turnaround / Outro**: Resolution to tonic, fading energy or ritardando.
+> [!IMPORTANT]
+> **Pure 24-Bar Blues Policy**:
+> For 12-bar blues loops, **never add intro or outro cadences**. The track must strictly consist of **two 12-bar choruses (24 bars total, exactly 48 beats per chorus)**:
+> 1. Bars 1–12: **Verse / Head** with turnaround cadence on Bar 12.
+> 2. Bars 13–24: **Chorus / Solo** with turnaround cadence on Bar 24.
+
+---
+
+### 3.2. The 14 Authentic Studio Backing Track Presets
+
+All presets in the platform follow the naming convention:
+$$\mathbf{\text{Genre} - \text{chord progression} - \text{mode}}$$
+
+| # | Preset ID | Title | Key / Mode | Target Mode Key | BPM | Instrumentation | Canonical MIDI |
+|---|---|---|---|---|---|---|---|
+| **01** | `blues_12bar_a7` | **Blues Shuffle - I IV V (12 Bar) - Mixolydian** | A Mixolydian | `mixolydian` | 74 | Electric Blues Guitar & Drum Kit (Duo) | `01_blues_12bar_a7_74bpm.mid` |
+| **02** | `minor_blues_12bar_am` | **Minor Blues - i iv v (12 Bar) - Aeolian** | A Aeolian | `aeolian` | 58 | Slow Blues Guitar, Bass, Rhodes, Drums | `12_minor_blues_12bar_am_58bpm.mid` |
+| **03** | `jazz_251_c` | **Jazz Swing - ii V I VI - Ionian** | C Ionian | `ionian` | 122 | Hollowbody Jazz Guitar, Upright Bass, Drums | `11_jazz_251_c_122bpm.mid` |
+| **04** | `bossa_nova_2516_c` | **Bossa Nova - ii V I VI - Ionian** | C Ionian | `ionian` | 128 | Nylon Guitar, Acoustic Bass, Flute, Drums | `05_bossa_nova_2516_c_128bpm.mid` |
+| **05** | `dorian_smooth_a` | **Neo-Soul - i IV i ii - Dorian** | A Dorian | `dorian` | 95 | Clean Strat Neck, Electric Bass, Rhodes, Drums | `02_dorian_smooth_a_95bpm.mid` |
+| **06** | `dorian_funk_d` | **Latin Funk - i IV i ii - Dorian** | D Dorian | `dorian` | 115 | Clean Funk Guitar, Slap Bass, Organ, Drums | `06_dorian_funk_d_115bpm.mid` |
+| **07** | `phrygian_metal_e` | **Dark Metal - i bII bIII bII - Phrygian** | E Phrygian | `phrygian` | 120 | Heavy Metal Guitar, Distorted Bass, Drums | `08_phrygian_metal_e_120bpm.mid` |
+| **08** | `vai_lydian_e` | **Virtuoso Rock - I II I II - Lydian** | E Lydian | `lydian` | 130 | Clean Rhythm Guitar, Electric Bass, Pad, Drums | `14_vai_lydian_e_130bpm.mid` |
+| **09** | `mixolydian_open_life_a` | **Open Rock - I bVII IV I - Mixolydian** | A Mixolydian | `mixolydian` | 120 | Crunch Electric Guitar, Bass, Piano, Drums | `04_mixolydian_open_life_a_120bpm.mid` |
+| **10** | `dark_sad_blues_rock_am` | **Blues Rock Ballad - i bVI bIII bVII - Aeolian** | A Aeolian | `aeolian` | 64 | Chorus Arpeggio Guitar, Bass, Hammond, Drums | `07_dark_sad_blues_rock_am_64bpm.mid` |
+| **11** | `emotional_rock_ballad_bm` | **Melodic Ballad - i bVI bIII bVII - Aeolian** | B Aeolian | `aeolian` | 63 | Strat Clean Guitar, Bass, Grand Piano, Drums | `09_emotional_rock_ballad_bm_63bpm.mid` |
+| **12** | `rock_pop_g_70bpm` | **Acoustic Pop - I V vi IV - Ionian** | G Ionian | `ionian` | 70 | Steel Acoustic Guitar, Electric Bass, Drums | `13_rock_pop_g_70bpm.mid` |
+| **13** | `locrian_jam_a` | **Ambient Fusion - i° bII vii i° - Locrian** | A Locrian | `locrian` | 68 | Clean Chorus Guitar, Fretless Bass, Pad, Drums | `03_locrian_jam_a_68bpm.mid` |
+| **14** | `locrian_dark_fs` | **Modern Fusion - i° bII vii i° - Locrian** | F# Locrian | `locrian` | 122 | Clean Jazz Guitar, Fretless Bass, Rhodes, Drums | `10_locrian_dark_fs_122bpm.mid` |
 
 ---
 
 ## 4. Stage 3: Harmonic & Groove Decoding
 
-### Harmonic Archetypes:
-1. **Dominant Blues (12-Bar)**:
-   - I7 (4 bars) $\to$ IV7 (2 bars) $\to$ I7 (2 bars) $\to$ V7 (1 bar) $\to$ IV7 (1 bar) $\to$ I7 (1 bar) $\to$ V7 (1 bar turnaround).
-2. **Minor Blues (12-Bar)**:
-   - i7 (4 bars) $\to$ iv7 (2 bars) $\to$ i7 (2 bars) $\to$ $\flat\text{VI}7$ (1 bar) $\to$ V7alt (1 bar) $\to$ i7 (1 bar) $\to$ V7alt (1 bar).
-3. **Jazz 2-5-1**:
-   - ii7 $\to$ V7 $\to$ Imaj7 $\to$ VI7 (e.g. Dm9 $\to$ G13 $\to$ Cmaj9 $\to$ A7$\sharp$9).
-4. **Bossa Nova 2-5-1-6**:
-   - Dm9 $\to$ G13 $\to$ Cmaj9 $\to$ A7($\flat$13).
-5. **Modal Centers**:
-   - **Dorian**: i7 – IV9 (Am7 – D9 or Dm7 – G9).
-   - **Phrygian**: i5 – $\flat\text{II}5$ – $\flat\text{III}5$ (E5 – F5 – G5).
-   - **Lydian**: $\text{I}\text{maj7}(\sharp11)$ – $\text{II}/\text{I}$ (Emaj7$\sharp$11 – F#/E).
-   - **Mixolydian**: $\text{I}$ – $\flat\text{VII}$ – $\text{IV}$ (A – G – D).
-   - **Locrian**: $\text{i}^\varnothing$ – $\flat\text{II}\text{maj7}$ (Am7b5 – Bbmaj7).
+### 4.1. Note Duration & Articulation Protocol
+*(Calibrated from Songscription AI Reverse-Engineering & Sheet Music Ground Truth)*
 
-### Groove & Drum Grids:
-- **Swing / Triplet subdivisions**: Ticks per 16th swing: 60/40 or 66/34 ratio.
-- **Bossa Clave**: Syncopated strums on steps `[0, 3, 6, 10, 12]`, surdo on beats 1 and 3.
-- **Metal Chugs**: 16th-note galloping palm mutes with power chord punches.
-- **Walking Bass**: 4 quarter notes per measure outlining chord root, third, fifth, and chromatic approach.
-
----
-
-## 4.1. Rhythmic Quantization & Note Articulation Protocol
-*(Derived from Songscription AI Reverse-Engineering & Ground-Truth Musical Sheet Analysis)*
-
-When transcribing or synthesizing authentic musical accompaniment, **note durations and breathing rests** define the groove feel just as much as pitch selection:
-
-1. **Quarter Notes ($1.0$ beat, $480$ ticks @ 480 PPQ)**:
-   - Provide harmonic grounding and rhythmic weight.
-   - Crucial for syncopated pushes: e.g. the 3rd triplet of Beat 2 (Beat 2-uh) or Beat 4 (Beat 4-uh) hit that sustains for a full quarter note into the following beat.
-   - Used for primary comping downbeats when establishing harmonic stability.
-
-2. **Half Notes ($2.0$ beats, $960$ ticks @ 480 PPQ)**:
-   - Used for spacious ballad chords, modal vamp holds, and cadence arrival points.
-   - Crucial for **turnaround bars** (e.g. Bar 12 of a 12-bar blues: Beat 1 V7 push held for 2 beats, Beat 3 V7#9 push held for 2 beats).
-
-3. **Eighth Notes & Triplet Staccato Chops ($0.33$ to $0.5$ beat, $160$ to $240$ ticks)**:
-   - Percussive "chops" and fret-hand damping: downbeat chops on Beat 1 and Beat 2, providing percussive snap without cluttering the sustain window.
+1. **Quarter Notes ($1.0$ beat = $480$ ticks)**:
+   - Provide rhythmic weight and harmonic foundation.
+   - Crucial for syncopated pushes: e.g. the 3rd triplet of Beat 2 ("2-uh") that sustains right across Beat 3.
+2. **Half Notes ($2.0$ beats = $960$ ticks)**:
+   - Used for spacious ballad chords and turnaround cadence arrivals (e.g. Bar 12 V7 push on Beat 1, V7#9 push on Beat 3).
+3. **Eighth Notes & Staccato Chops ($0.33$ to $0.5$ beat = $160$ to $240$ ticks)**:
+   - Crisp percussive chops on downbeats (Beat 1 and Beat 2).
    - Root pickups on the 3rd triplet of beats (low-string bass approach notes before upper-register chord voicings).
-
 4. **Deliberate Rests (Negative Space)**:
-   - Rests on the middle triplet of beats allow the kick and snare drums to punch through with high clarity.
-   - Silence immediately preceding turnaround rolls or cadence climaxes builds dramatic tension.
+   - Rests on the middle triplet of beats allow the kick and snare drums to punch through cleanly without frequency masking.
 
 ---
 
-## 4.2. Two-Instrument Arrangement Paradigm: Electric Guitar & Drum Kit
-
-When producing tight, high-clarity blues, rock, or modal backing tracks, avoid over-saturating the mix with synthetic bass and organ layers. Instead, employ the **Two Distinct Core Instruments** paradigm:
+### 4.2. Arrangement Paradigms
 
 ```mermaid
 graph LR
-    subgraph Track 1: Electric Guitar
-        G1["Low String: Root / Fifth Pickups<br/>(A2, D3, E3 staccato pickups)"]
-        G2["Upper Strings: Chord Chops & Pushes<br/>(3rd, b7th, 9th voicings: quarter & half notes)"]
+    subgraph Paradigm 1: Electric Guitar + Drum Kit Duo
+        G1["Track 1: Electric Guitar (GM 26)<br/>Low root pickups + Staccato chops + Quarter note pushes"]
+        D1["Track 2: Drum Kit (GM Drums)<br/>Kick on 1 & 3, Snare on 2 & 4, Shuffle hi-hat"]
     end
-    subgraph Track 2: Drum Kit
-        D1["Kick Drum (GM 36): Beats 1 & 3 Downbeats"]
-        D2["Snare Drum (GM 38): Beats 2 & 4 Backbeat & Rolls"]
-        D3["Closed Hi-Hat (GM 42): 12/8 Shuffle Triplets"]
-        D4["Crash Cymbal (GM 49): Chorus Entry Downbeat"]
+    subgraph Paradigm 2: Full 4-Track Ensemble
+        E1["Track 1: Rhythm Guitar / Keys"]
+        E2["Track 2: Electric / Upright Bass"]
+        E3["Track 3: Suitcase Rhodes / Pad"]
+        E4["Track 4: Full Drum Kit"]
     end
 ```
 
-### Key Rules for the Electric Guitar + Drum Kit Duo:
-1. **Electric Guitar (Channel 0 / GM 26 Jazz Guitar or GM 27 Clean Electric)**:
-   - Plays **hybrid comping**: low strings (strings 6 & 5) provide rhythmic bass motion (walking approaches, pedal roots) while middle/upper strings (strings 4, 3, 2) supply the harmonic character (tritones, guide tones, color extensions).
-   - Dynamic articulation: Staccato chops on 1 and 2, **Quarter-Note pushes** on 2-and/2-uh sustaining into 3, and **Dotted Quarter / Half-Note anticipations** on 4-uh sustaining across barlines.
-2. **Drum Kit (Channel 9 / Channel 10 GM Drums)**:
-   - Anchors the tempo pocket with solid kick on 1 & 3 and crisp snare backbeat on 2 & 4.
-   - Hi-hat maintains the swung shuffle subdivision ($12/8$ triplet grid: 3 hits per quarter-note beat).
-   - Never overlaps with the guitar frequency spectrum; leaves negative space for guitar chokes and pick attacks.
+---
+
+## 5. Stage 4: Multi-Track MIDI Sequence Programming
+
+Using Python `mido` to build General MIDI Level 1 multi-track files:
+1. **Track 0: Conductor**:
+   - `set_tempo`: Microseconds per beat.
+   - `time_signature`: 4/4 (numerator=4, denominator=4, clocks_per_click=24, notated_32nd_notes_per_beat=8).
+   - `marker`: Exact section boundaries (`Verse (Head)`, `Chorus (Solo)`, `Solo Flight`).
+2. **Track 1: Instrument (Channel 0)**:
+   - Program change event (e.g. GM 26 Jazz Guitar, GM 25 Steel Acoustic, GM 29 Overdrive Guitar).
+   - Velocity dynamics: Chops $vel \approx 85-95$, Pushes $vel \approx 98-105$, Pickups $vel \approx 80-85$.
+3. **Track 2: Bass (Channel 1)**:
+   - Program change event (e.g. GM 33 Finger Bass, GM 32 Upright Bass, GM 35 Fretless Bass).
+4. **Track 3: Drum Kit (Channel 9 / MIDI Channel 10)**:
+   - Kick (35/36), Snare (38), Closed HH (42), Open HH (46), Crash (49), Ride (51).
 
 ---
 
-## 5. Stage 4: Multi-Track Standard MIDI Synthesis
+## 6. Stage 5: Web Application Audio Engine & MVVM Integration
 
-Every backing track must be compiled into standard multi-track General MIDI:
-- **Track 0: Conductor**: Tempo meta-events, Time Signature, Section Markers (`MetaMessage('marker', text='Verse 1')`).
-- **Track 1: Electric Guitar (Channel 0)**: GM 26 Jazz Guitar / GM 27 Clean Guitar / GM 29 Overdriven Guitar (Hybrid comping, staccato chops, quarter notes, half notes).
-- **Track 2: Drum Kit (Channel 9 / Channel 10)**: GM Drum Map (35/36 Kick, 38 Snare, 42 Closed HH, 46 Open HH, 49 Crash, 51 Ride).
-- *(Optional Auxiliary Tracks for 4-track arrangements: Track 3 Bass, Track 4 Keys/Organ).*
+1. **Preset Configuration Contract (`MidiBackingTrackModel.js`)**:
+   Every preset registered in `PRESETS` must include:
+   - `id`: Unique identifier (e.g. `blues_12bar_a7`).
+   - `name`: Formatted title (`Genre - chord progression - mode`).
+   - `targetModeKey`: Target diatonic mode (`'ionian'`, `'dorian'`, `'phrygian'`, `'lydian'`, `'mixolydian'`, `'aeolian'`, `'locrian'`).
+   - `defaultRootIdx`: Integer 0–11 matching the key.
+   - `sections`: Array of sections with exact bar counts.
+   - `progression`: Array of chord objects with `rootOffset`, `chordIntervals`, and `degreeRoman`.
+2. **4-Beat Studio Drumstick Count-In**:
+   - Scheduled via Web Audio hardware clock (`scheduleCountInClick` in `AudioEngineModel.js`).
+   - Counts 4 full beats before Bar 1 downbeat.
+3. **Automatic Mode & Root Synchronization**:
+   - Handled in `FretboardViewModel.setBackingStylePreset()`: automatically updates `state.selectedMusicalMode` and `state.clickedRoot`, triggering reactive view updates on the fretboard and dropdown.
 
 ---
 
-## 6. Stage 5: Web Application Audio Engine Integration
+## 7. Toolkit Scripts Reference
 
-1. Register all track presets in `MidiBackingTrackModel.PRESETS` with:
-   - `id`, `name`, `category`, `timeSignature`, `defaultBpm`, `sections`, `progression`.
-2. Connect section reporting so the UI displays:
-   - Current Section badge: e.g. `[Verse 1 / Bar 3]` or `[Chorus]`.
-   - Current Chord badge: e.g. `Chord: Am7 (i)`.
-   - Recommended Scale/Mode.
-3. Expose one-click standard `.mid` file download for each backing track.
+| Script | Purpose & Usage |
+|---|---|
+| [`scripts/extract_audio_to_midi.py`](file:///d:/huong/antigravity/guitar_fretboard_visualization/scripts/extract_audio_to_midi.py) | **Full Audio-to-MIDI Extractor**: Analyzes any `.mp3`/`.wav`, detects tempo & harmonic root, builds multi-track `.mid`, and outputs JS preset code.<br/>`python scripts/extract_audio_to_midi.py <audio_path> [--bpm BPM] [--mode MODE] [--root ROOT] [--output-preset]` |
+| [`scripts/analyze_midi_track.py`](file:///d:/huong/antigravity/guitar_fretboard_visualization/scripts/analyze_midi_track.py) | **MIDI Track & Rhythm Inspector**: Decodes conductor tempo/markers, note duration histograms (quarter, half, chops), and bar voicings.<br/>`python scripts/analyze_midi_track.py <path_to_midi>` |
+| [`scripts/analyze_backing_tracks.py`](file:///d:/huong/antigravity/guitar_fretboard_visualization/scripts/analyze_backing_tracks.py) | **Catalog Structural Audit**: Reports on all 14 presets, files, tempos, and progressions.<br/>`python scripts/analyze_backing_tracks.py` |
+| [`scripts/generate_midi_tracks.py`](file:///d:/huong/antigravity/guitar_fretboard_visualization/scripts/generate_midi_tracks.py) | **Canonical MIDI Generator**: Synthesizes the 14 multi-track `.mid` files with exact timing.<br/>`python scripts/generate_midi_tracks.py` |
+| [`scripts/detect_sample_frequencies.py`](file:///d:/huong/antigravity/guitar_fretboard_visualization/scripts/detect_sample_frequencies.py) | **Sample Frequency Detector**: Analyzes `.wav` instrument samples in `midi_instruments/` to detect base pitches and build manifests.<br/>`python scripts/detect_sample_frequencies.py` |
+| [`scripts/validate_js.py`](file:///d:/huong/antigravity/guitar_fretboard_visualization/scripts/validate_js.py) | **Syntax Validator**: Checks all application JS files for syntax errors.<br/>`python scripts/validate_js.py` |

@@ -355,7 +355,8 @@ class FretboardViewModel {
             }))
         }));
 
-        const backingPresets = window.GuitarApp.Models.MidiBackingTrackModel
+        const backingPresets = this.getFilteredBackingPresets();
+        const allBackingPresets = window.GuitarApp.Models.MidiBackingTrackModel
             ? window.GuitarApp.Models.MidiBackingTrackModel.PRESETS
             : [];
 
@@ -394,6 +395,7 @@ class FretboardViewModel {
             audioEnabled: s.audioEnabled,
             backingTrack: s.backingTrack,
             backingPresets,
+            allBackingPresets,
             isTuningModalOpen: s.isTuningModalOpen,
             inlineTuningStrings,
             modalTuningStrings
@@ -565,10 +567,14 @@ class FretboardViewModel {
             this.notifyViews();
         };
 
+        const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
+        const currentPreset = MidiModel ? MidiModel.getPresetById(this.state.backingTrack.stylePreset) : null;
+        const countInBeats = currentPreset ? (currentPreset.countInBeats || currentPreset.beatsPerBar || 4) : 4;
+
         this.midiBackingModel.start(this.audioModel, getContextFn, onChordUpdateFn);
         this.state.backingTrack.isPlaying = true;
         this.state.backingTrack.isCountingIn = true;
-        this.state.backingTrack.currentSectionLabel = 'Count-in: 1 / 4';
+        this.state.backingTrack.currentSectionLabel = `Count-in: 1 / ${countInBeats}`;
         this.state.backingTrack.currentChordLabel = null;
         this.stateModel.notify();
     }
@@ -644,6 +650,38 @@ class FretboardViewModel {
         if (MidiModel && typeof MidiModel.downloadPresetMidi === 'function') {
             MidiModel.downloadPresetMidi(this.state.backingTrack.stylePreset);
         }
+    }
+
+    getFilteredBackingPresets() {
+        const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
+        if (!MidiModel) return [];
+        const allPresets = MidiModel.PRESETS || [];
+        const filter = this.state.backingTrack.meterFilter || 'all';
+        if (filter === 'all') {
+            return allPresets;
+        }
+        return allPresets.filter(p => p.timeSignature === filter);
+    }
+
+    setBackingMeterFilter(meter) {
+        const validMeters = ['all', '4/4', '3/4', '5/4', '6/8', '7/8'];
+        const selectedMeter = validMeters.includes(meter) ? meter : 'all';
+        this.state.backingTrack.meterFilter = selectedMeter;
+
+        // Check if the current stylePreset matches the selected meter filter
+        const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
+        const currentPreset = MidiModel ? MidiModel.getPresetById(this.state.backingTrack.stylePreset) : null;
+
+        if (selectedMeter !== 'all' && currentPreset && currentPreset.timeSignature !== selectedMeter) {
+            // Automatically switch to the first preset that matches the chosen time signature
+            const matchingPresets = this.getFilteredBackingPresets();
+            if (matchingPresets.length > 0) {
+                this.setBackingStylePreset(matchingPresets[0].id);
+                return;
+            }
+        }
+
+        this.stateModel.notify();
     }
 
     resetBoard() {

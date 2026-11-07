@@ -1,7 +1,7 @@
 /**
  * ==========================================================================
  * MODEL LAYER: MidiBackingTrackModel
- * Encapsulates 14 authentic studio backing tracks derived directly from
+ * Encapsulates 25 authentic studio backing tracks (including 4/4, 3/4, 5/4, 6/8, and 7/8 meters) derived directly from
  * inspected .mp3 master audio tracks (Blues Shuffle A7, Neo-Soul A Dorian,
  * Dark Ambient Fusion A Locrian, Open Life A Mixolydian, Bossa Nova 2516 C Major,
  * Latin Funk D Dorian, Dark Sad Blues Rock A Minor, Dark Metal E Phrygian,
@@ -37,7 +37,7 @@ class MidiBackingTrackModel {
     }
 
     /**
-     * 14 Authentic Studio Backing Track Presets
+     * 25 Authentic Studio Backing Track Presets (4/4, 3/4, 5/4, 6/8, 7/8)
      */
     static PRESETS = [
         // ==================== BLUES & SHUFFLE ====================
@@ -828,7 +828,570 @@ class MidiBackingTrackModel {
                 { step: 2, durationSteps: 3.0, velocity: 0.85 },
                 { step: 10, durationSteps: 3.0, velocity: 0.8 }
             ]
+        },
+
+        // ==================== 15. ACID JAZZ FUSION JAM TRACK IN D MINOR (3/4) ====================
+        {
+            id: 'acid_jazz_34_dm',
+            name: 'Acid Jazz (3/4) - i iv v i - Dorian',
+            targetModeKey: 'dorian',
+            category: 'Jazz & Fusion',
+            timeSignature: '3/4',
+            beatsPerBar: 3,
+            countInBeats: 3,
+            stepsPerBeat: 4,
+            stepsPerBar: 12,
+            defaultBpm: 154,
+            defaultRootIdx: 2, // D
+            defaultRootName: 'D',
+            midiFile: '15_acid_jazz_34_dm_154bpm.mid',
+            instrumentType: 'jazz_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Clean Jazz Guitar & Rhodes Piano (3/4 Jazz Waltz)',
+            scaleRecommendation: 'D Dorian, D Minor Blues, G Mixolydian',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (Jazz Waltz)', bars: 4 },
+                { name: 'Verse (Acid Groove)', bars: 8 },
+                { name: 'Chorus (Organ Surge)', bars: 8 },
+                { name: 'Solo Flight', bars: 8 },
+                { name: 'Outro Vamp', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 2, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
+                { bar: 2, rootOffset: 7, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'iv9' },
+                { bar: 3, rootOffset: 9, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'v9' },
+                { bar: 4, rootOffset: 2, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0],
+                snare: [4, 8],
+                hihatClosed: [0, 2, 4, 6, 8, 10]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 3.5, velocity: 0.95 },
+                { step: 4, degree: 'fifth', durationSteps: 3.5, velocity: 0.85 },
+                { step: 8, degree: 'root', durationSteps: 3.5, velocity: 0.9 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 2.0, velocity: 0.85 },
+                { step: 5, durationSteps: 3.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 16. SOFT ROCK IN E MINOR (5/4) ====================
+        {
+            id: 'soft_rock_54_em',
+            name: 'Soft Rock (5/4) - i bVI bVII i - Aeolian',
+            targetModeKey: 'aeolian',
+            category: 'Rock & Pop',
+            timeSignature: '5/4',
+            beatsPerBar: 5,
+            countInBeats: 5,
+            stepsPerBeat: 4,
+            stepsPerBar: 20,
+            defaultBpm: 110,
+            defaultRootIdx: 4, // E
+            defaultRootName: 'E',
+            midiFile: '16_soft_rock_54_em_110bpm.mid',
+            instrumentType: 'acoustic_guitar',
+            bassType: 'finger_bass',
+            instrumentLabel: '🎸 Acoustic Guitar & Warm Strings (5/4 Groove)',
+            scaleRecommendation: 'E Aeolian (Natural Minor), E Minor Pentatonic, G Major',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (5/4 Pulse)', bars: 4 },
+                { name: 'Verse (3+2 Groove)', bars: 8 },
+                { name: 'Chorus (Anthem)', bars: 8 },
+                { name: 'Solo Section', bars: 8 },
+                { name: 'Outro Vamp', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 4, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
+                { bar: 2, rootOffset: 0, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'bVImaj7' },
+                { bar: 3, rootOffset: 2, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { bar: 4, rootOffset: 4, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 8, 12],
+                snare: [4, 16],
+                hihatClosed: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 5.5, velocity: 0.95 },
+                { step: 6, degree: 'fifth', durationSteps: 5.5, velocity: 0.85 },
+                { step: 12, degree: 'root', durationSteps: 3.5, velocity: 0.9 },
+                { step: 16, degree: 'seventh', durationSteps: 3.5, velocity: 0.85 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 3.5, velocity: 0.85 },
+                { step: 6, durationSteps: 5.0, velocity: 0.85 },
+                { step: 12, durationSteps: 3.5, velocity: 0.85 },
+                { step: 16, durationSteps: 3.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 17. ROCK BALLAD IN A (6/8) ====================
+        {
+            id: 'rock_ballad_68_a',
+            name: 'Rock Ballad (6/8) - I V vi IV - Ionian',
+            targetModeKey: 'ionian',
+            category: 'Rock & Pop',
+            timeSignature: '6/8',
+            beatsPerBar: 6,
+            countInBeats: 6,
+            stepsPerBeat: 2,
+            stepsPerBar: 12,
+            defaultBpm: 80,
+            defaultRootIdx: 9, // A
+            defaultRootName: 'A',
+            midiFile: '17_rock_ballad_68_a_80bpm.mid',
+            instrumentType: 'clean_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Strat Clean Arpeggios & Grand Piano (6/8 Ballad)',
+            scaleRecommendation: 'A Major / Ionian, F# Minor Pentatonic',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (6/8 Arpeggio)', bars: 4 },
+                { name: 'Verse (A - E - F#m - D)', bars: 8 },
+                { name: 'Chorus (Soaring Lead)', bars: 8 },
+                { name: 'Solo Section', bars: 8 },
+                { name: 'Outro Cadence', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 9, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { bar: 2, rootOffset: 4, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' },
+                { bar: 3, rootOffset: 6, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
+                { bar: 4, rootOffset: 2, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 4, 10],
+                snare: [6],
+                hihatClosed: [0, 2, 4, 6, 8, 10]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 5.5, velocity: 0.95 },
+                { step: 6, degree: 'fifth', durationSteps: 5.5, velocity: 0.9 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 5.5, velocity: 0.85 },
+                { step: 6, durationSteps: 5.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 18. SOUL JAM IN C MAJOR (6/8) ====================
+        {
+            id: 'soul_jam_68_c',
+            name: 'Soul Jam (6/8) - I vi ii V - Ionian',
+            targetModeKey: 'ionian',
+            category: 'Funk, Soul & R&B',
+            timeSignature: '6/8',
+            beatsPerBar: 6,
+            countInBeats: 6,
+            stepsPerBeat: 2,
+            stepsPerBar: 12,
+            defaultBpm: 65,
+            defaultRootIdx: 0, // C
+            defaultRootName: 'C',
+            midiFile: '18_soul_jam_68_c_65bpm.mid',
+            instrumentType: 'clean_guitar',
+            bassType: 'finger_bass',
+            instrumentLabel: '🎸 Soul Clean Guitar & Warm Rhodes (6/8 Neo-Soul)',
+            scaleRecommendation: 'C Major / Ionian, A Minor Pentatonic, D Dorian',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (6/8 Soul)', bars: 4 },
+                { name: 'Verse (Sweet 6/8)', bars: 8 },
+                { name: 'Chorus (Gospel Push)', bars: 8 },
+                { name: 'Solo Section', bars: 8 },
+                { name: 'Outro Fade', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'Imaj7' },
+                { bar: 2, rootOffset: 9, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'vi7' },
+                { bar: 3, rootOffset: 2, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'ii7' },
+                { bar: 4, rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 4],
+                snare: [6],
+                hihatClosed: [0, 2, 4, 6, 8, 10]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 5.5, velocity: 0.95 },
+                { step: 6, degree: 'root', durationSteps: 5.5, velocity: 0.9 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 5.5, velocity: 0.8 },
+                { step: 6, durationSteps: 5.5, velocity: 0.8 }
+            ]
+        },
+
+        // ==================== 19. PROGRESSIVE ROCK IN A MINOR (7/8) ====================
+        {
+            id: 'prog_rock_78_am',
+            name: 'Progressive Rock (7/8) - i bVII bVI V - Aeolian',
+            targetModeKey: 'aeolian',
+            category: 'Rock & Pop',
+            timeSignature: '7/8',
+            beatsPerBar: 7,
+            countInBeats: 7,
+            stepsPerBeat: 2,
+            stepsPerBar: 14,
+            defaultBpm: 146,
+            defaultRootIdx: 9, // A
+            defaultRootName: 'A',
+            midiFile: '19_prog_rock_78_am_146bpm.mid',
+            instrumentType: 'distorted_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Overdriven Riff Guitar & Synth Strings (7/8 Odd Meter)',
+            scaleRecommendation: 'A Aeolian / Harmonic Minor, A Minor Pentatonic',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (7/8 Odd Meter)', bars: 4 },
+                { name: 'Verse (2+2+3 Drive)', bars: 8 },
+                { name: 'Chorus (Power Anthem)', bars: 8 },
+                { name: 'Solo Section', bars: 8 },
+                { name: 'Outro Climax', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { bar: 3, rootOffset: 5, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { bar: 4, rootOffset: 4, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 4, 8],
+                snare: [4, 10],
+                hihatClosed: [0, 2, 4, 6, 8, 10, 12]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 3.5, velocity: 0.95 },
+                { step: 4, degree: 'fifth', durationSteps: 3.5, velocity: 0.9 },
+                { step: 8, degree: 'root', durationSteps: 5.5, velocity: 0.95 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 3.5, velocity: 0.85 },
+                { step: 4, durationSteps: 3.5, velocity: 0.85 },
+                { step: 8, durationSteps: 5.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 20. JAZZ FUSION IN E (5/4) ====================
+        {
+            id: 'fusion_54_e',
+            name: 'Jazz Fusion (5/4) - i IV i IV - Dorian',
+            targetModeKey: 'dorian',
+            category: 'Jazz & Fusion',
+            timeSignature: '5/4',
+            beatsPerBar: 5,
+            countInBeats: 5,
+            stepsPerBeat: 4,
+            stepsPerBar: 20,
+            defaultBpm: 108,
+            defaultRootIdx: 4, // E
+            defaultRootName: 'E',
+            midiFile: '20_fusion_54_e_108bpm.mid',
+            instrumentType: 'jazz_guitar',
+            bassType: 'fretless_bass',
+            instrumentLabel: '🎸 Clean Jazz Guitar & Synth Pad (5/4 Modern Fusion)',
+            scaleRecommendation: 'E Dorian, A Mixolydian, D Major',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (5/4 Fusion Pulse)', bars: 4 },
+                { name: 'Theme A (Em9 - A13)', bars: 8 },
+                { name: 'Theme B (Soaring Vamp)', bars: 8 },
+                { name: 'Solo Flight', bars: 8 },
+                { name: 'Outro Cadence', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 4, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
+                { bar: 2, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14, 21], suffix: '13', degreeRoman: 'IV13' },
+                { bar: 3, rootOffset: 4, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
+                { bar: 4, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14, 21], suffix: '13', degreeRoman: 'IV13' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 6, 12],
+                snare: [4, 16],
+                hihatClosed: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 5.5, velocity: 0.95 },
+                { step: 6, degree: 'fifth', durationSteps: 5.5, velocity: 0.85 },
+                { step: 12, degree: 'root', durationSteps: 7.5, velocity: 0.9 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 5.5, velocity: 0.85 },
+                { step: 6, durationSteps: 5.5, velocity: 0.85 },
+                { step: 12, durationSteps: 7.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 21. BALKAN FOLK IN A PHRYGIAN (7/8) ====================
+        {
+            id: 'balkan_78_a_phrygian',
+            name: 'Balkan Folk (7/8) - i bII i bVII - Phrygian',
+            targetModeKey: 'phrygian',
+            category: 'World & Exotic',
+            timeSignature: '7/8',
+            beatsPerBar: 7,
+            countInBeats: 7,
+            stepsPerBeat: 2,
+            stepsPerBar: 14,
+            defaultBpm: 155,
+            defaultRootIdx: 9, // A
+            defaultRootName: 'A',
+            midiFile: '21_balkan_78_a_155bpm.mid',
+            instrumentType: 'nylon_guitar',
+            bassType: 'acoustic_bass',
+            instrumentLabel: '🎸 Nylon Flamenco Guitar & Accordion (7/8 Balkan 3+2+2)',
+            scaleRecommendation: 'A Phrygian, A Phrygian Dominant, D Harmonic Minor',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (Balkan 3+2+2)', bars: 3 },
+                { name: 'Theme (Am - Bb)', bars: 7 },
+                { name: 'Chorus (Phrygian Fire)', bars: 7 },
+                { name: 'Solo Improvisation', bars: 7 },
+                { name: 'Outro Climax', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bII' },
+                { bar: 3, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 4, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 6, 10],
+                snare: [6, 10],
+                hihatClosed: [0, 2, 4, 6, 8, 10, 12]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 5.5, velocity: 0.95 },
+                { step: 6, degree: 'fifth', durationSteps: 3.5, velocity: 0.9 },
+                { step: 10, degree: 'root', durationSteps: 3.5, velocity: 0.9 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 5.5, velocity: 0.9 },
+                { step: 6, durationSteps: 3.5, velocity: 0.85 },
+                { step: 10, durationSteps: 3.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 22. BALLAD ROCK IN D MINOR (3/4) ====================
+        {
+            id: 'ballad_rock_34_dm',
+            name: 'Ballad Rock (3/4) - i bVI bVII i - Aeolian',
+            targetModeKey: 'aeolian',
+            category: 'Rock & Pop',
+            timeSignature: '3/4',
+            beatsPerBar: 3,
+            countInBeats: 3,
+            stepsPerBeat: 4,
+            stepsPerBar: 12,
+            defaultBpm: 132,
+            defaultRootIdx: 2, // D
+            defaultRootName: 'D',
+            midiFile: '22_ballad_rock_34_dm_132bpm.mid',
+            instrumentType: 'clean_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Strat Clean Arpeggios & String Orchestra (3/4 Waltz Ballad)',
+            scaleRecommendation: 'D Aeolian (Natural Minor), D Minor Pentatonic, F Major',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (Gentle 3/4)', bars: 4 },
+                { name: 'Verse (Dm - Bb - C)', bars: 8 },
+                { name: 'Chorus (Strings Swell)', bars: 8 },
+                { name: 'Solo Space', bars: 8 },
+                { name: 'Outro Resolve', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 2, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { bar: 3, rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { bar: 4, rootOffset: 2, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0],
+                snare: [4, 8],
+                hihatClosed: [0, 2, 4, 6, 8, 10]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 3.5, velocity: 0.95 },
+                { step: 4, degree: 'fifth', durationSteps: 3.5, velocity: 0.85 },
+                { step: 8, degree: 'root', durationSteps: 3.5, velocity: 0.9 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 3.5, velocity: 0.85 },
+                { step: 4, durationSteps: 3.5, velocity: 0.85 },
+                { step: 8, durationSteps: 3.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 23. METALCORE IN D MINOR (3/4) ====================
+        {
+            id: 'metalcore_34_dm',
+            name: 'Metalcore (3/4) - i bVI iv bVII - Aeolian',
+            targetModeKey: 'aeolian',
+            category: 'Metal & Hard Rock',
+            timeSignature: '3/4',
+            beatsPerBar: 3,
+            countInBeats: 3,
+            stepsPerBeat: 4,
+            stepsPerBar: 12,
+            defaultBpm: 120,
+            defaultRootIdx: 2, // D
+            defaultRootName: 'D',
+            midiFile: '23_metalcore_34_dm_120bpm.mid',
+            instrumentType: 'distorted_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 High-Gain Distortion Guitar & Double Bass Drum (3/4 Heavy)',
+            scaleRecommendation: 'D Aeolian, D Harmonic Minor, D Minor Blues',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (Distortion Chugs)', bars: 4 },
+                { name: 'Verse (Gallop Beat)', bars: 8 },
+                { name: 'Chorus (Melodic Power)', bars: 8 },
+                { name: 'Breakdown / Solo', bars: 8 },
+                { name: 'Outro Riff', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 2, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { bar: 3, rootOffset: 7, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'iv' },
+                { bar: 4, rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 2, 4, 8, 10],
+                snare: [4],
+                hihatClosed: [0, 2, 4, 6, 8, 10]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 1.8, velocity: 1.0 },
+                { step: 2, degree: 'root', durationSteps: 1.8, velocity: 0.95 },
+                { step: 4, degree: 'root', durationSteps: 1.8, velocity: 1.0 },
+                { step: 6, degree: 'root', durationSteps: 1.8, velocity: 0.9 },
+                { step: 8, degree: 'root', durationSteps: 1.8, velocity: 1.0 },
+                { step: 10, degree: 'root', durationSteps: 1.8, velocity: 0.95 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 3.5, velocity: 0.95 },
+                { step: 4, durationSteps: 3.5, velocity: 0.9 },
+                { step: 8, durationSteps: 3.5, velocity: 0.9 }
+            ]
+        },
+
+        // ==================== 24. MODAL FUNK FUSION IN A (7/8) ====================
+        {
+            id: 'funk_fusion_78_a',
+            name: 'Modal Funk Fusion (7/8) - I IV I IV - Mixolydian',
+            targetModeKey: 'mixolydian',
+            category: 'Funk, Soul & R&B',
+            timeSignature: '7/8',
+            beatsPerBar: 7,
+            countInBeats: 7,
+            stepsPerBeat: 2,
+            stepsPerBar: 14,
+            defaultBpm: 120,
+            defaultRootIdx: 9, // A
+            defaultRootName: 'A',
+            midiFile: '24_funk_fusion_78_a_120bpm.mid',
+            instrumentType: 'clean_guitar',
+            bassType: 'finger_bass',
+            instrumentLabel: '🎸 Clean Funk Strat & Rhodes Piano (7/8 Syncopated Funk)',
+            scaleRecommendation: 'A Mixolydian, A Minor Blues, D Dorian',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (7/8 Funk Vamp)', bars: 4 },
+                { name: 'Theme A (A9 - D9 Groove)', bars: 8 },
+                { name: 'Theme B (Syncope Climax)', bars: 8 },
+                { name: 'Solo Jam', bars: 8 },
+                { name: 'Outro Vamp', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'I9' },
+                { bar: 2, rootOffset: 2, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' },
+                { bar: 3, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'I9' },
+                { bar: 4, rootOffset: 2, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0, 4, 8, 12],
+                snare: [4, 10],
+                hihatClosed: [0, 2, 4, 6, 8, 10, 12]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 3.5, velocity: 0.95 },
+                { step: 4, degree: 'fifth', durationSteps: 3.5, velocity: 0.9 },
+                { step: 8, degree: 'flatSeventh', durationSteps: 2.5, velocity: 0.9 },
+                { step: 11, degree: 'root', durationSteps: 2.5, velocity: 0.95 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 3.5, velocity: 0.85 },
+                { step: 4, durationSteps: 3.5, velocity: 0.85 },
+                { step: 8, durationSteps: 5.5, velocity: 0.85 }
+            ]
+        },
+
+        // ==================== 25. TASTY POP IN D (3/4) ====================
+        {
+            id: 'tasty_pop_34_d',
+            name: 'Tasty Pop (3/4) - I V vi IV - Ionian',
+            targetModeKey: 'ionian',
+            category: 'Rock & Pop',
+            timeSignature: '3/4',
+            beatsPerBar: 3,
+            countInBeats: 3,
+            stepsPerBeat: 4,
+            stepsPerBar: 12,
+            defaultBpm: 132,
+            defaultRootIdx: 2, // D
+            defaultRootName: 'D',
+            midiFile: '25_tasty_pop_34_d_132bpm.mid',
+            instrumentType: 'acoustic_guitar',
+            bassType: 'electric_bass',
+            instrumentLabel: '🎸 Acoustic Strum & Grand Piano (3/4 Pop Ballad Goodbye Sea)',
+            scaleRecommendation: 'D Major / Ionian, B Minor Pentatonic',
+            cycleBars: 4,
+            sections: [
+                { name: 'Intro (Acoustic Strum)', bars: 4 },
+                { name: 'Verse (D - A - Bm - G)', bars: 8 },
+                { name: 'Chorus (Full Pop Band)', bars: 8 },
+                { name: 'Solo Melodic Flight', bars: 8 },
+                { name: 'Outro Resolution', bars: 4 }
+            ],
+            progression: [
+                { bar: 1, rootOffset: 2, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { bar: 2, rootOffset: 9, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' },
+                { bar: 3, rootOffset: 11, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
+                { bar: 4, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' }
+            ],
+            drums: {
+                crash: [0],
+                kick: [0],
+                snare: [4, 8],
+                hihatClosed: [0, 2, 4, 6, 8, 10]
+            },
+            bass: [
+                { step: 0, degree: 'root', durationSteps: 3.5, velocity: 0.95 },
+                { step: 4, degree: 'fifth', durationSteps: 3.5, velocity: 0.85 },
+                { step: 8, degree: 'root', durationSteps: 3.5, velocity: 0.9 }
+            ],
+            chords: [
+                { step: 0, durationSteps: 3.5, velocity: 0.85 },
+                { step: 4, durationSteps: 3.5, velocity: 0.85 },
+                { step: 8, durationSteps: 3.5, velocity: 0.85 }
+            ]
         }
+
     ];
 
     /**
@@ -1049,29 +1612,32 @@ class MidiBackingTrackModel {
             this.currentParsedSong = parsed;
         });
 
-        // 4-BEAT COUNT-IN TIMING SETUP
+        // TIME-SIGNATURE AWARE COUNT-IN TIMING SETUP (4/4 -> 4 beats, 3/4 -> 3 beats, 5/4 -> 5 beats, 6/8 -> 6 eighths, 7/8 -> 7 eighths)
         const userBpm = context.bpm || preset.defaultBpm || 120;
         const beatSec = 60.0 / userBpm;
+        const isEighthBased = Boolean(preset.timeSignature && preset.timeSignature.endsWith('/8'));
+        const countInBeats = preset.countInBeats || preset.beatsPerBar || 4;
+        const clickIntervalSec = isEighthBased ? (beatSec / 2) : beatSec;
         const countInStartTime = ctx.currentTime + 0.05;
-        const countInDurationSec = 4 * beatSec;
+        const countInDurationSec = countInBeats * clickIntervalSec;
         this.songStartTime = countInStartTime + countInDurationSec;
         this.nextStepTime = this.songStartTime;
 
-        // Schedule the 4 audible drumstick clicks into Web Audio hardware clock
-        for (let beat = 1; beat <= 4; beat++) {
-            const beatAudioTime = countInStartTime + (beat - 1) * beatSec;
+        // Schedule the audible drumstick clicks into Web Audio hardware clock
+        for (let beat = 1; beat <= countInBeats; beat++) {
+            const beatAudioTime = countInStartTime + (beat - 1) * clickIntervalSec;
             if (typeof audioModel.scheduleCountInClick === 'function') {
                 audioModel.scheduleCountInClick(beat, beatAudioTime);
             } else {
                 audioModel.scheduleDrumHit('crossStick', beatAudioTime, beat === 1 ? 1.0 : 0.8);
             }
 
-            // Timed UI callback updates for visual count-in badge (Count-in: 1, 2, 3, 4)
+            // Timed UI callback updates for visual count-in badge (e.g. Count-in: 1 / 3)
             const msFromNow = Math.max(0, (beatAudioTime - ctx.currentTime) * 1000);
             const timerId = window.setTimeout(() => {
                 if (!this.isPlaying || !this.isCountingIn) return;
                 if (typeof onChordUpdateFn === 'function') {
-                    onChordUpdateFn(null, `Count-in: ${beat} / 4`, preset.scaleRecommendation);
+                    onChordUpdateFn(null, `Count-in: ${beat} / ${countInBeats}`, preset.scaleRecommendation);
                 }
             }, msFromNow);
             this.countInTimers.push(timerId);

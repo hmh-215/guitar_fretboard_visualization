@@ -40,6 +40,7 @@ class FretboardStateModel {
                 stylePreset: 'blues_12bar_a7',
                 bpm: 74,
                 timeSignature: '4/4',
+                meterFilter: 'all', // 'all' | '4/4' | '3/4' | '5/4' | '6/8' | '7/8'
                 currentChordLabel: null,
                 currentSectionLabel: null,
                 scaleRecommendation: 'A Minor / Major Blues, A Mixolydian',

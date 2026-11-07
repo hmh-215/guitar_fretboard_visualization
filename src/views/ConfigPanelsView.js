@@ -35,6 +35,10 @@ class ConfigPanelsView {
         // Tab 2: MIDI Backing Track accompaniment controls
         this.backingStyleSelect = document.getElementById('backing-style-select');
         this.backingMeterBadge = document.getElementById('backing-meter-badge');
+        this.meterFilterMenu = document.getElementById('meter-filter-menu');
+        this.meterFilterWrapper = document.getElementById('meter-filter-wrapper');
+        this.meterBadgeText = document.getElementById('meter-badge-text');
+        this._lastRenderedMeterFilter = null;
         this.backingBpmInput = document.getElementById('backing-bpm-input');
         this.btnBpmDec = document.getElementById('btn-bpm-dec');
         this.btnBpmInc = document.getElementById('btn-bpm-inc');
@@ -125,6 +129,42 @@ class ConfigPanelsView {
         if (this.btnToggleBacking) {
             this.btnToggleBacking.addEventListener('click', () => {
                 this.viewModel.toggleBackingTrack();
+            });
+        }
+
+        // Expandable Time Signature Filter Menu bindings
+        if (this.backingMeterBadge && this.meterFilterMenu) {
+            this.backingMeterBadge.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = this.meterFilterMenu.classList.contains('hidden');
+                this.meterFilterMenu.classList.toggle('hidden', !isHidden);
+                this.backingMeterBadge.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (this.meterFilterMenu && !this.meterFilterMenu.classList.contains('hidden')) {
+                    if (!this.meterFilterWrapper || !this.meterFilterWrapper.contains(e.target)) {
+                        this.meterFilterMenu.classList.add('hidden');
+                        if (this.backingMeterBadge) {
+                            this.backingMeterBadge.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                }
+            });
+
+            // Handle clicking meter filter buttons
+            const meterOptions = this.meterFilterMenu.querySelectorAll('.meter-filter-opt');
+            meterOptions.forEach(optBtn => {
+                optBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const selectedMeter = optBtn.getAttribute('data-meter');
+                    this.meterFilterMenu.classList.add('hidden');
+                    if (this.backingMeterBadge) {
+                        this.backingMeterBadge.setAttribute('aria-expanded', 'false');
+                    }
+                    this.viewModel.setBackingMeterFilter(selectedMeter);
+                });
             });
         }
 
@@ -255,8 +295,12 @@ class ConfigPanelsView {
         }
 
         // Update MIDI Backing Track Controls (Tab 2)
+        const currentMeterFilter = data.backingTrack ? (data.backingTrack.meterFilter || 'all') : 'all';
         if (this.backingStyleSelect && data.backingPresets && data.backingPresets.length > 0) {
-            if (this.backingStyleSelect.children.length === 0) {
+            if (this.backingStyleSelect.children.length === 0 || this._lastRenderedMeterFilter !== currentMeterFilter) {
+                this._lastRenderedMeterFilter = currentMeterFilter;
+                this.backingStyleSelect.innerHTML = '';
+
                 // Populate optgroups by category
                 const categories = {};
                 data.backingPresets.forEach(preset => {
@@ -283,7 +327,32 @@ class ConfigPanelsView {
         }
 
         if (this.backingMeterBadge && data.backingTrack) {
-            this.backingMeterBadge.textContent = data.backingTrack.timeSignature || '4/4';
+            const filter = data.backingTrack.meterFilter || 'all';
+            const displayLabel = filter === 'all'
+                ? (data.backingTrack.timeSignature ? `All (${data.backingTrack.timeSignature})` : 'All')
+                : filter;
+            if (this.meterBadgeText) {
+                this.meterBadgeText.textContent = displayLabel;
+            } else {
+                this.backingMeterBadge.textContent = displayLabel;
+            }
+            this.backingMeterBadge.title = `Time Signature Filter: ${filter.toUpperCase()} (Click to change)`;
+        }
+
+        // Update active checkmarks inside meter filter popover menu
+        if (this.meterFilterMenu && data.backingTrack) {
+            const activeFilter = data.backingTrack.meterFilter || 'all';
+            const options = this.meterFilterMenu.querySelectorAll('.meter-filter-opt');
+            options.forEach(btn => {
+                const meterVal = btn.getAttribute('data-meter');
+                const isSelected = meterVal === activeFilter;
+                const checkEl = btn.querySelector('.meter-check');
+                if (checkEl) {
+                    checkEl.classList.toggle('hidden', !isSelected);
+                }
+                btn.classList.toggle('bg-zinc-800', isSelected);
+                btn.classList.toggle('text-orange-400', isSelected);
+            });
         }
 
         if (this.backingBpmInput && data.backingTrack) {
