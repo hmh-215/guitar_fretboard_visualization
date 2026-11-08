@@ -2,9 +2,13 @@ import asyncio
 import json
 import os
 import subprocess
+import sys
 import time
 import urllib.request
 import websockets
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 EDGE_PATH = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 PORT = 9444
@@ -60,12 +64,14 @@ async def test_suite():
 
             # Navigate to visualizer
             print("Navigating to http://localhost:8080/index.html ...")
+            await send_cmd('Network.enable')
+            await send_cmd('Network.setCacheDisabled', {'cacheDisabled': True})
             await send_cmd('Page.enable')
             await send_cmd('Page.navigate', {'url': 'http://localhost:8080/index.html'})
 
             # Wait for bootstrap
             for _ in range(30):
-                ready = await eval_js('Boolean(window.GuitarApp && window.GuitarApp.instance && window.GuitarApp.instance.viewModel)')
+                ready = await eval_js('Boolean(window.GuitarApp && window.GuitarApp.instance && window.GuitarApp.instance.viewModel && document.getElementById("backing-style-select") && document.getElementById("backing-style-select").children.length > 0)')
                 if ready:
                     break
                 await asyncio.sleep(0.3)
@@ -78,17 +84,20 @@ async def test_suite():
                 const menu = document.getElementById('meter-filter-menu');
                 const totalPresets = window.GuitarApp.Models.MidiBackingTrackModel.PRESETS.length;
                 const options = Array.from(select ? select.querySelectorAll('option') : []).map(o => o.value);
+                const hasAllOption = Boolean(document.querySelector('.meter-filter-opt[data-meter="all"]'));
                 return {
                     totalPresets,
                     optionsCount: options.length,
                     badgeText: badgeText ? badgeText.textContent.trim() : (badge ? badge.textContent.trim() : null),
-                    menuHidden: menu ? menu.classList.contains('hidden') : null
+                    menuHidden: menu ? menu.classList.contains('hidden') : null,
+                    hasAllOption
                 };
             })()''')
             print("Init State:", init_res)
             assert init_res['totalPresets'] == 25, f"Expected 25 presets in model, got {init_res['totalPresets']}"
-            assert init_res['optionsCount'] == 25, f"Expected 25 select options, got {init_res['optionsCount']}"
-            assert 'All' in init_res['badgeText'], f"Expected 'All' in badge, got {init_res['badgeText']}"
+            assert init_res['optionsCount'] == 14, f"Expected 14 default 4/4 select options, got {init_res['optionsCount']}"
+            assert init_res['badgeText'] == '4/4', f"Expected '4/4' default badge, got {init_res['badgeText']}"
+            assert init_res['hasAllOption'] is False, "Expected 'All meters' option to be removed"
             assert init_res['menuHidden'] is True, "Expected menu hidden initially"
 
             print("\n--- TEST 2: Toggle Meter Filter Menu Open and Close ---")
@@ -236,26 +245,34 @@ async def test_suite():
             assert res_44['badgeText'] == '4/4'
             assert res_44['count'] == 14, f"Expected 14 tracks for 4/4, got {res_44['count']}"
 
-            print("\n--- TEST 8: Reset to All Meters Filter ---")
-            res_all = await eval_js('''(() => {
+            print("\n--- TEST 8: Verify 'All meters' is removed and only minimal 5 meters exist ---")
+            res_meters = await eval_js('''(() => {
                 const badge = document.getElementById('backing-meter-badge');
                 badge.click();
-                const btnAll = document.querySelector('.meter-filter-opt[data-meter="all"]');
-                btnAll.click();
-
-                const select = document.getElementById('backing-style-select');
+                const allOpt = document.querySelector('.meter-filter-opt[data-meter="all"]');
+                const opts = Array.from(document.querySelectorAll('.meter-filter-opt')).map(el => {
+                    const labelSpan = el.querySelector('span:not(.meter-check)') || el;
+                    return {
+                        meter: el.getAttribute('data-meter'),
+                        text: labelSpan.textContent.trim()
+                    };
+                });
                 const badgeText = document.getElementById('meter-badge-text');
-                const options = Array.from(select.querySelectorAll('option')).map(o => ({ id: o.value, text: o.textContent }));
 
                 return {
+                    hasAllOpt: allOpt !== null,
                     badgeText: badgeText ? badgeText.textContent.trim() : null,
-                    count: options.length,
-                    activePreset: select.value
+                    options: opts
                 };
             })()''')
-            print("Filter All:", res_all)
-            assert 'All' in res_all['badgeText']
-            assert res_all['count'] == 25, f"Expected 25 tracks for All, got {res_all['count']}"
+            print("Meter options check:", res_meters)
+            assert not res_meters['hasAllOpt'], "Unwanted 'all' meter option found!"
+            assert len(res_meters['options']) == 5, f"Expected exactly 5 meter options, got {len(res_meters['options'])}"
+            expected_meters = ['4/4', '3/4', '5/4', '6/8', '7/8']
+            actual_meters = [o['meter'] for o in res_meters['options']]
+            actual_texts = [o['text'] for o in res_meters['options']]
+            assert actual_meters == expected_meters, f"Expected {expected_meters}, got {actual_meters}"
+            assert actual_texts == expected_meters, f"Expected minimal labels {expected_meters}, got {actual_texts}"
 
             print("\n--- TEST 9: Test Play Backing Count-in Display for Odd Meter (3/4) ---")
             count_in_test = await eval_js('''(() => {

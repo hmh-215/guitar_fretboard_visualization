@@ -295,7 +295,7 @@ class ConfigPanelsView {
         }
 
         // Update MIDI Backing Track Controls (Tab 2)
-        const currentMeterFilter = data.backingTrack ? (data.backingTrack.meterFilter || 'all') : 'all';
+        const currentMeterFilter = data.backingTrack ? (data.backingTrack.meterFilter || '4/4') : '4/4';
         if (this.backingStyleSelect && data.backingPresets && data.backingPresets.length > 0) {
             if (this.backingStyleSelect.children.length === 0 || this._lastRenderedMeterFilter !== currentMeterFilter) {
                 this._lastRenderedMeterFilter = currentMeterFilter;
@@ -327,21 +327,18 @@ class ConfigPanelsView {
         }
 
         if (this.backingMeterBadge && data.backingTrack) {
-            const filter = data.backingTrack.meterFilter || 'all';
-            const displayLabel = filter === 'all'
-                ? (data.backingTrack.timeSignature ? `All (${data.backingTrack.timeSignature})` : 'All')
-                : filter;
+            const filter = data.backingTrack.meterFilter || '4/4';
             if (this.meterBadgeText) {
-                this.meterBadgeText.textContent = displayLabel;
+                this.meterBadgeText.textContent = filter;
             } else {
-                this.backingMeterBadge.textContent = displayLabel;
+                this.backingMeterBadge.textContent = filter;
             }
-            this.backingMeterBadge.title = `Time Signature Filter: ${filter.toUpperCase()} (Click to change)`;
+            this.backingMeterBadge.title = `Time Signature: ${filter} (Click to change)`;
         }
 
         // Update active checkmarks inside meter filter popover menu
         if (this.meterFilterMenu && data.backingTrack) {
-            const activeFilter = data.backingTrack.meterFilter || 'all';
+            const activeFilter = data.backingTrack.meterFilter || '4/4';
             const options = this.meterFilterMenu.querySelectorAll('.meter-filter-opt');
             options.forEach(btn => {
                 const meterVal = btn.getAttribute('data-meter');
