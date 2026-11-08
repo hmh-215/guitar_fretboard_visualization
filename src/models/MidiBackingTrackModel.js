@@ -27,6 +27,7 @@ class MidiBackingTrackModel {
         this.lastReportedChord = null;
         this.lastReportedSection = null;
         this.lastReportedBar = -1;
+        this.lastReportedRoot = null;
 
         // True Standard MIDI File (SMF) Parsing Cache & Stream State
         this._parsedMidiCache = {};
@@ -1615,6 +1616,7 @@ class MidiBackingTrackModel {
         this.isCountingIn = true;
         this.currentStep = 0;
         this.lastReportedBar = -1;
+        this.lastReportedRoot = null;
         this.lastReportedChord = null;
         this.lastReportedSection = null;
         this.scheduledNoteIndex = 0;
@@ -1699,6 +1701,7 @@ class MidiBackingTrackModel {
         this.isCountingIn = false;
         this.currentStep = 0;
         this.lastReportedBar = -1;
+        this.lastReportedRoot = null;
         this.lastReportedChord = null;
         this.lastReportedSection = null;
         this.scheduledNoteIndex = 0;
@@ -1758,6 +1761,16 @@ class MidiBackingTrackModel {
         const guitarInstrument = preset.instrumentType || 'clean_guitar';
         const bassInstrument = preset.bassType || 'electric_bass';
 
+        // Calculate dynamic transposition delta between active user root and preset native root
+        const nativeRootIdx = (preset.defaultRootIdx !== undefined) ? preset.defaultRootIdx : 0;
+        const userRootIdx = (context.rootNoteIdx !== undefined && context.rootNoteIdx !== null)
+            ? context.rootNoteIdx
+            : nativeRootIdx;
+        let semitoneDelta = ((userRootIdx - nativeRootIdx) % 12 + 12) % 12;
+        if (semitoneDelta > 6) {
+            semitoneDelta -= 12; // Natural acoustic register: -5 to +6 semitones
+        }
+
         while (this.scheduledNoteIndex < parsed.notes.length) {
             const note = parsed.notes[this.scheduledNoteIndex];
             if (note.startSec > lookaheadHorizonSongSec) break;
@@ -1766,27 +1779,31 @@ class MidiBackingTrackModel {
             const noteAudioDuration = Math.max(0.06, note.durSec / timeScale);
 
             if (noteAudioStartTime >= now - 0.04) {
+                const pitchToPlay = (note.role === 'drums')
+                    ? note.pitch
+                    : Math.max(12, Math.min(127, note.pitch + semitoneDelta));
+
                 if (typeof audioModel.playAccompanimentNote === 'function') {
                     if (note.role === 'drums') {
                         const drumType = MidiBackingTrackModel.GM_DRUM_MAP[note.pitch] || 'snare';
                         audioModel.scheduleDrumHit(drumType, noteAudioStartTime, note.vel * 0.95);
                     } else if (note.role === 'guitar') {
-                        audioModel.playAccompanimentNote('guitar', guitarInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
+                        audioModel.playAccompanimentNote('guitar', guitarInstrument, pitchToPlay, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
                     } else if (note.role === 'bass') {
-                        audioModel.playAccompanimentNote('bass', bassInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
+                        audioModel.playAccompanimentNote('bass', bassInstrument, pitchToPlay, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
                     } else if (note.role === 'keys') {
-                        audioModel.playAccompanimentNote('keys', 'electric_piano', note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
+                        audioModel.playAccompanimentNote('keys', 'electric_piano', pitchToPlay, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
                     }
                 } else {
                     if (note.role === 'drums') {
                         const drumType = MidiBackingTrackModel.GM_DRUM_MAP[note.pitch] || 'snare';
                         audioModel.scheduleDrumHit(drumType, noteAudioStartTime, note.vel * 0.95);
                     } else if (note.role === 'guitar') {
-                        audioModel.playWavNote(guitarInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
+                        audioModel.playWavNote(guitarInstrument, pitchToPlay, noteAudioStartTime, noteAudioDuration, note.vel, guitarBus);
                     } else if (note.role === 'bass') {
-                        audioModel.playWavNote(bassInstrument, note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
+                        audioModel.playWavNote(bassInstrument, pitchToPlay, noteAudioStartTime, noteAudioDuration, note.vel * 0.95, bassBus);
                     } else if (note.role === 'keys') {
-                        audioModel.playWavNote('electric_piano', note.pitch, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
+                        audioModel.playWavNote('electric_piano', pitchToPlay, noteAudioStartTime, noteAudioDuration, note.vel * 0.85, keysBus);
                     }
                 }
             }
@@ -1798,8 +1815,13 @@ class MidiBackingTrackModel {
         const barDurationSec = (60.0 / userBpm) * beatsPerBar;
         const currentBar = Math.floor(songPosSec / barDurationSec);
 
-        if (currentBar !== this.lastReportedBar && typeof onChordUpdateFn === 'function') {
+        const currentRoot = (context.rootNoteIdx !== undefined && context.rootNoteIdx !== null)
+            ? context.rootNoteIdx
+            : nativeRootIdx;
+
+        if ((currentBar !== this.lastReportedBar || currentRoot !== this.lastReportedRoot) && typeof onChordUpdateFn === 'function') {
             this.lastReportedBar = currentBar;
+            this.lastReportedRoot = currentRoot;
             this._reportChordAndSection(preset, currentBar, context, onChordUpdateFn);
         }
     }
@@ -1914,18 +1936,21 @@ class MidiBackingTrackModel {
                 }
             }
 
-            // Report chord and section on downbeat of each bar
-            if (barStep === 0 && chordSlot && typeof onChordUpdateFn === 'function') {
-                const scaleRootIdx = (context.rootNoteIdx !== undefined && context.rootNoteIdx !== null)
-                    ? context.rootNoteIdx
-                    : (preset.defaultRootIdx !== undefined ? preset.defaultRootIdx : 0);
+            // Report chord and section on downbeat of each bar or when root changes
+            const currentRoot = (context.rootNoteIdx !== undefined && context.rootNoteIdx !== null)
+                ? context.rootNoteIdx
+                : (preset.defaultRootIdx !== undefined ? preset.defaultRootIdx : 0);
+
+            if ((barStep === 0 || currentRoot !== this.lastReportedRoot) && chordSlot && typeof onChordUpdateFn === 'function') {
+                this.lastReportedRoot = currentRoot;
+                const scaleRootIdx = currentRoot;
                 
                 const isSharps = context.accidentalMode !== 'flats';
                 const NOTES = isSharps
                     ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
                     : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
-                const chordRootIdx = (scaleRootIdx + (chordSlot.rootOffset || 0)) % 12;
+                const chordRootIdx = ((scaleRootIdx + (chordSlot.rootOffset || 0)) % 12 + 12) % 12;
                 const chordRootName = NOTES[chordRootIdx];
                 const chordLabel = `${chordRootName}${chordSlot.suffix || ''} (${chordSlot.degreeRoman || ''})`;
                 const minimalSection = MidiBackingTrackModel.getMinimalSectionName(currentSection);

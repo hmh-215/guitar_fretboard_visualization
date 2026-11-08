@@ -452,6 +452,28 @@ class FretboardViewModel {
         this.stateModel.setState({ selectedNoteIdx });
     }
 
+    _updateLiveChordOnRootChange(newRootIdx) {
+        if (!this.state.backingTrack || !this.state.backingTrack.isPlaying || this.state.backingTrack.isCountingIn) return;
+        const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
+        if (!MidiModel) return;
+        const preset = MidiModel.getPresetById(this.state.backingTrack.stylePreset);
+        if (!preset || !preset.progression || preset.progression.length === 0) return;
+
+        const currentBar = (this.midiBackingModel && this.midiBackingModel.lastReportedBar >= 0)
+            ? this.midiBackingModel.lastReportedBar
+            : 0;
+        const slotIndex = currentBar % preset.progression.length;
+        const chordSlot = preset.progression[slotIndex];
+        if (chordSlot) {
+            const isSharps = this.accidentalMode !== 'flats';
+            const NOTES = isSharps
+                ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+                : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+            const chordRootIdx = ((newRootIdx + (chordSlot.rootOffset || 0)) % 12 + 12) % 12;
+            this.state.backingTrack.currentChordLabel = `${NOTES[chordRootIdx]}${chordSlot.suffix || ''} (${chordSlot.degreeRoman || ''})`;
+        }
+    }
+
     quickPickModeRoot(noteIdx) {
         const sixthString = this.stateModel.getStringByNumber(6) || this.state.guitarStrings[0];
         const fretOn6th = ((noteIdx - sixthString.openNoteIdx) % 12 + 12) % 12;
@@ -462,6 +484,7 @@ class FretboardViewModel {
         };
         const pitch = this.TheoryModel.getStringMidiPitch(sixthString, fretOn6th);
         this.audioModel.playGuitarNote(pitch, this.state.audioEnabled);
+        this._updateLiveChordOnRootChange(noteIdx);
         this.stateModel.setState({ clickedRoot });
     }
 
@@ -493,6 +516,7 @@ class FretboardViewModel {
         if (this.state.appMode === 'note') {
             this.stateModel.setState({ selectedNoteIdx: cellData.noteIdx });
         } else {
+            this._updateLiveChordOnRootChange(cellData.noteIdx);
             this.stateModel.setState({
                 clickedRoot: {
                     stringNum: strObj.stringNum,
@@ -543,9 +567,12 @@ class FretboardViewModel {
     startBackingTrack() {
         if (!this.midiBackingModel || !this.state.audioEnabled) return;
 
-        // If no root is selected yet, default to C on 6th string 8th fret
+        // If no root is selected yet, default to backing track preset's default key
         if (!this.state.clickedRoot) {
-            this.quickPickModeRoot(0);
+            const MidiModel = window.GuitarApp.Models.MidiBackingTrackModel;
+            const currentPreset = MidiModel ? MidiModel.getPresetById(this.state.backingTrack.stylePreset) : null;
+            const defRoot = (currentPreset && currentPreset.defaultRootIdx !== undefined) ? currentPreset.defaultRootIdx : 0;
+            this.quickPickModeRoot(defRoot);
         }
 
         const getContextFn = () => ({
