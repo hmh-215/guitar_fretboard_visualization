@@ -271,9 +271,66 @@ async def test_suite():
                 };
             })()''')
             print("Count-in test:", count_in_test)
-            assert 'Count-in: 1 / 3' in count_in_test['sectionText'], f"Expected 'Count-in: 1 / 3', got {count_in_test['sectionText']}"
+            assert 'Count-in 1/3' in count_in_test['sectionText'], f"Expected 'Count-in 1/3', got {count_in_test['sectionText']}"
 
-            print("\n--- TEST 10: Check Parity between index.html and guitar_fretboard_visualizer.html ---")
+            print("\n--- TEST 10: Test Minimal Section and Chord Description (No Prefix, No Parentheses) ---")
+            minimal_test = await eval_js('''(() => {
+                const vm = window.GuitarApp.instance.viewModel;
+                const model = window.GuitarApp.instance.midiBackingModel;
+                const preset = window.GuitarApp.Models.MidiBackingTrackModel.getPresetById('acid_jazz_34_dm');
+                vm.setBackingStylePreset('acid_jazz_34_dm');
+
+                // Simulate state reporting for Bar 0 (Intro Bar 1/4)
+                model._reportChordAndSection(preset, 0, { rootNoteIdx: 2, accidentalMode: 'sharps' }, (chord, section, scale) => {
+                    vm.state.backingTrack.isPlaying = true;
+                    vm.state.backingTrack.currentChordLabel = chord;
+                    vm.state.backingTrack.currentSectionLabel = section;
+                    vm.notifyViews();
+                });
+
+                const sectionBadge = document.getElementById('backing-section-badge');
+                const chordBadge = document.getElementById('backing-chord-badge');
+                const bar0Section = sectionBadge ? sectionBadge.textContent.trim() : '';
+                const bar0Chord = chordBadge ? chordBadge.textContent.trim() : '';
+
+                // Simulate state reporting for Bar 4 (Verse Bar 1/8)
+                model._reportChordAndSection(preset, 4, { rootNoteIdx: 2, accidentalMode: 'sharps' }, (chord, section, scale) => {
+                    vm.state.backingTrack.currentChordLabel = chord;
+                    vm.state.backingTrack.currentSectionLabel = section;
+                    vm.notifyViews();
+                });
+
+                const bar4Section = sectionBadge ? sectionBadge.textContent.trim() : '';
+                const bar4Chord = chordBadge ? chordBadge.textContent.trim() : '';
+
+                // Simulate state reporting for Bar 12 (Chorus Bar 1/8)
+                model._reportChordAndSection(preset, 12, { rootNoteIdx: 2, accidentalMode: 'sharps' }, (chord, section, scale) => {
+                    vm.state.backingTrack.currentChordLabel = chord;
+                    vm.state.backingTrack.currentSectionLabel = section;
+                    vm.notifyViews();
+                });
+
+                const bar12Section = sectionBadge ? sectionBadge.textContent.trim() : '';
+                const bar12Chord = chordBadge ? chordBadge.textContent.trim() : '';
+
+                vm.stopBackingTrack();
+
+                return {
+                    bar0Section, bar0Chord,
+                    bar4Section, bar4Chord,
+                    bar12Section, bar12Chord
+                };
+            })()''')
+            print("Minimal Section & Chord test:", minimal_test)
+            assert minimal_test['bar0Section'] == 'Intro 1/4', f"Expected 'Intro 1/4', got '{minimal_test['bar0Section']}'"
+            assert minimal_test['bar0Chord'] == 'Dm9 (i9)', f"Expected 'Dm9 (i9)', got '{minimal_test['bar0Chord']}'"
+            assert 'Section:' not in minimal_test['bar0Section'], "Found unwanted 'Section:' prefix"
+            assert 'Chord:' not in minimal_test['bar0Chord'], "Found unwanted 'Chord:' prefix"
+            assert '(' not in minimal_test['bar0Section'], "Found unwanted parenthesis in section description"
+            assert minimal_test['bar4Section'] == 'Verse 1/8', f"Expected 'Verse 1/8', got '{minimal_test['bar4Section']}'"
+            assert minimal_test['bar12Section'] == 'Chorus 1/8', f"Expected 'Chorus 1/8', got '{minimal_test['bar12Section']}'"
+
+            print("\n--- TEST 11: Check Parity between index.html and guitar_fretboard_visualizer.html ---")
             with open('index.html', 'rb') as f1, open('guitar_fretboard_visualizer.html', 'rb') as f2:
                 b1 = f1.read()
                 b2 = f2.read()
@@ -281,7 +338,7 @@ async def test_suite():
             print("Parity Check: 100% IDENTICAL (Both files match perfectly).")
 
             print("\n=======================================================")
-            print("ALL 10 TESTS PASSED WITH 100% VERIFIED SUCCESS!")
+            print("ALL 11 TESTS PASSED WITH 100% VERIFIED SUCCESS!")
             print("=======================================================")
 
     finally:

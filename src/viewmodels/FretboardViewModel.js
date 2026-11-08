@@ -574,7 +574,7 @@ class FretboardViewModel {
         this.midiBackingModel.start(this.audioModel, getContextFn, onChordUpdateFn);
         this.state.backingTrack.isPlaying = true;
         this.state.backingTrack.isCountingIn = true;
-        this.state.backingTrack.currentSectionLabel = `Count-in: 1 / ${countInBeats}`;
+        this.state.backingTrack.currentSectionLabel = `Count-in 1/${countInBeats}`;
         this.state.backingTrack.currentChordLabel = null;
         this.stateModel.notify();
     }

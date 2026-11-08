@@ -385,7 +385,7 @@ class ConfigPanelsView {
             const section = data.backingTrack.currentSectionLabel;
             if (isPlaying && section) {
                 this.backingSectionBadge.classList.remove('hidden');
-                this.backingSectionBadge.textContent = section.startsWith('Count-in') ? section : `Section: ${section}`;
+                this.backingSectionBadge.textContent = section;
             } else {
                 this.backingSectionBadge.classList.add('hidden');
             }
@@ -396,7 +396,7 @@ class ConfigPanelsView {
             const chord = data.backingTrack.currentChordLabel;
             if (isPlaying && chord) {
                 this.backingChordBadge.classList.remove('hidden');
-                this.backingChordBadge.textContent = `Chord: ${chord}`;
+                this.backingChordBadge.textContent = chord;
             } else {
                 this.backingChordBadge.classList.add('hidden');
             }

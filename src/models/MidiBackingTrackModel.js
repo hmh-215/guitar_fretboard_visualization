@@ -858,10 +858,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Vamp', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 2, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
-                { bar: 2, rootOffset: 7, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'iv9' },
-                { bar: 3, rootOffset: 9, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'v9' },
-                { bar: 4, rootOffset: 2, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
+                { bar: 2, rootOffset: 5, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'iv9' },
+                { bar: 3, rootOffset: 7, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'v9' },
+                { bar: 4, rootOffset: 0, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' }
             ],
             drums: {
                 crash: [0],
@@ -908,10 +908,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Vamp', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 4, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
-                { bar: 2, rootOffset: 0, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'bVImaj7' },
-                { bar: 3, rootOffset: 2, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
-                { bar: 4, rootOffset: 4, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' },
+                { bar: 2, rootOffset: 8, chordIntervals: [0, 4, 7, 11], suffix: 'maj7', degreeRoman: 'bVImaj7' },
+                { bar: 3, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { bar: 4, rootOffset: 0, chordIntervals: [0, 3, 7, 10], suffix: 'm7', degreeRoman: 'i7' }
             ],
             drums: {
                 crash: [0],
@@ -961,10 +961,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Cadence', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 9, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
-                { bar: 2, rootOffset: 4, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' },
-                { bar: 3, rootOffset: 6, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
-                { bar: 4, rootOffset: 2, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { bar: 2, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' },
+                { bar: 3, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
+                { bar: 4, rootOffset: 5, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' }
             ],
             drums: {
                 crash: [0],
@@ -1059,10 +1059,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Climax', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
-                { bar: 2, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
-                { bar: 3, rootOffset: 5, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
-                { bar: 4, rootOffset: 4, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { bar: 3, rootOffset: 8, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { bar: 4, rootOffset: 7, chordIntervals: [0, 4, 7, 10], suffix: '7', degreeRoman: 'V7' }
             ],
             drums: {
                 crash: [0],
@@ -1110,10 +1110,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Cadence', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 4, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
-                { bar: 2, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14, 21], suffix: '13', degreeRoman: 'IV13' },
-                { bar: 3, rootOffset: 4, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
-                { bar: 4, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14, 21], suffix: '13', degreeRoman: 'IV13' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
+                { bar: 2, rootOffset: 5, chordIntervals: [0, 4, 7, 10, 14, 21], suffix: '13', degreeRoman: 'IV13' },
+                { bar: 3, rootOffset: 0, chordIntervals: [0, 3, 7, 10, 14], suffix: 'm9', degreeRoman: 'i9' },
+                { bar: 4, rootOffset: 5, chordIntervals: [0, 4, 7, 10, 14, 21], suffix: '13', degreeRoman: 'IV13' }
             ],
             drums: {
                 crash: [0],
@@ -1161,10 +1161,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Climax', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
-                { bar: 2, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bII' },
-                { bar: 3, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
-                { bar: 4, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 1, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bII' },
+                { bar: 3, rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 4, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' }
             ],
             drums: {
                 crash: [0],
@@ -1212,10 +1212,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Resolve', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 2, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
-                { bar: 2, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
-                { bar: 3, rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
-                { bar: 4, rootOffset: 2, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 8, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { bar: 3, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' },
+                { bar: 4, rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' }
             ],
             drums: {
                 crash: [0],
@@ -1263,10 +1263,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Riff', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 2, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
-                { bar: 2, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
-                { bar: 3, rootOffset: 7, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'iv' },
-                { bar: 4, rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'i' },
+                { bar: 2, rootOffset: 8, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVI' },
+                { bar: 3, rootOffset: 5, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'iv' },
+                { bar: 4, rootOffset: 10, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'bVII' }
             ],
             drums: {
                 crash: [0],
@@ -1317,10 +1317,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Vamp', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'I9' },
-                { bar: 2, rootOffset: 2, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' },
-                { bar: 3, rootOffset: 9, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'I9' },
-                { bar: 4, rootOffset: 2, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'I9' },
+                { bar: 2, rootOffset: 5, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' },
+                { bar: 3, rootOffset: 0, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'I9' },
+                { bar: 4, rootOffset: 5, chordIntervals: [0, 4, 7, 10, 14], suffix: '9', degreeRoman: 'IV9' }
             ],
             drums: {
                 crash: [0],
@@ -1369,10 +1369,10 @@ class MidiBackingTrackModel {
                 { name: 'Outro Resolution', bars: 4 }
             ],
             progression: [
-                { bar: 1, rootOffset: 2, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
-                { bar: 2, rootOffset: 9, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' },
-                { bar: 3, rootOffset: 11, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
-                { bar: 4, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' }
+                { bar: 1, rootOffset: 0, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'I' },
+                { bar: 2, rootOffset: 7, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'V' },
+                { bar: 3, rootOffset: 9, chordIntervals: [0, 3, 7], suffix: 'm', degreeRoman: 'vi' },
+                { bar: 4, rootOffset: 5, chordIntervals: [0, 4, 7], suffix: '', degreeRoman: 'IV' }
             ],
             drums: {
                 crash: [0],
@@ -1406,6 +1406,29 @@ class MidiBackingTrackModel {
      */
     static getAllPresets() {
         return MidiBackingTrackModel.PRESETS;
+    }
+
+    /**
+     * Clean and minimize section name for display (e.g. "Intro (Jazz Waltz)" -> "Intro").
+     */
+    static getMinimalSectionName(rawName) {
+        if (!rawName) return 'Main';
+        const clean = rawName.replace(/\s*\(.*?\)/g, '').trim();
+        const lower = clean.toLowerCase();
+        if (lower.startsWith('intro')) return 'Intro';
+        if (lower.startsWith('verse')) return 'Verse';
+        if (lower.startsWith('chorus') || lower.includes('chorus')) return 'Chorus';
+        if (lower.includes('solo')) return 'Solo';
+        if (lower.startsWith('outro') || lower.includes('outro')) return 'Outro';
+        if (lower.startsWith('theme a')) return 'Theme A';
+        if (lower.startsWith('theme b')) return 'Theme B';
+        if (lower.startsWith('theme')) return 'Theme';
+        if (lower.startsWith('part a')) return 'Part A';
+        if (lower.startsWith('part b')) return 'Part B';
+        if (lower.startsWith('head')) return 'Head';
+        if (lower.startsWith('bridge')) return 'Bridge';
+        if (lower.startsWith('breakdown')) return 'Breakdown';
+        return clean;
     }
 
     /**
@@ -1637,7 +1660,7 @@ class MidiBackingTrackModel {
             const timerId = window.setTimeout(() => {
                 if (!this.isPlaying || !this.isCountingIn) return;
                 if (typeof onChordUpdateFn === 'function') {
-                    onChordUpdateFn(null, `Count-in: ${beat} / ${countInBeats}`, preset.scaleRecommendation);
+                    onChordUpdateFn(null, `Count-in ${beat}/${countInBeats}`, preset.scaleRecommendation);
                 }
             }, msFromNow);
             this.countInTimers.push(timerId);
@@ -1821,7 +1844,8 @@ class MidiBackingTrackModel {
             const chordRootIdx = ((scaleRootIdx + (chordSlot.rootOffset || 0)) % 12 + 12) % 12;
             const chordRootName = NOTES[chordRootIdx];
             const chordLabel = `${chordRootName}${chordSlot.suffix || ''} (${chordSlot.degreeRoman || ''})`;
-            const sectionLabel = `${currentSection} [${barInSection}/${totalSectionBars}]`;
+            const minimalSection = MidiBackingTrackModel.getMinimalSectionName(currentSection);
+            const sectionLabel = `${minimalSection} ${barInSection}/${totalSectionBars}`;
 
             if (this.lastReportedChord !== chordLabel || this.lastReportedSection !== sectionLabel) {
                 this.lastReportedChord = chordLabel;
@@ -1904,7 +1928,8 @@ class MidiBackingTrackModel {
                 const chordRootIdx = (scaleRootIdx + (chordSlot.rootOffset || 0)) % 12;
                 const chordRootName = NOTES[chordRootIdx];
                 const chordLabel = `${chordRootName}${chordSlot.suffix || ''} (${chordSlot.degreeRoman || ''})`;
-                const sectionLabel = `${currentSection} [${barInSection}/${totalSectionBars}]`;
+                const minimalSection = MidiBackingTrackModel.getMinimalSectionName(currentSection);
+                const sectionLabel = `${minimalSection} ${barInSection}/${totalSectionBars}`;
 
                 if (this.lastReportedChord !== chordLabel || this.lastReportedSection !== sectionLabel) {
                     this.lastReportedChord = chordLabel;
